@@ -3,22 +3,15 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.InviteUser
 {
     [TestFixture]
-    public class WhenInvitingUserAsLibraryAdmin : TestBase
+    public class WhenInvitingUserAsLibraryAdmin() : TestBase(Role.LibraryAdmin)
     {
         private HttpResponseMessage _response;
         private string _name = RandomData.String;
         private string _email = RandomData.Email;
-
-        public WhenInvitingUserAsLibraryAdmin() : base(Role.LibraryAdmin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,10 +26,7 @@ namespace Inshapardaz.Api.Tests.Accounts.InviteUser
         }
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveCreatedAccount()

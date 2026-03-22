@@ -2,25 +2,16 @@
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Darker;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Article;
 
-public class GetArticlesQuery : LibraryBaseQuery<Page<ArticleModel>>
+public class GetArticlesQuery(int libraryId, int pageNumber, int pageSize, int? accountId)
+    : LibraryBaseQuery<Page<ArticleModel>>(libraryId)
 {
-    public GetArticlesQuery(int libraryId, int pageNumber, int pageSize, int? accountId)
-        : base(libraryId)
-    {
-        PageNumber = pageNumber;
-        PageSize = pageSize;
-        AccountId = accountId;
-    }
+    public int PageNumber { get; private set; } = pageNumber;
 
-    public int PageNumber { get; private set; }
-
-    public int PageSize { get; private set; }
-    public int? AccountId { get; }
+    public int PageSize { get; private set; } = pageSize;
+    public int? AccountId { get; } = accountId;
     public string Query { get; set; }
 
     public ArticleSortByType SortBy { get; set; }
@@ -30,19 +21,13 @@ public class GetArticlesQuery : LibraryBaseQuery<Page<ArticleModel>>
 
 }
 
-public class GetArticlesQueryHandler : QueryHandlerAsync<GetArticlesQuery, Page<ArticleModel>>
+public class GetArticlesQueryHandler(IArticleRepository articleRepository)
+    : QueryHandlerAsync<GetArticlesQuery, Page<ArticleModel>>
 {
-    private readonly IArticleRepository _articleRepository;
-
-    public GetArticlesQueryHandler(IArticleRepository articleRepository)
-    {
-        _articleRepository = articleRepository;
-    }
-
     [LibraryAuthorize(1)]
     public override async Task<Page<ArticleModel>> ExecuteAsync(GetArticlesQuery command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var articles = await _articleRepository.GetArticles(
+        var articles = await articleRepository.GetArticles(
             command.LibraryId,
             command.Query,
             command.PageNumber,

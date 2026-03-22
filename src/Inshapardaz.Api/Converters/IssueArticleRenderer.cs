@@ -16,23 +16,14 @@ public interface IRenderIssueArticle
     ListView<IssueArticleView> Render(IEnumerable<IssueArticleModel> source, int libraryId, int periodicalId, int volumeNumber, int issueNumber);
 }
 
-public class IssueArticleRenderer : IRenderIssueArticle
+public class IssueArticleRenderer(IRenderLink linkRenderer, IUserHelper userHelper) : IRenderIssueArticle
 {
-    private readonly IRenderLink _linkRenderer;
-    private readonly IUserHelper _userHelper;
-
-    public IssueArticleRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
-    {
-        _linkRenderer = linkRenderer;
-        _userHelper = userHelper;
-    }
-
     public ListView<IssueArticleView> Render(IEnumerable<IssueArticleModel> source, int libraryId, int periodicalId, int volumeNumber, int issueNumber)
     {
         var items = source.Select(c => Render(c, libraryId, periodicalId, volumeNumber, issueNumber)).ToList();
         var view = new ListView<IssueArticleView> { Data = items };
 
-        view.Links.Add(_linkRenderer.Render(new Link
+        view.Links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(IssueArticleController.GetIssueArticles),
             Method = HttpMethod.Get,
@@ -40,9 +31,9 @@ public class IssueArticleRenderer : IRenderIssueArticle
             Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber }
         }));
 
-        if (_userHelper.IsWriter(libraryId))
+        if (userHelper.IsWriter(libraryId))
         {
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.CreateIssueArticle),
                 Method = HttpMethod.Post,
@@ -50,7 +41,7 @@ public class IssueArticleRenderer : IRenderIssueArticle
                 Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber }
             }));
 
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.UpdateIssueArticleSequence),
                 Method = HttpMethod.Post,
@@ -67,21 +58,21 @@ public class IssueArticleRenderer : IRenderIssueArticle
         var result = source.Map();
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.GetIssueArticleById),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
                 Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, sequenceNumber = source.SequenceNumber }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(PeriodicalController.GetPeriodicalById),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Periodical,
                 Parameters = new { libraryId = libraryId, periodicalId = periodicalId }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.GetIssueById),
                 Method = HttpMethod.Get,
@@ -92,7 +83,7 @@ public class IssueArticleRenderer : IRenderIssueArticle
 
         if (source.PreviousArticle != null)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.GetIssueArticleById),
                 Method = HttpMethod.Get,
@@ -103,7 +94,7 @@ public class IssueArticleRenderer : IRenderIssueArticle
 
         if (source.NextArticle != null)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.GetIssueArticleById),
                 Method = HttpMethod.Get,
@@ -112,9 +103,9 @@ public class IssueArticleRenderer : IRenderIssueArticle
             }));
         }
 
-        if (_userHelper.IsWriter(libraryId))
+        if (userHelper.IsWriter(libraryId))
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.UpdateIssueArticle),
                 Method = HttpMethod.Put,
@@ -122,7 +113,7 @@ public class IssueArticleRenderer : IRenderIssueArticle
                 Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, sequenceNumber = source.SequenceNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.DeleteIssueArticle),
                 Method = HttpMethod.Delete,
@@ -130,7 +121,7 @@ public class IssueArticleRenderer : IRenderIssueArticle
                 Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, sequenceNumber = source.SequenceNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.CreateIssueArticleContent),
                 Method = HttpMethod.Post,
@@ -138,7 +129,7 @@ public class IssueArticleRenderer : IRenderIssueArticle
                 Parameters = new { libraryId = libraryId, periodicalId = periodicalId, volumeNumber = volumeNumber, issueNumber = issueNumber, sequenceNumber = source.SequenceNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.AssignIssueArticleToUser),
                 Method = HttpMethod.Post,
@@ -147,7 +138,7 @@ public class IssueArticleRenderer : IRenderIssueArticle
             }));
         }
 
-        if (_userHelper.IsAuthenticated)
+        if (userHelper.IsAuthenticated)
         {
             var contents = new List<IssueArticleContentView>();
             foreach (var content in source.Contents)
@@ -168,7 +159,7 @@ public class IssueArticleRenderer : IRenderIssueArticle
 
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.GetIssueArticleContent),
                 Method = HttpMethod.Get,
@@ -176,21 +167,21 @@ public class IssueArticleRenderer : IRenderIssueArticle
                 Language = source.Language,
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber, sequenceNumber = source.SequenceNumber }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(PeriodicalController.GetPeriodicalById),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Periodical,
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.GetIssueById),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Issue,
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.GetIssueArticleById),
                 Method = HttpMethod.Get,
@@ -199,9 +190,9 @@ public class IssueArticleRenderer : IRenderIssueArticle
             })
         };
 
-        if (_userHelper.IsWriter(libraryId))
+        if (userHelper.IsWriter(libraryId))
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.UpdateIssueArticleContent),
                 Method = HttpMethod.Put,
@@ -210,7 +201,7 @@ public class IssueArticleRenderer : IRenderIssueArticle
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber, sequenceNumber = source.SequenceNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.DeleteIssueArticleContent),
                 Method = HttpMethod.Delete,

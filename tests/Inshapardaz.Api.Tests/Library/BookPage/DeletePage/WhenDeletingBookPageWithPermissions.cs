@@ -4,26 +4,19 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePage
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingBookPageWithPermissions : TestBase
+    public class WhenDeletingBookPageWithPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private BookPageAssert _assert;
         private BookPageDto _page;
         private string _filePath;
         private int _bookId;
-
-        public WhenDeletingBookPageWithPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,28 +31,16 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            BookBuilder.CleanUp();
-        }
+        public void Teardown() => BookBuilder.CleanUp();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldDeletePage()
-        {
-            _assert.ShouldHaveNoBookPage(_bookId, _page.Id, _page.ImageId);
-        }
+        public void ShouldDeletePage() => _assert.ShouldHaveNoBookPage(_bookId, _page.Id, _page.ImageId);
 
 
         [Test]
-        public void ShouldHaveDeletedTheContentFile()
-        {
-            _assert.ShouldHaveNoBookPageContent(_page.ContentId.Value, _filePath);
-        }
+        public void ShouldHaveDeletedTheContentFile() => _assert.ShouldHaveNoBookPageContent(_page.ContentId.Value, _filePath);
     }
 }

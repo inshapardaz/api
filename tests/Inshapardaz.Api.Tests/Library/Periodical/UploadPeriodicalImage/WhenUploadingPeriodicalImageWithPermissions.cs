@@ -3,25 +3,18 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.UploadPeriodicalImage
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUploadingPeriodicalImageWithPermissions : TestBase
+    public class WhenUploadingPeriodicalImageWithPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private PeriodicalAssert _assert;
         private int _periodicalId;
         private byte[] _newImage = RandomData.Bytes;
-
-        public WhenUploadingPeriodicalImageWithPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,21 +31,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UploadPeriodicalImage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            PeriodicalBuilder.CleanUp();
-        }
+        public void Teardown() => PeriodicalBuilder.CleanUp();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveUpdatedPeriodicalImage()
-        {
-            _assert.ShouldHaveUpdatedPeriodicalImage(_periodicalId, _newImage);
-        }
+        public void ShouldHaveUpdatedPeriodicalImage() => _assert.ShouldHaveUpdatedPeriodicalImage(_periodicalId, _newImage);
     }
 }

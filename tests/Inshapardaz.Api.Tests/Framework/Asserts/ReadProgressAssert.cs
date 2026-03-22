@@ -1,28 +1,18 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using System.Net.Http;
-using Google.Type;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Domain.Models.Library;
 using DateTime = System.DateTime;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class ReadProgressAssert
+    public class ReadProgressAssert(IBookTestRepository bookTestRepository)
     {
         private HttpResponseMessage _response;
         private int _libraryId;
         private ReadProgressView _view;
-
-        private readonly IBookTestRepository _bookTestRepository;
-
-        public ReadProgressAssert(IBookTestRepository bookTestRepository)
-        {
-            _bookTestRepository = bookTestRepository;
-        }
 
         public ReadProgressAssert ForView(ReadProgressView view)
         {
@@ -45,7 +35,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ReadProgressAssert ShouldHaveSaved(int bookId, int accountId, ReadProgressView view)
         {
-            var progress = _bookTestRepository.GetBookProgress(bookId, accountId);
+            var progress = bookTestRepository.GetBookProgress(bookId, accountId);
         
             progress.Should().NotBeNull();
 

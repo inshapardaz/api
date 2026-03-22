@@ -4,25 +4,17 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenGettingChapterByIdHavingContentsWithWritePermissions
-        : TestBase
+    public class WhenGettingChapterByIdHavingContentsWithWritePermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private ChapterDto _expected;
         private ChapterAssert _assert;
-
-        public WhenGettingChapterByIdHavingContentsWithWritePermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,22 +27,13 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveCorrectObjectReturned()
-        {
-            _assert.ShouldMatch(_expected);
-        }
+        public void ShouldHaveCorrectObjectReturned() => _assert.ShouldMatch(_expected);
 
         [Test]
         public void ShouldHaveLinks()
@@ -68,9 +51,6 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
         }
 
         [Test]
-        public void ShouldHaveCorrectContents()
-        {
-            _assert.ShouldHaveCorrectContents();
-        }
+        public void ShouldHaveCorrectContents() => _assert.ShouldHaveCorrectContents();
     }
 }

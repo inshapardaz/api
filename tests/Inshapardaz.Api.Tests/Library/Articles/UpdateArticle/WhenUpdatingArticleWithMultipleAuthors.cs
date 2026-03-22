@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Bogus;
+﻿using Bogus;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -17,17 +12,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
 {
     [TestFixture]
-    public class WhenUpdatingArticleWithMultipleAuthors : TestBase
+    public class WhenUpdatingArticleWithMultipleAuthors() : TestBase(Role.LibraryAdmin)
     {
         private HttpResponseMessage _response;
         private ArticleView _expected;
         private ArticleAssert _assert;
         private IEnumerable<CategoryDto> _otherCategories;
-
-        public WhenUpdatingArticleWithMultipleAuthors()
-            : base(Role.LibraryAdmin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -61,16 +51,10 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOKResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOKResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveUpdatedTheArticle()
@@ -84,9 +68,6 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
         }
 
         [Test]
-        public void ShouldReturnCorrectCategories()
-        {
-            _assert.ShouldBeSameCategories(_otherCategories.ToList());
-        }
+        public void ShouldReturnCorrectCategories() => _assert.ShouldBeSameCategories(_otherCategories.ToList());
     }
 }

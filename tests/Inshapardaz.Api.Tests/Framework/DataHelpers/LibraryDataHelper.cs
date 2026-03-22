@@ -4,9 +4,7 @@ using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -32,15 +30,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         string GetLibraryImageUrl(int id);
     }
 
-    public class MySqlLibraryTestRepository : ILibraryTestRepository
+    public class MySqlLibraryTestRepository(IProvideConnection connectionProvider) : ILibraryTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public MySqlLibraryTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddLibraries(IEnumerable<LibraryDto> libraries)
         {
             foreach (var library in libraries)
@@ -52,7 +43,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         public void AddLibrary(LibraryDto library)
         {
 
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var mySql = @"INSERT INTO Library (Name, Description, Language, SupportsPeriodicals, PrimaryColor, SecondaryColor, ImageId) 
                         VALUES (@Name, @Description, @Language, @SupportsPeriodicals, @PrimaryColor, @SecondaryColor, @ImageId);
@@ -65,7 +56,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public LibraryDto GetLibrary(LibraryView library)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "Select * From Library Where Name = @Name AND Language = @Language AND SupportsPeriodicals = @SupportsPeriodicals";
                 return connection.QuerySingleOrDefault<LibraryDto>(sql,
@@ -75,7 +66,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public LibraryDto GetLibraryById(int libraryId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<LibraryDto>("Select * From Library Where Id = @Id",
                 new { Id = libraryId });
@@ -84,7 +75,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteLibraries(IEnumerable<int> libraryIds)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 connection.Execute("DELETE FROM Library WHERE Id IN @LibraryIds", new { LibraryIds = libraryIds });
             }
@@ -92,7 +83,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteLibrary(int libraryId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 connection.Execute("DELETE FROM Library WHERE Id = @LibraryId", new { LibraryId = libraryId });
                 connection.Execute("DELETE FROM AccountLibrary WHERE LibraryId = @LibraryId", new { LibraryId = libraryId });
@@ -101,7 +92,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AssignLibrariesToUser(IEnumerable<LibraryDto> libraries, int accountId, Role role)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 connection.Execute("INSERT INTO AccountLibrary (LibraryId, AccountId, `Role`) VALUES (@LibraryId, @AccountId, @Role)",
                 libraries.Select(l => new { LibraryId = l.Id, AccountId = accountId, Role = role }));
@@ -110,7 +101,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetLibraryImage(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var mySql = @"SELECT f.* FROM `File` f
                         INNER JOIN Library l ON f.Id = l.ImageId
@@ -121,7 +112,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetLibraryImageUrl(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var mySql = @"SELECT f.FilePath FROM `File` f
                         INNER JOIN Library l ON f.Id = l.ImageId
@@ -130,15 +121,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             }
         }
     }
-    public class SqlServerLibraryTestRepository : ILibraryTestRepository
+    public class SqlServerLibraryTestRepository(IProvideConnection connectionProvider) : ILibraryTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public SqlServerLibraryTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddLibraries(IEnumerable<LibraryDto> libraries)
         {
             foreach (var library in libraries)
@@ -150,7 +134,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         public void AddLibrary(LibraryDto library)
         {
 
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO Library (Name, Description, Language, SupportsPeriodicals, PrimaryColor, SecondaryColor, ImageId)
                         OUTPUT Inserted.Id 
@@ -163,7 +147,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public LibraryDto GetLibrary(LibraryView library)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "Select * From Library Where Name = @Name AND Language = @Language AND SupportsPeriodicals = @SupportsPeriodicals";
                 return connection.QuerySingleOrDefault<LibraryDto>(sql,
@@ -173,7 +157,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public LibraryDto GetLibraryById(int libraryId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<LibraryDto>("Select * From Library Where Id = @Id",
                 new { Id = libraryId });
@@ -182,7 +166,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteLibraries(IEnumerable<int> libraryIds)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 connection.Execute("DELETE FROM Library WHERE Id IN @LibraryIds", new { LibraryIds = libraryIds });
             }
@@ -190,7 +174,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteLibrary(int libraryId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 connection.Execute("DELETE FROM Library WHERE Id = @LibraryId", new { LibraryId = libraryId });
                 connection.Execute("DELETE FROM AccountLibrary WHERE LibraryId = @LibraryId", new { LibraryId = libraryId });
@@ -199,7 +183,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AssignLibrariesToUser(IEnumerable<LibraryDto> libraries, int accountId, Role role)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 connection.Execute("INSERT INTO AccountLibrary (LibraryId, AccountId, Role) VALUES (@LibraryId, @AccountId, @Role)",
                 libraries.Select(l => new { LibraryId = l.Id, AccountId = accountId, Role = role }));
@@ -208,7 +192,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetLibraryImage(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.* FROM [File] f
                         INNER JOIN Library l ON f.Id = l.ImageId
@@ -219,7 +203,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetLibraryImageUrl(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.FilePath FROM [File] f
                         INNER JOIN Library l ON f.Id = l.ImageId
@@ -268,10 +252,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                 new { Id = libraryId });
         }
 
-        public static void DeleteLibraries(this IDbConnection connection, IEnumerable<int> libraryIds)
-        {
-            connection.Execute("DELETE FROM Library WHERE Id IN @LibraryIds", new { LibraryIds = libraryIds });
-        }
+        public static void DeleteLibraries(this IDbConnection connection, IEnumerable<int> libraryIds) => connection.Execute("DELETE FROM Library WHERE Id IN @LibraryIds", new { LibraryIds = libraryIds });
 
         public static void DeleteLibrary(this IDbConnection connection, int libraryId)
         {

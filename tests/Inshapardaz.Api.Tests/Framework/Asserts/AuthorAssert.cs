@@ -5,36 +5,20 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
-using System.IO;
-using System.Net.Http;
-using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class AuthorAssert
+    public class AuthorAssert(
+        IAuthorTestRepository authorRepository,
+        IBookTestRepository bookRepository,
+        IArticleTestRepository articleRepository,
+        FakeFileStorage fileStorage,
+        IFileTestRepository fileRepository)
     {
         private AuthorView _author;
         private int _libraryId;
 
         public HttpResponseMessage _response;
-        private readonly IAuthorTestRepository _authorRepository;
-        private readonly IBookTestRepository _bookRepository;
-        private readonly IArticleTestRepository _articleRepository;
-        private readonly FakeFileStorage _fileStorage;
-        private readonly IFileTestRepository _fileRepository;
-
-        public AuthorAssert(IAuthorTestRepository authorRepository, 
-            IBookTestRepository bookRepository, 
-            IArticleTestRepository articleRepository, 
-            FakeFileStorage fileStorage, 
-            IFileTestRepository fileRepository)
-        {
-            _authorRepository = authorRepository;
-            _bookRepository = bookRepository;
-            _articleRepository = articleRepository;
-            _fileStorage = fileStorage;
-            _fileRepository = fileRepository;
-        }
 
         public AuthorAssert ForResponse(HttpResponseMessage response)
         {
@@ -180,16 +164,16 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public AuthorAssert ShouldHaveUpdatedAuthorImage(int authorId, byte[] newImage)
         {
-            var imageUrl = _authorRepository.GetAuthorImageUrl(authorId);
+            var imageUrl = authorRepository.GetAuthorImageUrl(authorId);
             imageUrl.Should().NotBeNull();
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.Equal(newImage);
             return this;
         }
 
         public AuthorAssert ShouldHavePublicImage(int authorId)
         {
-            var image = _authorRepository.GetAuthorImage(authorId);
+            var image = authorRepository.GetAuthorImage(authorId);
             image.Should().NotBeNull();
             image.IsPublic.Should().BeTrue();
             return this;
@@ -197,44 +181,44 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public AuthorAssert ShouldNotHaveUpdatedAuthorImage(int authorId, byte[] newImage)
         {
-            var imageUrl = _authorRepository.GetAuthorImageUrl(authorId);
+            var imageUrl = authorRepository.GetAuthorImageUrl(authorId);
             imageUrl.Should().NotBeNull();
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotEqual(newImage);
             return this;
         }
 
         public AuthorAssert ShouldHaveAddedAuthorImage(int authorId, byte[] newImage)
         {
-            var author = _authorRepository.GetAuthorById(authorId);
+            var author = authorRepository.GetAuthorById(authorId);
             author.ImageId.Should().NotBeNull();
-            var file = _fileRepository.GetFileById(author.ImageId.Value);
+            var file = fileRepository.GetFileById(author.ImageId.Value);
             file.FilePath.Should().Be($"authors/{author.Id}/image{Path.GetExtension(file.FileName)}");
-            var image = _fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
             image.Should().NotBeNullOrEmpty().And.Equal(newImage);
             return this;
         }
 
         public AuthorAssert ShouldHaveDeletedAuthorImage(int authorId, long imageId, string filePath)
         {
-            var image = _authorRepository.GetAuthorImage(authorId);
+            var image = authorRepository.GetAuthorImage(authorId);
             image.Should().BeNull();
-            var file = _fileRepository.GetFileById(imageId);
+            var file = fileRepository.GetFileById(imageId);
             file.Should().BeNull();
-            _fileStorage.DoesFileExists(filePath).Should().BeFalse();
+            fileStorage.DoesFileExists(filePath).Should().BeFalse();
             return this;
         }
 
         public AuthorAssert ShouldHaveDeletedAuthor(int authorId)
         {
-            var author = _authorRepository.GetAuthorById(authorId);
+            var author = authorRepository.GetAuthorById(authorId);
             author.Should().BeNull();
             return this;
         }
 
         public AuthorAssert ShouldNotHaveDeletedAuthor(int authorId)
         {
-            var author = _authorRepository.GetAuthorById(authorId);
+            var author = authorRepository.GetAuthorById(authorId);
             author.Should().NotBeNull();
             return this;
         }
@@ -272,7 +256,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public AuthorAssert ShouldHaveSavedAuthor()
         {
-            var dbAuthor = _authorRepository.GetAuthorById(_author.Id);
+            var dbAuthor = authorRepository.GetAuthorById(_author.Id);
             dbAuthor.Should().NotBeNull();
             _author.Name.Should().Be(dbAuthor.Name);
             return this;
@@ -283,8 +267,8 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _author.Should().NotBeNull();
             _author.Id.Should().Be(author.Id);
             _author.Name.Should().Be(author.Name);
-            _author.BookCount.Should().Be(_bookRepository.GetBookCountByAuthor(_author.Id));
-            _author.ArticleCount.Should().Be(_articleRepository.GetArticleCountByAuthor(_author.Id));
+            _author.BookCount.Should().Be(bookRepository.GetBookCountByAuthor(_author.Id));
+            _author.ArticleCount.Should().Be(articleRepository.GetArticleCountByAuthor(_author.Id));
             return this;
         }
     }

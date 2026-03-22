@@ -3,31 +3,18 @@ using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using Bogus;
 using Inshapardaz.Api.Extensions;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class IssueArticleAssert
+    public class IssueArticleAssert(
+        IIssueArticleTestRepository issueArticleRepository,
+        IAuthorTestRepository authorTestRepository)
     {
         private HttpResponseMessage _response;
         private int _libraryId;
         private IssueDto _issue;
         private IssueArticleView _issueArticle;
-
-        private readonly IIssueArticleTestRepository _issueArticleRepository;
-        private readonly IAuthorTestRepository _authorTestRepository;
-
-        public IssueArticleAssert(IIssueArticleTestRepository issueArticleRepository, 
-            IAuthorTestRepository authorTestRepository)
-        {
-            _issueArticleRepository = issueArticleRepository;
-            _authorTestRepository = authorTestRepository;
-        }
 
         public IssueArticleAssert ForView(IssueArticleView view)
         {
@@ -80,7 +67,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueArticleAssert ShouldBeSavedAssignmentForWriting(AccountDto account)
         {
-            var dbArticle = _issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
+            var dbArticle = issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
             dbArticle.WriterAccountId.Should().Be(account.Id);
             dbArticle.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
@@ -88,7 +75,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueArticleAssert ShouldBeSavedNoAssignmentForWriting()
         {
-            var dbArticle = _issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
+            var dbArticle = issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
             dbArticle.WriterAccountId.Should().BeNull();
             dbArticle.WriterAssignTimeStamp.Should().BeNull();
             return this;
@@ -112,7 +99,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueArticleAssert ShouldBeSavedAssignmentForReviewing(AccountDto account)
         {
-            var dbArticle = _issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
+            var dbArticle = issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
             dbArticle.ReviewerAccountId.Should().Be(account.Id);
             dbArticle.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
@@ -120,7 +107,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueArticleAssert ShouldBeSavedNoAssignmentForReviewing()
         {
-            var dbArticle = _issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
+            var dbArticle = issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
             dbArticle.ReviewerAccountId.Should().BeNull();
             dbArticle.ReviewerAssignTimeStamp.Should().BeNull();
             return this;
@@ -128,7 +115,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueArticleAssert ShouldHaveSavedArticle()
         {
-            var dbArticle = _issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
+            var dbArticle = issueArticleRepository.GetIssueArticleById(_issueArticle.Id);
             dbArticle.Should().NotBeNull();
             _issueArticle.Title.Should().Be(dbArticle.Title);
             _issueArticle.SeriesName.Should().Be(dbArticle.SeriesName);
@@ -154,7 +141,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _issueArticle.Status.Should().Be(dbArticle.Status.ToDescription());
             _issueArticle.SequenceNumber.Should().Be(dbArticle.SequenceNumber );
 
-            var dbAuthors = _authorTestRepository.GetAuthorsByIssueArticle(dbArticle.Id).ToArray();
+            var dbAuthors = authorTestRepository.GetAuthorsByIssueArticle(dbArticle.Id).ToArray();
             _issueArticle.Authors.Should().HaveSameCount(dbAuthors);
             foreach (var issueAuthor in _issueArticle.Authors)
             {
@@ -169,14 +156,14 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueArticleAssert ShouldHaveDeletedArticle(int articleId)
         {
-            var article = _issueArticleRepository.GetIssueArticleById(articleId);
+            var article = issueArticleRepository.GetIssueArticleById(articleId);
             article.Should().BeNull();
             return this;
         }
 
         public IssueArticleAssert ThatContentsAreDeletedForArticle(int articleId)
         {
-            var contents = _issueArticleRepository.GetContentByIssueArticle(articleId);
+            var contents = issueArticleRepository.GetContentByIssueArticle(articleId);
             contents.Should().BeNullOrEmpty();
             return this;
         }
@@ -261,7 +248,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueArticleAssert ShouldHaveCorrectContents()
         {
-            var contents = _issueArticleRepository.GetIssueArticleContents(_issueArticle.Id);
+            var contents = issueArticleRepository.GetIssueArticleContents(_issueArticle.Id);
 
             contents.Should().HaveSameCount(_issueArticle.Contents);
 

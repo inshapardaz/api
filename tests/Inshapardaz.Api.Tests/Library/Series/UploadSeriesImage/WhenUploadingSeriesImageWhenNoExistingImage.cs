@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,16 +7,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
 {
     [TestFixture]
-    public class WhenUploadingSeriesImageWhenNoExistingImage : TestBase
+    public class WhenUploadingSeriesImageWhenNoExistingImage() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private SeriesAssert _assert;
         private int _seriesId;
-
-        public WhenUploadingSeriesImageWhenNoExistingImage()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -31,33 +24,18 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectImageLocationHeader(_seriesId);
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectImageLocationHeader(_seriesId);
 
         [Test]
-        public void ShouldHaveAddedImageToSeries()
-        {
-            _assert.ShouldHaveAddedSeriesImage(_seriesId);
-        }
+        public void ShouldHaveAddedImageToSeries() => _assert.ShouldHaveAddedSeriesImage(_seriesId);
 
         [Test]
-        public void ShouldSavePublicImage()
-        {
-            _assert.ShouldHavePublicImage(_seriesId);
-        }
+        public void ShouldSavePublicImage() => _assert.ShouldHavePublicImage(_seriesId);
     }
 }

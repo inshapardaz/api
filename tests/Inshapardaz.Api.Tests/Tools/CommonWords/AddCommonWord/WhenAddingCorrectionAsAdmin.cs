@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Tools;
 using Inshapardaz.Domain.Models;
@@ -10,17 +8,13 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Tools.CommonWords.AddCommonWord
 {
     [TestFixture]
-    public class WhenAddingCommonWordAsAdmin : TestBase
+    public class WhenAddingCommonWordAsAdmin() : TestBase(Role.Admin)
     {
         private HttpResponseMessage _response;
         private CommonWordAssert _assert;
         private CommonWordView _commonWord;
 
 
-        public WhenAddingCommonWordAsAdmin()
-            :base(Role.Admin)
-        { }
-        
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -31,27 +25,15 @@ namespace Inshapardaz.Api.Tests.Tools.CommonWords.AddCommonWord
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldBeCreated()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldBeCreated() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldReturnCorrectObject()
-        {
-            _assert.ShouldBeSameAs(_commonWord);
-        }
+        public void ShouldReturnCorrectObject() => _assert.ShouldBeSameAs(_commonWord);
 
         [Test]
-        public void ShouldHaveSavedWord()
-        {
-            _assert.ShouldHaveSavedWord();
-        }
+        public void ShouldHaveSavedWord() => _assert.ShouldHaveSavedWord();
     }
 }

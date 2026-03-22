@@ -16,19 +16,9 @@ public interface IRenderSeries
     SeriesView Render(SeriesModel series, int libraryId);
 }
 
-public class SeriesRenderer : IRenderSeries
+public class SeriesRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IFileStorage fileStorage)
+    : IRenderSeries
 {
-    private readonly IRenderLink _linkRenderer;
-    private readonly IUserHelper _userHelper;
-    private readonly IFileStorage _fileStorage;
-
-    public SeriesRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IFileStorage fileStorage)
-    {
-        _linkRenderer = linkRenderer;
-        _userHelper = userHelper;
-        _fileStorage = fileStorage;
-    }
-
     public PageView<SeriesView> Render(PageRendererArgs<SeriesModel> source, int libraryId)
     {
         var page = new PageView<SeriesView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
@@ -38,7 +28,7 @@ public class SeriesRenderer : IRenderSeries
 
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link {
+            linkRenderer.Render(new Link {
                 ActionName = nameof(SeriesController.GetSeries),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
@@ -52,9 +42,9 @@ public class SeriesRenderer : IRenderSeries
             })
         };
 
-        if (_userHelper.IsWriter(libraryId) || _userHelper.IsLibraryAdmin(libraryId) || _userHelper.IsAdmin)
+        if (userHelper.IsWriter(libraryId) || userHelper.IsLibraryAdmin(libraryId) || userHelper.IsAdmin)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(SeriesController.CreateSeries),
                 Method = HttpMethod.Post,
@@ -65,7 +55,7 @@ public class SeriesRenderer : IRenderSeries
 
         if (page.CurrentPageIndex < page.PageCount)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(SeriesController.GetSeries),
                 Method = HttpMethod.Get,
@@ -82,7 +72,7 @@ public class SeriesRenderer : IRenderSeries
 
         if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(SeriesController.GetSeries),
                 Method = HttpMethod.Get,
@@ -105,7 +95,7 @@ public class SeriesRenderer : IRenderSeries
     {
         var view = series.Map();
 
-        view.Links.Add(_linkRenderer.Render(new Link
+        view.Links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(SeriesController.GetSeriesById),
             Method = HttpMethod.Get,
@@ -113,7 +103,7 @@ public class SeriesRenderer : IRenderSeries
             Parameters = new { libraryId = libraryId, seriesId = series.Id }
         }));
 
-        view.Links.Add(_linkRenderer.Render(new Link
+        view.Links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(BookController.GetBooks),
             Method = HttpMethod.Get,
@@ -125,11 +115,11 @@ public class SeriesRenderer : IRenderSeries
             }
         }));
 
-        if (!string.IsNullOrWhiteSpace(series.ImageUrl) && _fileStorage.SupportsPublicLink)
+        if (!string.IsNullOrWhiteSpace(series.ImageUrl) && fileStorage.SupportsPublicLink)
         {
             view.Links.Add(new LinkView
             {
-                Href = _fileStorage.GetPublicUrl(series.ImageUrl),
+                Href = fileStorage.GetPublicUrl(series.ImageUrl),
                 Method = "GET",
                 Rel = RelTypes.Image,
                 Accept = MimeTypes.Jpg
@@ -137,7 +127,7 @@ public class SeriesRenderer : IRenderSeries
         }
         else if (series.ImageId.HasValue)
         {
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(FileController.GetLibraryFile),
                 Method = HttpMethod.Get,
@@ -146,9 +136,9 @@ public class SeriesRenderer : IRenderSeries
             }));
         }
 
-        if (_userHelper.IsWriter(libraryId) || _userHelper.IsLibraryAdmin(libraryId) || _userHelper.IsAdmin)
+        if (userHelper.IsWriter(libraryId) || userHelper.IsLibraryAdmin(libraryId) || userHelper.IsAdmin)
         {
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(SeriesController.UpdateSeries),
                 Method = HttpMethod.Put,
@@ -156,7 +146,7 @@ public class SeriesRenderer : IRenderSeries
                 Parameters = new { libraryId = libraryId, seriesId = series.Id }
             }));
 
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(SeriesController.DeleteSeries),
                 Method = HttpMethod.Delete,
@@ -164,7 +154,7 @@ public class SeriesRenderer : IRenderSeries
                 Parameters = new { libraryId = libraryId, seriesId = series.Id }
             }));
 
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(SeriesController.UpdateSeriesImage),
                 Method = HttpMethod.Put,

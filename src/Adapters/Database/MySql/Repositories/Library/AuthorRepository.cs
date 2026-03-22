@@ -2,25 +2,15 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library;
 
-public class AuthorRepository : IAuthorRepository
+public class AuthorRepository(MySqlConnectionProvider connectionProvider) : IAuthorRepository
 {
-    private readonly MySqlConnectionProvider _connectionProvider;
-
-    public AuthorRepository(MySqlConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-
     public async Task<AuthorModel> AddAuthor(int libraryId, AuthorModel author, CancellationToken cancellationToken)
     {
         int authorId;
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO Author(`Name`, `Description`, ImageId, LibraryId, AuthorType)
                             VALUES(@Name, @Description, @ImageId, @LibraryId, @AuthorType);
@@ -34,7 +24,7 @@ public class AuthorRepository : IAuthorRepository
 
     public async Task UpdateAuthor(int libraryId, AuthorModel author, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE `Author` 
                             SET `Name` = @Name, 
@@ -50,7 +40,7 @@ public class AuthorRepository : IAuthorRepository
 
     public async Task UpdateAuthorImage(int libraryId, int authorId, long imageId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE  `Author` 
                             SET ImageId = @ImageId 
@@ -63,7 +53,7 @@ public class AuthorRepository : IAuthorRepository
 
     public async Task DeleteAuthor(int libraryId, int authorId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"DELETE FROM `Author` 
                             WHERE LibraryId = @LibraryId 
@@ -75,7 +65,7 @@ public class AuthorRepository : IAuthorRepository
 
     public async Task<Page<AuthorModel>> GetAuthors(int libraryId, AuthorTypes? authorType, int pageNumber, int pageSize, AuthorSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sortByQuery = $"a.{GetSortByQuery(sortBy)}";
             var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
@@ -121,7 +111,7 @@ public class AuthorRepository : IAuthorRepository
 
     public async Task<AuthorModel> GetAuthorById(int libraryId, int authorId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType as AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
                                 (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,
@@ -141,7 +131,7 @@ public class AuthorRepository : IAuthorRepository
 
     public async Task<Page<AuthorModel>> FindAuthors(int libraryId, string query, AuthorTypes? authorType, int pageNumber, int pageSize, AuthorSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sortByQuery = $"a.{GetSortByQuery(sortBy)}";
             var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
@@ -189,7 +179,7 @@ public class AuthorRepository : IAuthorRepository
 
     public async Task<IEnumerable<AuthorModel>> GetAuthorByIds(int libraryId, IEnumerable<int> authorIds, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT a.Id, a.Name, a.Description, a.AuthorType, f.Id As ImageId, f.FilePath AS ImageUrl,
                                 (SELECT Count(*) FROM BookAuthor WHERE AuthorId = a.Id) AS BookCount,

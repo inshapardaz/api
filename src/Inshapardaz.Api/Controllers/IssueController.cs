@@ -13,27 +13,14 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Controllers;
 
-public class IssueController : Controller
+public class IssueController(
+    IAmACommandProcessor commandProcessor,
+    IQueryProcessor queryProcessor,
+    IRenderIssue issueRenderer,
+    IRenderFile fileRenderer,
+    IUserHelper userHelper)
+    : Controller
 {
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRenderIssue _issueRenderer;
-    private readonly IRenderFile _fileRenderer;
-    private readonly IUserHelper _userHelper;
-
-    public IssueController(IAmACommandProcessor commandProcessor,
-        IQueryProcessor queryProcessor,
-        IRenderIssue issueRenderer,
-        IRenderFile fileRenderer,
-        IUserHelper userHelper)
-    {
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-        _issueRenderer = issueRenderer;
-        _fileRenderer = fileRenderer;
-        _userHelper = userHelper;
-    }
-
     [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/issues", Name = nameof(GetIssues))]
     public async Task<IActionResult> GetIssues(int libraryId, int periodicalId,
         int pageNumber = 1,
@@ -61,7 +48,7 @@ public class IssueController : Controller
             SortBy = sortBy,
             SortDirection = sortDirection
         };
-        var result = await _queryProcessor.ExecuteAsync(issuesQuery, token);
+        var result = await queryProcessor.ExecuteAsync(issuesQuery, token);
 
         if (result != null)
         {
@@ -79,7 +66,7 @@ public class IssueController : Controller
                 Filters = filter
             };
 
-            return new OkObjectResult(_issueRenderer.Render(args, libraryId, periodicalId));
+            return new OkObjectResult(issueRenderer.Render(args, libraryId, periodicalId));
         }
 
         return new NotFoundResult();
@@ -96,11 +83,11 @@ public class IssueController : Controller
             SortDirection = sortDirection,
             AssignmentStatus = assignedFor
         };
-        var result = await _queryProcessor.ExecuteAsync(issuesQuery, token);
+        var result = await queryProcessor.ExecuteAsync(issuesQuery, token);
 
         if (result != null)
         {
-            return new OkObjectResult(_issueRenderer.Render(result, libraryId, periodicalId, sortDirection));
+            return new OkObjectResult(issueRenderer.Render(result, libraryId, periodicalId, sortDirection));
         }
 
         return new NotFoundResult();
@@ -110,11 +97,11 @@ public class IssueController : Controller
     public async Task<IActionResult> GetIssueById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token = default(CancellationToken))
     {
         var query = new GetIssueByIdQuery(libraryId, periodicalId, volumeNumber, issueNumber);
-        var issues = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
+        var issues = await queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
         if (issues != null)
         {
-            return new OkObjectResult(_issueRenderer.Render(issues, libraryId));
+            return new OkObjectResult(issueRenderer.Render(issues, libraryId));
         }
 
         return new NotFoundResult();
@@ -130,9 +117,9 @@ public class IssueController : Controller
         }
 
         var request = new AddIssueRequest(libraryId, periodicalId, issue.Map());
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _issueRenderer.Render(request.Result, libraryId);
+        var renderResult = issueRenderer.Render(request.Result, libraryId);
         return new CreatedResult(renderResult.Links.Self(), renderResult);
     }
 
@@ -145,9 +132,9 @@ public class IssueController : Controller
         }
 
         var request = new UpdateIssueRequest(libraryId, periodicalId, volumeNumber, issueNumber, issue.Map());
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _issueRenderer.Render(request.Result.Issue, libraryId);
+        var renderResult = issueRenderer.Render(request.Result.Issue, libraryId);
         if (request.Result.HasAddedNew)
         {
             return new CreatedResult(renderResult.Links.Self(), renderResult);
@@ -162,7 +149,7 @@ public class IssueController : Controller
     public async Task<IActionResult> DeleteIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteIssueRequest(libraryId, periodicalId, volumeNumber, issueNumber);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
 
@@ -185,11 +172,11 @@ public class IssueController : Controller
             }
         };
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         if (request.Result.HasAddedNew)
         {
-            var response = _fileRenderer.Render(libraryId, request.Result.File);
+            var response = fileRenderer.Render(libraryId, request.Result.File);
             return new CreatedResult(response.Links.Self(), response);
         }
 
@@ -200,11 +187,11 @@ public class IssueController : Controller
     public async Task<IActionResult> GetIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int contentId, CancellationToken token = default(CancellationToken))
     {
 
-        var request = new GetIssueContentQuery(libraryId, periodicalId, volumeNumber, issueNumber, contentId, _userHelper.AccountId);
-        var content = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
+        var request = new GetIssueContentQuery(libraryId, periodicalId, volumeNumber, issueNumber, contentId, userHelper.AccountId);
+        var content = await queryProcessor.ExecuteAsync(request, cancellationToken: token);
         if (content != null)
         {
-            return new OkObjectResult(_issueRenderer.Render(content, libraryId));
+            return new OkObjectResult(issueRenderer.Render(content, libraryId));
         }
 
         return new NotFoundResult();
@@ -232,11 +219,11 @@ public class IssueController : Controller
             }
         };
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         if (request.Result != null)
         {
-            var response = _issueRenderer.Render(request.Result, libraryId);
+            var response = issueRenderer.Render(request.Result, libraryId);
             return new CreatedResult(response.Links.Self(), response);
         }
 
@@ -265,11 +252,11 @@ public class IssueController : Controller
             }
         };
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         if (request.Result.Content != null)
         {
-            var renderResult = _issueRenderer.Render(request.Result.Content, libraryId);
+            var renderResult = issueRenderer.Render(request.Result.Content, libraryId);
 
             if (request.Result.HasAddedNew)
             {
@@ -288,7 +275,7 @@ public class IssueController : Controller
     public async Task<IActionResult> DeleteIssueContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int contentId, CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteIssueContentRequest(libraryId, periodicalId, volumeNumber, issueNumber, contentId);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
     
@@ -296,7 +283,7 @@ public class IssueController : Controller
     public async Task<IActionResult> PublishIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token)
     {
         var request = new PublishIssueRequest(libraryId, periodicalId, volumeNumber, issueNumber);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         return Ok();
     }

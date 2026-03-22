@@ -6,22 +6,14 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.AddIssue
 {
     [TestFixture]
-    public class WhenAddingIssueForPeriodicalInOtherLibrary
-        : TestBase
+    public class WhenAddingIssueForPeriodicalInOtherLibrary() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private LibraryDataBuilder _libBuilder;
-
-        public WhenAddingIssueForPeriodicalInOtherLibrary()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -49,9 +41,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.AddIssue
         }
 
         [Test]
-        public void ShouldHaveBadRequestResult()
-        {
-            _response.ShouldBeBadRequest();
-        }
+        public void ShouldHaveBadRequestResult() => _response.ShouldBeBadRequest();
     }
 }

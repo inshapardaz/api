@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,51 +25,27 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelfById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
-        public void ShouldHaveBooksLink()
-        {
-            _assert.ShouldHaveBooksLink();
-        }
+        public void ShouldHaveBooksLink() => _assert.ShouldHaveBooksLink();
 
         [Test]
-        public void ShouldNotHaveUpdateLink()
-        {
-            _assert.ShouldNotHaveUpdateLink();
-        }
+        public void ShouldNotHaveUpdateLink() => _assert.ShouldNotHaveUpdateLink();
 
         [Test]
-        public void ShouldNotHaveDeleteLink()
-        {
-            _assert.ShouldNotHaveDeleteLink();
-        }
+        public void ShouldNotHaveDeleteLink() => _assert.ShouldNotHaveDeleteLink();
 
         [Test]
-        public void ShouldNotHaveImageUploadLink()
-        {
-            _assert.ShouldNotHaveImageUploadLink();
-        }
+        public void ShouldNotHaveImageUploadLink() => _assert.ShouldNotHaveImageUploadLink();
 
         [Test]
-        public void ShouldReturnCorrectBookShelfData()
-        {
-            _assert.ShouldHaveCorrectBookShelfRetunred(_expected);
-        }
+        public void ShouldReturnCorrectBookShelfData() => _assert.ShouldHaveCorrectBookShelfRetunred(_expected);
     }
 }

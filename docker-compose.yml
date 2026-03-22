@@ -13,14 +13,14 @@ services:
       timeout: 5s
       retries: 3
   api:
-    build: 
+    build:
       dockerfile: dockerfile
     restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=docker
-    depends_on: 
+    depends_on:
       - db
-    expose: 
+    expose:
       - "5000"
     ports:
       - "5000:5000"

@@ -5,15 +5,13 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingBookPageWithPermissions : TestBase
+    public class WhenUpdatingBookPageWithPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private BookPageAssert _assert;
@@ -21,11 +19,6 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
         private BookPageView _updatedPage;
         private int _bookId;
         private string _text;
-
-        public WhenUpdatingBookPageWithPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -47,33 +40,18 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            BookBuilder.CleanUp();
-        }
+        public void Teardown() => BookBuilder.CleanUp();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveReturnCorrectObject()
-        {
-            _assert.ShouldMatch(_updatedPage);
-        }
+        public void ShouldHaveReturnCorrectObject() => _assert.ShouldMatch(_updatedPage);
 
         [Test]
-        public void ShouldHaveSavedBookPage()
-        {
-            _assert.ShouldHaveSavedPage();
-        }
+        public void ShouldHaveSavedBookPage() => _assert.ShouldHaveSavedPage();
 
         [Test]
-        public void ShouldHaveSavedContents()
-        {
-            _assert.ShouldHaveBookPageContent(_text);
-        }
+        public void ShouldHaveSavedContents() => _assert.ShouldHaveBookPageContent(_text);
     }
 }

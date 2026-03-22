@@ -6,22 +6,14 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Controllers;
 
-public class FileController : Controller
+public class FileController(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor)
+    : Controller
 {
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IQueryProcessor _queryProcessor;
-
-    public FileController(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor)
-    {
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-    }
-
     [HttpGet("files/{fileId}", Name = nameof(FileController.GetFile))]
     public async Task<IActionResult> GetFile(int fileId, CancellationToken token = default(CancellationToken))
     {
         var query = new GetFileQuery(fileId) { Height = 200, Width = 200 };
-        var file = await _queryProcessor.ExecuteAsync(query, token);
+        var file = await queryProcessor.ExecuteAsync(query, token);
 
         if (file == null)
         {
@@ -35,7 +27,7 @@ public class FileController : Controller
     public async Task<IActionResult> GetLibraryFile(int libraryId, int fileId, CancellationToken token = default(CancellationToken))
     {
         var query = new GetFileQuery(fileId) {  Height = 200, Width = 200 };
-        var file = await _queryProcessor.ExecuteAsync(query, token);
+        var file = await queryProcessor.ExecuteAsync(query, token);
 
         if (file == null)
         {
@@ -49,7 +41,7 @@ public class FileController : Controller
     public async Task<IActionResult> DeleteFile(int fileId, CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteFileCommand(fileId);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
 }

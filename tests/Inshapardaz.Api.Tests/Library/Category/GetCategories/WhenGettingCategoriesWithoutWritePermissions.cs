@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
@@ -16,16 +12,11 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategories
 {
     [TestFixture(Role.Reader)]
     [TestFixture(Role.Writer)]
-    public class WhenGettingCategoriesWithoutWritePermissions : TestBase
+    public class WhenGettingCategoriesWithoutWritePermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IEnumerable<CategoryDto> _categories;
         private ListView<CategoryView> _view;
-
-        public WhenGettingCategoriesWithoutWritePermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,16 +29,10 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategories
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -58,10 +43,7 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategories
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _view.CreateLink().Should().BeNull();
-        }
+        public void ShouldNotHaveCreateLink() => _view.CreateLink().Should().BeNull();
 
         [Test]
         public void ShouldHaveSomeCategories()

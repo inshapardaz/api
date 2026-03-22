@@ -2,61 +2,45 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.BookShelf;
 
-public class AddBookToBookShelfRequest : LibraryBaseCommand
+public class AddBookToBookShelfRequest(int libraryId, int bookShelfId, int bookId, int index)
+    : LibraryBaseCommand(libraryId)
 {
-    public AddBookToBookShelfRequest(int libraryId, int bookShelfId, int bookId, int index)
-        : base(libraryId)
-    {
-        BookShelfId = bookShelfId;
-        BookId = bookId;
-        Index = index;
-    }
-
-    public int BookShelfId { get; }
-    public int BookId { get; }
-    public int Index { get; }
+    public int BookShelfId { get; } = bookShelfId;
+    public int BookId { get; } = bookId;
+    public int Index { get; } = index;
 }
 
-public class AddBookToBookShelfRequestHandler : RequestHandlerAsync<AddBookToBookShelfRequest>
+public class AddBookToBookShelfRequestHandler(
+    IBookShelfRepository bookShelfRepository,
+    IBookRepository bookRepository,
+    IUserHelper userHelper)
+    : RequestHandlerAsync<AddBookToBookShelfRequest>
 {
-    private readonly IBookShelfRepository _bookShelfRepository;
-    private readonly IBookRepository _bookRepository;
-    private readonly IUserHelper _userHelper;
-
-    public AddBookToBookShelfRequestHandler(IBookShelfRepository bookShelfRepository, IBookRepository bookRepository, IUserHelper userHelper)
-    {
-        _bookShelfRepository = bookShelfRepository;
-        _bookRepository = bookRepository;
-        _userHelper = userHelper;
-    }
-
     [LibraryAuthorize(1)]
     public override async Task<AddBookToBookShelfRequest> HandleAsync(AddBookToBookShelfRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);
+        var book = await bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);
         if (book == null)
         {
             throw new BadRequestException("Book does not exist");
         }
 
-        var bookShelf = await _bookShelfRepository.GetBookShelfById(command.LibraryId, command.BookShelfId, cancellationToken);
+        var bookShelf = await bookShelfRepository.GetBookShelfById(command.LibraryId, command.BookShelfId, cancellationToken);
 
         if (bookShelf == null)
         {
             throw new BadRequestException("Bookshelf does not exist");
         }
 
-        if (bookShelf.AccountId != _userHelper.AccountId)
+        if (bookShelf.AccountId != userHelper.AccountId)
         {
             throw new ForbiddenException();
         }
 
-        await _bookShelfRepository.AddBookToBookShelf(command.LibraryId, command.BookShelfId, command.BookId, command.Index, cancellationToken);
+        await bookShelfRepository.AddBookToBookShelf(command.LibraryId, command.BookShelfId, command.BookId, command.Index, cancellationToken);
         return await base.HandleAsync(command, cancellationToken);
     }
 }

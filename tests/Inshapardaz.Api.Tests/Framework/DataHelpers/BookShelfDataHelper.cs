@@ -2,9 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -31,18 +29,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         public FileDto GetBookShelfImage(int bookShelfId);
     }
 
-    public class MySqlBookShelfTestRepository : IBookShelfTestRepository
+    public class MySqlBookShelfTestRepository(IProvideConnection connectionProvider) : IBookShelfTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public MySqlBookShelfTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddBookShelf(BookShelfDto bookshelf)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO BookShelf (Name, `Description`, ImageId, LibraryId, AccountId, IsPublic)
                     VALUES (@Name, @Description, @ImageId, @LibraryId, @AccountId, @IsPublic);
@@ -62,7 +53,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBooksToBookShelf(int bookshelfId, IEnumerable<int> booksIds)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var id = connection.Execute("INSERT INTO BookShelfBook (BookShelfId, BookId) " +
                 "VALUES (@BookShelfId, @BookId)", booksIds.Select(bId => new { BookShelfId = bookshelfId, BookId = bId }));
@@ -71,7 +62,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteBookShelf(IEnumerable<BookShelfDto> bookshelves)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "Delete From BookShelf Where Id IN @Ids";
                 connection.Execute(sql, new { Ids = bookshelves.Select(a => a.Id) });
@@ -80,7 +71,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public BookShelfDto GetBookShelfById(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<BookShelfDto>("Select * From BookShelf Where Id = @Id", new { Id = id });
             }
@@ -88,7 +79,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public BookShelfDto GetBookShelfForBook(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<BookShelfDto>(@"SELECT s.* FROM BookShelf s
                                 INNER JOIN BookShelfBook b ON s.Id = b.BookShelfId
@@ -98,7 +89,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public int GetBookCountByBookShelf(int bookShelfId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<int>(@"SELECT Count(*) FROM BookShelf s
                                 INNER JOIN BookShelfBook b ON s.Id = b.BookShelfId
@@ -108,7 +99,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<(int BookId, int Index)> GetBookShelfBooks(int bookShelfId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var Sql = @"SELECT BookId, `Index` FROM BookShelfBook WHERE BookShelfId = @BookShelfId";
                 return connection.Query<(int, int)>(Sql, new { BookShelfId = bookShelfId });
@@ -117,7 +108,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetBookShelfImageUrl(int bookShelfId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return GetBookShelfImage(bookShelfId)?.FilePath;
             }
@@ -125,7 +116,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetBookShelfImage(int bookShelfId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.* FROM `File` f
                         INNER JOIN BookShelf s ON f.Id = s.ImageId
@@ -134,18 +125,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             }
         }
     }
-    public class SqlServerBookShelfTestRepository : IBookShelfTestRepository
+    public class SqlServerBookShelfTestRepository(IProvideConnection connectionProvider) : IBookShelfTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public SqlServerBookShelfTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddBookShelf(BookShelfDto bookshelf)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO BookShelf (Name, [Description], ImageId, LibraryId, AccountId, IsPublic)
                     OUTPUT Inserted.Id
@@ -165,7 +149,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBooksToBookShelf(int bookshelfId, IEnumerable<int> booksIds)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var id = connection.Execute("INSERT INTO BookShelfBook (BookShelfId, BookId) " +
                 "VALUES (@BookShelfId, @BookId)", booksIds.Select(bId => new { BookShelfId = bookshelfId, BookId = bId }));
@@ -174,7 +158,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteBookShelf(IEnumerable<BookShelfDto> bookshelves)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "Delete From BookShelf Where Id IN @Ids";
                 connection.Execute(sql, new { Ids = bookshelves.Select(a => a.Id) });
@@ -183,7 +167,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public BookShelfDto GetBookShelfById(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<BookShelfDto>("Select * From BookShelf Where Id = @Id", new { Id = id });
             }
@@ -191,7 +175,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public BookShelfDto GetBookShelfForBook(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<BookShelfDto>(@"SELECT s.* FROM BookShelf s
                                 INNER JOIN BookShelfBook b ON s.Id = b.BookShelfId
@@ -201,7 +185,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public int GetBookCountByBookShelf(int bookShelfId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<int>(@"SELECT Count(*) FROM BookShelf s
                                 INNER JOIN BookShelfBook b ON s.Id = b.BookShelfId
@@ -211,7 +195,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<(int BookId, int Index)> GetBookShelfBooks(int bookShelfId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var Sql = @"SELECT BookId, [Index] FROM BookShelfBook WHERE BookShelfId = @BookShelfId";
                 return connection.Query<(int, int)>(Sql, new { BookShelfId = bookShelfId });
@@ -220,7 +204,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetBookShelfImageUrl(int bookShelfId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return GetBookShelfImage(bookShelfId)?.FilePath;
             }
@@ -228,7 +212,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetBookShelfImage(int bookShelfId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.* FROM [File] f
                         INNER JOIN BookShelf s ON f.Id = s.ImageId
@@ -275,10 +259,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             connection.Execute(sql, new { Ids = bookshelves.Select(a => a.Id) });
         }
 
-        public static BookShelfDto GetBookShelfById(this IDbConnection connection, int id)
-        {
-            return connection.QuerySingleOrDefault<BookShelfDto>("Select * From BookShelf Where Id = @Id", new { Id = id });
-        }
+        public static BookShelfDto GetBookShelfById(this IDbConnection connection, int id) => connection.QuerySingleOrDefault<BookShelfDto>("Select * From BookShelf Where Id = @Id", new { Id = id });
 
         public static BookShelfDto GetBookShelfForBook(this IDbConnection connection, int bookId)
         {
@@ -302,10 +283,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             return connection.Query<(int, int)>(Sql, new { BookShelfId = bookShelfId });
         }
 
-        public static string GetBookShelfImageUrl(this IDbConnection connection, int bookShelfId)
-        {
-            return GetBookShelfImage(connection, bookShelfId)?.FilePath;
-        }
+        public static string GetBookShelfImageUrl(this IDbConnection connection, int bookShelfId) => GetBookShelfImage(connection, bookShelfId)?.FilePath;
 
         public static FileDto GetBookShelfImage(this IDbConnection connection, int bookShelfId)
         {

@@ -3,28 +3,17 @@ using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Paramore.Brighter;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library;
 
 
-public class LibraryAuthorizeHandler<TRequest>
-    : RequestHandlerAsync<TRequest> where TRequest : LibraryBaseCommand, IRequest
+public class LibraryAuthorizeHandler<TRequest>(IUserHelper userHelper, ILibraryRepository libraryRepository)
+    : RequestHandlerAsync<TRequest>
+    where TRequest : LibraryBaseCommand, IRequest
 {
     private HandlerTiming _timing;
     private Role[] _roles;
 
-    private readonly IUserHelper _userHelper;
-    private readonly ILibraryRepository _libraryRepository;
-
-    public LibraryAuthorizeHandler(IUserHelper userHelper, ILibraryRepository libraryRepository)
-    {
-        _userHelper = userHelper;
-        _libraryRepository = libraryRepository;
-    }
     public override void InitializeFromAttributeParams(
         params object[] initializerList
     )
@@ -35,15 +24,15 @@ public class LibraryAuthorizeHandler<TRequest>
 
     public override Task<TRequest> HandleAsync(TRequest command, CancellationToken cancellationToken = default)
     {
-        var account = _userHelper.Account;
-        var isAuthenticated = _userHelper.IsAuthenticated;
+        var account = userHelper.Account;
+        var isAuthenticated = userHelper.IsAuthenticated;
 
         if (!isAuthenticated)
         {
             throw new UnauthorizedException();
         }
 
-        var libraries = _libraryRepository.GetLibrariesByAccountId(account.Id).Result;
+        var libraries = libraryRepository.GetLibrariesByAccountId(account.Id).Result;
         var library = libraries.SingleOrDefault(l => l.Id == command.LibraryId);
 
         if (account.IsSuperAdmin)
@@ -64,23 +53,9 @@ public class LibraryAuthorizeHandler<TRequest>
 
 }
 
-public class LibraryAuthorizeAttribute : RequestHandlerAttribute
+public class LibraryAuthorizeAttribute(int step, params Role[] roles) : RequestHandlerAttribute(step)
 {
-    private Role[] _roles;
+    public override object[] InitializerParams() => new object[] { Timing, roles };
 
-    public LibraryAuthorizeAttribute(int step, params Role[] roles)
-        : base(step)
-    {
-        _roles = roles;
-    }
-
-    public override object[] InitializerParams()
-    {
-        return new object[] { Timing, _roles };
-    }
-
-    public override Type GetHandlerType()
-    {
-        return typeof(LibraryAuthorizeHandler<>);
-    }
+    public override Type GetHandlerType() => typeof(LibraryAuthorizeHandler<>);
 }

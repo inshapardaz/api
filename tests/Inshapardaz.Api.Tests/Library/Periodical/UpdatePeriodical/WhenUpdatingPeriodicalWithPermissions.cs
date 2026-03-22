@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Bogus;
+﻿using Bogus;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -18,18 +14,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingPeriodicalWithPermissions : TestBase
+    public class WhenUpdatingPeriodicalWithPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private PeriodicalView _expected;
         private PeriodicalAssert _periodicalAssert;
         private IEnumerable<CategoryDto> _otherCategories;
         private List<TagView> _newTags;
-
-        public WhenUpdatingPeriodicalWithPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -69,33 +60,18 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOKResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOKResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveUpdatedThePeriodical()
-        {
-            _periodicalAssert.ShouldBeSameAs(_expected, 4);
-        }
+        public void ShouldHaveUpdatedThePeriodical() => _periodicalAssert.ShouldBeSameAs(_expected, 4);
 
         [Test]
-        public void ShouldReturnCorrectCategories()
-        {
-            _periodicalAssert.ShouldHaveSameCategories(_otherCategories);
-        }
-        
+        public void ShouldReturnCorrectCategories() => _periodicalAssert.ShouldHaveSameCategories(_otherCategories);
+
         [Test]
-        public void ShouldReturnCorrectTags()
-        {
-            _periodicalAssert.ShouldHaveMatchingTags(_newTags);
-        }
+        public void ShouldReturnCorrectTags() => _periodicalAssert.ShouldHaveMatchingTags(_newTags);
     }
 }

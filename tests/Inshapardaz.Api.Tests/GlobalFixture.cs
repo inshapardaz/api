@@ -1,4 +1,3 @@
-using System;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using NUnit.Framework;
 

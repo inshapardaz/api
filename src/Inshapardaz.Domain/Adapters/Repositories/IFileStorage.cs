@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace Inshapardaz.Domain.Adapters.Repositories;
+﻿namespace Inshapardaz.Domain.Adapters.Repositories;
 
 public interface IFileStorage
 {

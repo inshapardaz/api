@@ -4,23 +4,16 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePage
 {
     [TestFixture]
-    public class WhenDeletingBookPageWhenNoExistingImage : TestBase
+    public class WhenDeletingBookPageWhenNoExistingImage() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private BookPageAssert _assert;
         private BookPageDto _page;
         private int _bookId;
-
-        public WhenDeletingBookPageWhenNoExistingImage()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -40,15 +33,9 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePage
         }
 
         [Test]
-        public void ShouldHaveOkResponse()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResponse() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldDeletePage()
-        {
-            _assert.ShouldHaveNoBookPage(_bookId, _page.Id, _page.ImageId);
-        }
+        public void ShouldDeletePage() => _assert.ShouldHaveNoBookPage(_bookId, _page.Id, _page.ImageId);
     }
 }

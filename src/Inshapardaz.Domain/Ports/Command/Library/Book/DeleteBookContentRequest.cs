@@ -1,43 +1,26 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Book;
 
-public class DeleteBookContentRequest : BookRequest
+public class DeleteBookContentRequest(int libraryId, int bookId, long contentId) : BookRequest(libraryId, bookId)
 {
-    public DeleteBookContentRequest(int libraryId, int bookId, long contentId)
-        : base(libraryId, bookId)
-    {
-        ContentId = contentId;
-    }
-
-    public long ContentId { get; }
+    public long ContentId { get; } = contentId;
 }
 
-public class DeleteBookContentRequestHandler : RequestHandlerAsync<DeleteBookContentRequest>
+public class DeleteBookContentRequestHandler(IBookRepository bookRepository, IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<DeleteBookContentRequest>
 {
-    private readonly IBookRepository _bookRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public DeleteBookContentRequestHandler(IBookRepository bookRepository, IAmACommandProcessor commandProcessor)
-    {
-        _bookRepository = bookRepository;
-        _commandProcessor = commandProcessor;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<DeleteBookContentRequest> HandleAsync(DeleteBookContentRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var content = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
+        var content = await bookRepository.GetBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
         if (content != null)
         {
-            await _commandProcessor.SendAsync(new DeleteFileCommand(content.FileId), cancellationToken: cancellationToken);
-            await _bookRepository.DeleteBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
+            await commandProcessor.SendAsync(new DeleteFileCommand(content.FileId), cancellationToken: cancellationToken);
+            await bookRepository.DeleteBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

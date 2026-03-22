@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
@@ -12,16 +10,11 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthorById
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenGettingAuthorWithPermission : TestBase
+    public class WhenGettingAuthorWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private AuthorDto _expected;
         private AuthorAssert _assert;
-
-        public WhenGettingAuthorWithPermission(Role Role)
-            : base(Role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -34,34 +27,19 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthorById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
-        public void ShouldHaveBooksLink()
-        {
-            _assert.ShouldHaveBooksLink();
-        }
+        public void ShouldHaveBooksLink() => _assert.ShouldHaveBooksLink();
 
         [Test]
-        public void ShouldHaveUpdateLink()
-        {
-            _assert.ShouldHaveUpdateLink();
-        }
+        public void ShouldHaveUpdateLink() => _assert.ShouldHaveUpdateLink();
 
         [Test]
         public void ShouldNotHaveDeleteLink()
@@ -78,15 +56,9 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthorById
         }
 
         [Test]
-        public void ShouldHaveImageUploadLink()
-        {
-            _assert.ShouldHaveImageUploadLink();
-        }
+        public void ShouldHaveImageUploadLink() => _assert.ShouldHaveImageUploadLink();
 
         [Test]
-        public void ShouldReturnCorrectAuthorData()
-        {
-            _assert.ShouldHaveCorrectAuthorRetunred(_expected);
-        }
+        public void ShouldReturnCorrectAuthorData() => _assert.ShouldHaveCorrectAuthorRetunred(_expected);
     }
 }

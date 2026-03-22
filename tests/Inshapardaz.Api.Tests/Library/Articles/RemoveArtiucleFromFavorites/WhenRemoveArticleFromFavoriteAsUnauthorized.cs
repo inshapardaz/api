@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.RemoveArtiucleFromFavorites
@@ -18,15 +16,9 @@ namespace Inshapardaz.Api.Tests.Library.Articles.RemoveArtiucleFromFavorites
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveUnauthorisedResult()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldHaveUnauthorisedResult() => _response.ShouldBeUnauthorized();
     }
 }

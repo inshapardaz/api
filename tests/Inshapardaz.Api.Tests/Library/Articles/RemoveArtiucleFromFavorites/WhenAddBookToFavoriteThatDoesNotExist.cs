@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,16 +7,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Articles.RemoveArtiucleFromFavorites
 {
     [TestFixture]
-    public class WhenRemoveArticleFromFavoriteThatDoesNotExist : TestBase
+    public class WhenRemoveArticleFromFavoriteThatDoesNotExist() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private ArticleAssert _assert;
         private int _articleId = -RandomData.Number;
-
-        public WhenRemoveArticleFromFavoriteThatDoesNotExist()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -28,21 +21,12 @@ namespace Inshapardaz.Api.Tests.Library.Articles.RemoveArtiucleFromFavorites
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldNotBeInFavorites()
-        {
-            _assert.ShouldNotBeInFavorites(_articleId, AccountId);
-        }
+        public void ShouldNotBeInFavorites() => _assert.ShouldNotBeInFavorites(_articleId, AccountId);
     }
 }

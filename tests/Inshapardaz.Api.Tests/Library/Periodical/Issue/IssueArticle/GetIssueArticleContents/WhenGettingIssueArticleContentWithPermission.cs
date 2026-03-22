@@ -4,29 +4,19 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueArticleContents
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenGettingIssueArticleContentWithPermission
-        : TestBase
+    public class WhenGettingIssueArticleContentWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IssueArticleContentAssert _assert;
         private IssueDto _issue;
         private IssueArticleDto _article;
         private IssueArticleContentDto _content;
-
-        public WhenGettingIssueArticleContentWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -40,41 +30,23 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
-        public void ShouldHavePeriodicalLink()
-        {
-            _assert.ShouldHavePeriodicalLink();
-        }
+        public void ShouldHavePeriodicalLink() => _assert.ShouldHavePeriodicalLink();
 
         [Test]
-        public void ShouldHaveIssueLink()
-        {
-            _assert.ShouldHaveIssueLink();
-        }
+        public void ShouldHaveIssueLink() => _assert.ShouldHaveIssueLink();
 
 
         [Test]
-        public void ShouldHaveArticleLink()
-        {
-            _assert.ShouldHaveArticleLink();
-        }
+        public void ShouldHaveArticleLink() => _assert.ShouldHaveArticleLink();
 
         [Test]
         public void ShouldHaveEditLinks()
@@ -93,9 +65,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [Test]
-        public void ShouldReturnCorrectArticleData()
-        {
-            _assert.ShouldMatch(_content, _issue, _article);
-        }
+        public void ShouldReturnCorrectArticleData() => _assert.ShouldMatch(_content, _issue, _article);
     }
 }

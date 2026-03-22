@@ -1,25 +1,15 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Paramore.Brighter;
-using System.Threading.Tasks;
-using System.Threading;
-using System;
 using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Domain.Ports.Command.File;
 
-public class SaveFileCommand: RequestBase
+public class SaveFileCommand(string fileName, string path, byte[] contents) : RequestBase
 {
-    public SaveFileCommand(string fileName, string path, byte[] contents)
-    {
-        Path = path;
-        FileName = fileName;
-        Contents = contents;
-    }
+    public string Path { get; set; } = path;
+    public string FileName { get; set; } = fileName;
 
-    public string Path { get; set; }
-    public string FileName { get; set; }
-
-    public byte[] Contents { get; set; }
+    public byte[] Contents { get; set; } = contents;
     public string MimeType { get; internal set; }
 
     public bool IsPublic { get; set; }
@@ -29,25 +19,17 @@ public class SaveFileCommand: RequestBase
     public FileModel Result { get; internal set; }
 }
 
-public class SaveFileCommandHandler : RequestHandlerAsync<SaveFileCommand>
+public class SaveFileCommandHandler(IFileRepository fileRepository, IFileStorage fileStorage)
+    : RequestHandlerAsync<SaveFileCommand>
 {
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
-
-    public SaveFileCommandHandler(IFileRepository fileRepository, IFileStorage fileStorage)
-    {
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
-    }
-
     public override async Task<SaveFileCommand> HandleAsync(SaveFileCommand command, CancellationToken cancellationToken = new CancellationToken())
     {
         if (command.ExistingFileId.HasValue)
         {
-            var file = await _fileRepository.GetFileById(command.ExistingFileId.Value, cancellationToken);
-            await _fileStorage.DeleteFile(file.FilePath, cancellationToken);
-            var url = await _fileStorage.StoreFile(command.Path, command.Contents, command.MimeType, cancellationToken);
-            command.Result = await _fileRepository.UpdateFile(new FileModel
+            var file = await fileRepository.GetFileById(command.ExistingFileId.Value, cancellationToken);
+            await fileStorage.DeleteFile(file.FilePath, cancellationToken);
+            var url = await fileStorage.StoreFile(command.Path, command.Contents, command.MimeType, cancellationToken);
+            command.Result = await fileRepository.UpdateFile(new FileModel
             {
                 Id = command.ExistingFileId.Value,
                 FileName = command.FileName,
@@ -58,8 +40,8 @@ public class SaveFileCommandHandler : RequestHandlerAsync<SaveFileCommand>
         }
         else 
         {
-            var url = await _fileStorage.StoreFile(command.Path, command.Contents, command.MimeType, cancellationToken);
-            command.Result = await _fileRepository.AddFile(new FileModel
+            var url = await fileStorage.StoreFile(command.Path, command.Contents, command.MimeType, cancellationToken);
+            command.Result = await fileRepository.AddFile(new FileModel
             {
                 FileName = command.FileName,
                 FilePath = command.Path,

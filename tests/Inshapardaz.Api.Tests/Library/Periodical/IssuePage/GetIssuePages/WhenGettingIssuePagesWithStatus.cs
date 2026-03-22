@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Extensions;
+﻿using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
@@ -19,91 +14,72 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
     [TestFixture(EditingStatus.InReview)]
     [TestFixture(EditingStatus.Completed)]
     [TestFixture(EditingStatus.Available)]
-    public class WhenGettingIssuePagesWithStatus : TestBase
+    public class WhenGettingIssuePagesWithStatus(EditingStatus status) : TestBase(Role.Reader)
     {
         private IssueDto _issue;
         private HttpResponseMessage _response;
         private PagingAssert<IssuePageView> _assert;
-        private readonly EditingStatus _status;
-
-        public WhenGettingIssuePagesWithStatus(EditingStatus status)
-            : base(Role.Reader)
-        {
-            _status = status;
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             _issue = IssueBuilder.WithLibrary(LibraryId).WithPages(20)
-                .WithStatus(_status, 12)
-                .WithStatus(RandomData.PickRandomExcept(RandomData.EditingStatusList, _status), 18)
+                .WithStatus(status, 12)
+                .WithStatus(RandomData.PickRandomExcept(RandomData.EditingStatusList, status), 18)
                 .Build();
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages?pageSize=10&pageNumber=1&status={_status.ToDescription()}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages?pageSize=10&pageNumber=1&status={status.ToDescription()}");
 
             _assert = Services.GetService<PagingAssert<IssuePageView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
         {
-            if (_status == EditingStatus.All)
+            if (status == EditingStatus.All)
             {
                 _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages");
             }
             else
             {
                 _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages",
-                    new KeyValuePair<string, string>("status", _status.ToDescription())
+                    new KeyValuePair<string, string>("status", status.ToDescription())
                 );
             }
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
 
         [Test]
         public void ShouldHaveNextLink()
         {
-            if (_status == EditingStatus.All)
+            if (status == EditingStatus.All)
             {
-                _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages", 2, 10);
+                _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages", 2);
             }
             else
             {
                 _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages", 2, 10,
-                    new KeyValuePair<string, string>("status", _status.ToDescription())
+                    new KeyValuePair<string, string>("status", status.ToDescription())
                 );
             }
         }
 
         [Test]
-        public void ShouldNotHavePreviousLink()
-        {
-            _assert.ShouldNotHavePreviousLink();
-        }
+        public void ShouldNotHavePreviousLink() => _assert.ShouldNotHavePreviousLink();
 
         [Test]
         public void ShouldReturnExpectedBookPages()
         {
             var expectedItems = IssueBuilder.GetPages(_issue.Id)
-                                            .Where(p => _status == EditingStatus.All || p.Status == _status)
+                                            .Where(p => status == EditingStatus.All || p.Status == status)
                                             .OrderBy(p => p.SequenceNumber).Take(10);
             _assert.ShouldHaveTotalCount(12)
                    .ShouldHavePage(1)

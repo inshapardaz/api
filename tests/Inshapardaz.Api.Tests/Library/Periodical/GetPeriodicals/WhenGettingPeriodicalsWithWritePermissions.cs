@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,15 +9,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicals
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenGettingPeriodicalsWithWritePermissions : TestBase
+    public class WhenGettingPeriodicalsWithWritePermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private PagingAssert<PeriodicalView> _assert;
-        
-        public WhenGettingPeriodicalsWithWritePermissions(Role role) 
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,28 +25,16 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicals
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/periodicals");
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/periodicals");
 
         [Test]
-        public void ShouldHaveCreateLink()
-        {
-            _assert.ShouldHaveCreateLink($"/libraries/{LibraryId}/periodicals");
-        }
+        public void ShouldHaveCreateLink() => _assert.ShouldHaveCreateLink($"/libraries/{LibraryId}/periodicals");
 
         [Test]
         public void ShouldNotHaveNavigationLinks()

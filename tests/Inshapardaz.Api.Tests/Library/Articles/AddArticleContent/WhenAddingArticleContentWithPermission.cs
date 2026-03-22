@@ -4,25 +4,17 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleContent
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenAddingArticleContentWithPermission
-        : TestBase
+    public class WhenAddingArticleContentWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private string _locale, _contents, _layout;
         private ArticleContentAssert _assert;
-
-        public WhenAddingArticleContentWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -45,16 +37,10 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
         public void ShouldHaveCorrectLink()
@@ -66,9 +52,6 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleContent
         }
 
         [Test]
-        public void ShouldHaceCorrectContentSaved()
-        {
-            _assert.ShouldHaveSavedArticleContent();
-        }
+        public void ShouldHaceCorrectContentSaved() => _assert.ShouldHaveSavedArticleContent();
     }
 }

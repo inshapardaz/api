@@ -4,15 +4,11 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
 {
     [TestFixture]
-    public class WhenUpdatingChapterContentsWithDifferentLanguage
-        : TestBase
+    public class WhenUpdatingChapterContentsWithDifferentLanguage() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private ChapterDto _chapter;
@@ -20,11 +16,6 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         private ChapterContentAssert _assert;
 
         private string _newContents;
-
-        public WhenUpdatingChapterContentsWithDifferentLanguage()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -39,16 +30,10 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
         public void ShouldHaveLinks()
@@ -62,15 +47,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         }
 
         [Test]
-        public void ShouldHaveTextReturened()
-        {
-            _assert.ShouldHaveText(_newContents);
-        }
+        public void ShouldHaveTextReturened() => _assert.ShouldHaveText(_newContents);
 
         [Test]
-        public void ShouldHaveUpdatedContents()
-        {
-            _assert.ShouldHaveMatechingTextForLanguage(_newContents, _content.Language + "1");
-        }
+        public void ShouldHaveUpdatedContents() => _assert.ShouldHaveMatechingTextForLanguage(_newContents, _content.Language + "1");
     }
 }

@@ -1,19 +1,12 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Tools;
 
-public class UpdateCorrectionRequest : RequestBase
+public class UpdateCorrectionRequest(CorrectionModel correctionModel) : RequestBase
 {
-    public UpdateCorrectionRequest(CorrectionModel correctionModel)
-    {
-        Correction = correctionModel;
-    }
-
-    public CorrectionModel Correction { get; }
+    public CorrectionModel Correction { get; } = correctionModel;
     public RequestResult Result { get; set; } = new RequestResult();
     public class RequestResult
     {
@@ -23,28 +16,22 @@ public class UpdateCorrectionRequest : RequestBase
     }
 }
 
-public class UpdateCorrectionRequestHandler : RequestHandlerAsync<UpdateCorrectionRequest>
+public class UpdateCorrectionRequestHandler(ICorrectionRepository correctionRepository)
+    : RequestHandlerAsync<UpdateCorrectionRequest>
 {
-    private readonly ICorrectionRepository _correctionRepository;
-
-    public UpdateCorrectionRequestHandler(ICorrectionRepository correctionRepository)
-    {
-        _correctionRepository = correctionRepository;
-    }
-
     [AuthorizeAdmin(1)]
     public override async Task<UpdateCorrectionRequest> HandleAsync(UpdateCorrectionRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var result = await _correctionRepository.GetCorrection(command.Correction.Language, command.Correction.Profile, command.Correction.Id, cancellationToken);
+        var result = await correctionRepository.GetCorrection(command.Correction.Language, command.Correction.Profile, command.Correction.Id, cancellationToken);
 
         if (result == null)
         {
-            command.Result.Correction = await _correctionRepository.AddCorrection(command.Correction, cancellationToken);
+            command.Result.Correction = await correctionRepository.AddCorrection(command.Correction, cancellationToken);
             command.Result.HasAddedNew = true;
         }
         else
         {
-            command.Result.Correction = await _correctionRepository.UpdateCorrection(command.Correction, cancellationToken); ;
+            command.Result.Correction = await correctionRepository.UpdateCorrection(command.Correction, cancellationToken); ;
         }
 
         return await base.HandleAsync(command, cancellationToken);

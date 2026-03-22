@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -12,16 +10,11 @@ namespace Inshapardaz.Api.Tests.Library.Author.UpdateAuthor
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingAuthorWithPermission : TestBase
+    public class WhenUpdatingAuthorWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private AuthorView _expected;
         private AuthorAssert _assert;
-
-        public WhenUpdatingAuthorWithPermission(Role Role)
-            : base(Role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -37,21 +30,12 @@ namespace Inshapardaz.Api.Tests.Library.Author.UpdateAuthor
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveUpdatedTheAuthor()
-        {
-            _assert.ShouldHaveSavedAuthor();
-        }
+        public void ShouldHaveUpdatedTheAuthor() => _assert.ShouldHaveSavedAuthor();
     }
 }

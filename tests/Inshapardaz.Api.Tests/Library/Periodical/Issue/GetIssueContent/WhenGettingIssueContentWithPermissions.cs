@@ -4,26 +4,18 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenGettingIssueContentWithPermissions
-        : TestBase
+    public class WhenGettingIssueContentWithPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IssueContentAssert _assert;
         private IssueDto _issue;
         private IssueContentDto _expected;
-
-        public WhenGettingIssueContentWithPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -36,22 +28,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
         public void ShouldHaveEditLinks()
@@ -61,27 +44,15 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
         }
 
         [Test]
-        public void ShouldHaveCorrectMimeType()
-        {
-            _assert.ShouldHaveCorrectMimeType(_expected.MimeType);
-        }
+        public void ShouldHaveCorrectMimeType() => _assert.ShouldHaveCorrectMimeType(_expected.MimeType);
 
         [Test]
-        public void ShouldHaveCorrectLanguage()
-        {
-            _assert.ShouldHaveCorrectLanguage(_expected.Language);
-        }
+        public void ShouldHaveCorrectLanguage() => _assert.ShouldHaveCorrectLanguage(_expected.Language);
 
         [Test]
-        public void SHouldHaveDownloadLink()
-        {
-            _assert.ShouldHavePrivateDownloadLink();
-        }
+        public void SHouldHaveDownloadLink() => _assert.ShouldHavePrivateDownloadLink();
 
         [Test]
-        public void ShouldReturnCorrectChapterData()
-        {
-            _assert.ShouldMatch(_expected, _expected.Id);
-        }
+        public void ShouldReturnCorrectChapterData() => _assert.ShouldMatch(_expected, _expected.Id);
     }
 }

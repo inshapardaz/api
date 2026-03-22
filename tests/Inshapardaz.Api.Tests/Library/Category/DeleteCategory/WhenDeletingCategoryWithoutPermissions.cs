@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
@@ -11,17 +8,12 @@ namespace Inshapardaz.Api.Tests.Library.Categories.DeleteCategory
 {
     [TestFixture(Role.Reader)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingCategoryWithoutPermissions : TestBase
+    public class WhenDeletingCategoryWithoutPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
 
         private IEnumerable<CategoryDto> _categories;
         private CategoryDto _selectedCategory;
-
-        public WhenDeletingCategoryWithoutPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,15 +25,9 @@ namespace Inshapardaz.Api.Tests.Library.Categories.DeleteCategory
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbiddenResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbiddenResult() => _response.ShouldBeForbidden();
     }
 }

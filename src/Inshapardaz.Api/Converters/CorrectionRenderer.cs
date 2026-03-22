@@ -14,17 +14,8 @@ public interface IRenderCorrection
     CorrectionView Render(CorrectionModel correction);
 }
 
-public class CorrectionRenderer : IRenderCorrection
+public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper) : IRenderCorrection
 {
-    private readonly IRenderLink _linkRenderer;
-    private readonly IUserHelper _userHelper;
-
-    public CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
-    {
-        _linkRenderer = linkRenderer;
-        _userHelper = userHelper;
-    }
-
     public PageView<CorrectionView> Render(PageRendererArgs<CorrectionModel> source, string language, string profile)
     {
         var page = new PageView<CorrectionView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
@@ -34,7 +25,7 @@ public class CorrectionRenderer : IRenderCorrection
 
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link {
+            linkRenderer.Render(new Link {
                 ActionName = nameof(ToolController.GetCorrections),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
@@ -48,9 +39,9 @@ public class CorrectionRenderer : IRenderCorrection
             })
         };
 
-        if (_userHelper.IsAdmin)
+        if (userHelper.IsAdmin)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ToolController.AddCorrection),
                 Method = HttpMethod.Post,
@@ -61,7 +52,7 @@ public class CorrectionRenderer : IRenderCorrection
 
         if (page.CurrentPageIndex < page.PageCount)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ToolController.GetCorrections),
                 Method = HttpMethod.Get,
@@ -78,7 +69,7 @@ public class CorrectionRenderer : IRenderCorrection
 
         if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ToolController.GetCorrections),
                 Method = HttpMethod.Get,
@@ -101,7 +92,7 @@ public class CorrectionRenderer : IRenderCorrection
     {
         var view = correction.Map();
 
-        view.Links.Add(_linkRenderer.Render(new Link
+        view.Links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(ToolController.GetCorrectionById),
             Method = HttpMethod.Get,
@@ -110,9 +101,9 @@ public class CorrectionRenderer : IRenderCorrection
         }));
 
 
-        if (_userHelper.IsAdmin)
+        if (userHelper.IsAdmin)
         {
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ToolController.UpdateCorrection),
                 Method = HttpMethod.Put,
@@ -120,7 +111,7 @@ public class CorrectionRenderer : IRenderCorrection
                 Parameters = new { language = correction.Language, profile = correction.Profile, id = correction.Id }
             }));
 
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ToolController.DeleteCorrection),
                 Method = HttpMethod.Delete,
@@ -132,8 +123,5 @@ public class CorrectionRenderer : IRenderCorrection
         return view;
     }
 
-    public IEnumerable<CorrectionSimpleView> RenderSimple(IEnumerable<CorrectionModel> source)
-    {
-        return source.Select(x => x.MapSimple());
-    }
+    public IEnumerable<CorrectionSimpleView> RenderSimple(IEnumerable<CorrectionModel> source) => source.Select(x => x.MapSimple());
 }

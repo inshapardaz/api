@@ -3,22 +3,15 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.AddLibrary
 {
     [TestFixture(Role.Reader)]
     [TestFixture(Role.Writer)]
     [TestFixture(Role.LibraryAdmin)]
-    public class WhenAddingLibraryWithoutPermissions : TestBase
+    public class WhenAddingLibraryWithoutPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
-
-        public WhenAddingLibraryWithoutPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -29,15 +22,9 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbiddenResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbiddenResult() => _response.ShouldBeForbidden();
     }
 }

@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Extensions;
+﻿using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
@@ -17,73 +14,48 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
     [TestFixture(EditingStatus.Typed)]
     [TestFixture(EditingStatus.Typing)]
     [TestFixture(EditingStatus.Available)]
-    public class WhenGettingIssuePagesInStatus : TestBase
+    public class WhenGettingIssuePagesInStatus(EditingStatus status) : TestBase(Role.Reader)
     {
         private IssueDto _issue;
         private HttpResponseMessage _response;
         private PagingAssert<IssuePageView> _assert;
-        private readonly EditingStatus _status;
-
-        public WhenGettingIssuePagesInStatus(EditingStatus status)
-            : base(Role.Reader)
-        {
-            _status = status;
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             _issue = IssueBuilder.WithLibrary(LibraryId)
                 .WithPages(20)
-                .WithStatus(_status, 15)
-                .WithStatus(RandomData.PickRandomExcept(RandomData.EditingStatusList, _status), 5)
+                .WithStatus(status, 15)
+                .WithStatus(RandomData.PickRandomExcept(RandomData.EditingStatusList, status), 5)
                 .Build();
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages?pageSize=10&pageNumber=1&status={_status.ToDescription()}");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages?pageSize=10&pageNumber=1&status={status.ToDescription()}");
 
             _assert = Services.GetService<PagingAssert<IssuePageView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages");
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages");
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
 
         [Test]
-        public void ShouldHaveNextLink()
-        {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages", 2, 10);
-        }
+        public void ShouldHaveNextLink() => _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages", 2);
 
         [Test]
-        public void ShouldNotHavePreviousLink()
-        {
-            _assert.ShouldNotHavePreviousLink();
-        }
+        public void ShouldNotHavePreviousLink() => _assert.ShouldNotHavePreviousLink();
 
         [Test]
         public void ShouldReturExpectedBookPages()
         {
-            var expectedItems = IssueBuilder.GetPages(_issue.Id).Where(p => p.Status == _status).OrderBy(p => p.SequenceNumber).Take(10);
+            var expectedItems = IssueBuilder.GetPages(_issue.Id).Where(p => p.Status == status).OrderBy(p => p.SequenceNumber).Take(10);
 
             _assert.ShouldHaveTotalCount(15)
                    .ShouldHavePage(1)

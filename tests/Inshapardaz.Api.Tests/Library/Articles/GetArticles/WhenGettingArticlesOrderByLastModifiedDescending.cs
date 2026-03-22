@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
@@ -13,15 +9,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
 {
     [TestFixture]
-    public class WhenGettingArticlesOrderByLastModifiedDescending : TestBase
+    public class WhenGettingArticlesOrderByLastModifiedDescending() : TestBase(Role.Reader)
     {
         private IEnumerable<ArticleDto> _expected;
         private HttpResponseMessage _response;
         private PagingAssert<ArticleView> _assert;
-
-        public WhenGettingArticlesOrderByLastModifiedDescending() : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,16 +25,10 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -63,16 +49,10 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
         }
 
         [Test]
-        public void ShouldHaveNextLink()
-        {
-            _assert.ShouldNotHaveNextLink();
-        }
+        public void ShouldHaveNextLink() => _assert.ShouldNotHaveNextLink();
 
         [Test]
-        public void ShouldNotHavePreviousLink()
-        {
-            _assert.ShouldNotHavePreviousLink();
-        }
+        public void ShouldNotHavePreviousLink() => _assert.ShouldNotHavePreviousLink();
 
         [Test]
         public void ShouldReturnExpectedArticles()

@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using NUnit.Framework;
 
 namespace Inshapardaz.Database.Migrations.MySql.Tests
@@ -7,12 +5,8 @@ namespace Inshapardaz.Database.Migrations.MySql.Tests
     [TestFixture]
     public class MigrationUpAndDownTests
     {
-        private MigrationHelper _helper;
+        private MigrationHelper _helper = new(_connectionString);
         private const string _connectionString = "Server=127.0.0.1;Database=nawishta_test;Uid=root;Pwd=Passw0rd;";
-        public MigrationUpAndDownTests()
-        {
-            _helper = new MigrationHelper(_connectionString);
-        }
 
         [Test]
         public void LatestMigrations_CanRunUpAndDown()

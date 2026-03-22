@@ -1,13 +1,8 @@
-﻿using FluentAssertions;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
 {
@@ -36,28 +31,16 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books");
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books");
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
 
         [Test]
         public void ShouldNotHaveNavigationLinks()
@@ -87,7 +70,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
                             .ShouldHavePublicImageLink()
                             .ShouldNotHaveAddFavoriteLink()
                             .ShouldNotHaveRemoveFavoriteLink()
-                            .ShouldHaveContents(false);
+                            .ShouldHaveContents();
             }
         }
     }

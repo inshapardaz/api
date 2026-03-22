@@ -4,25 +4,17 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueArticleById
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenGettingIssueArticleByIdWithWritePermissions
-        : TestBase
+    public class WhenGettingIssueArticleByIdWithWritePermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IssueArticleDto _expected;
         private IssueArticleAssert _assert;
-
-        public WhenGettingIssueArticleByIdWithWritePermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -36,16 +28,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveCorrectObjectReturned()

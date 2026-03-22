@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,15 +9,10 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
     [TestFixture(Role.Reader)]
-    public class WhenGettingLibrariesAs: TestBase
+    public class WhenGettingLibrariesAs(Role role) : TestBase(role, createLibrary: false)
     {
         private HttpResponseMessage _response;
         private PagingAssert<LibraryView> _assert;
-
-        public WhenGettingLibrariesAs(Role role)
-            : base(role, createLibrary: false)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -31,27 +24,15 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink("/libraries");
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink("/libraries");
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
     }
 }

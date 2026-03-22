@@ -2,21 +2,13 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.AddIssueContent
 {
     [TestFixture]
-    public class WhenAddingIssueContentAsReader
-        : TestBase
+    public class WhenAddingIssueContentAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
-
-        public WhenAddingIssueContentAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,15 +19,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.AddIssueContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbidResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbidResult() => _response.ShouldBeForbidden();
     }
 }

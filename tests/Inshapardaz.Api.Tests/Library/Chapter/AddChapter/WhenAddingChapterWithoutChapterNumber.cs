@@ -5,24 +5,16 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
 {
     [TestFixture]
-    public class WhenAddingChapterWithoutChapterNumber
-        : TestBase
+    public class WhenAddingChapterWithoutChapterNumber() : TestBase(Role.Writer)
     {
         private ChapterView _chapter;
         private HttpResponseMessage _response;
         private ChapterAssert _assert;
         private BookDto _book;
-
-        public WhenAddingChapterWithoutChapterNumber()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -37,28 +29,16 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldSaveTheChapter()
-        {
-            _assert.ShouldHaveSavedChapter();
-        }
+        public void ShouldSaveTheChapter() => _assert.ShouldHaveSavedChapter();
 
         [Test]
         public void ShouldHaveCorrectObjectReturned()

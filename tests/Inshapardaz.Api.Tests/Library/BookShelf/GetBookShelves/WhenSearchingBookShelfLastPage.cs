@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -10,16 +6,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelves
 {
     [TestFixture]
-    public class WhenSearchingBookShelfLastPage : TestBase
+    public class WhenSearchingBookShelfLastPage() : TestBase(Domain.Models.Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<BookShelfView> _assert;
         private const string searchTerm = "SearchBKS";
-
-        public WhenSearchingBookShelfLastPage()
-            :base(Domain.Models.Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -31,40 +22,22 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelves
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/bookshelves", new KeyValuePair<string, string>("query", searchTerm));
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/bookshelves", new KeyValuePair<string, string>("query", searchTerm));
 
         [Test]
-        public void ShouldHaveCreateLink()
-        {
-            _assert.ShouldHaveCreateLink($"/libraries/{LibraryId}/bookshelves");
-        }
+        public void ShouldHaveCreateLink() => _assert.ShouldHaveCreateLink($"/libraries/{LibraryId}/bookshelves");
 
         [Test]
-        public void ShouldNotHaveNextLink()
-        {
-            _assert.ShouldNotHaveNextLink();
-        }
+        public void ShouldNotHaveNextLink() => _assert.ShouldNotHaveNextLink();
 
         [Test]
-        public void ShouldHavePreviousLinks()
-        {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/bookshelves", 4, 10, new KeyValuePair<string, string>("query", searchTerm));
-        }
+        public void ShouldHavePreviousLinks() => _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/bookshelves", 4, 10, new KeyValuePair<string, string>("query", searchTerm));
 
         [Test]
         public void ShouldReturnExpectedSeries()

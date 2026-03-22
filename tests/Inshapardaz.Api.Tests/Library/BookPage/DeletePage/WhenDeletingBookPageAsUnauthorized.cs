@@ -3,8 +3,6 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePage
 {
@@ -34,15 +32,9 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePage
         }
 
         [Test]
-        public void ShouldHaveUnauthorisedResult()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldHaveUnauthorisedResult() => _response.ShouldBeUnauthorized();
 
         [Test]
-        public void ShouldNotDeletePage()
-        {
-            _assert.BookPageShouldExist(_bookId, _page.SequenceNumber);
-        }
+        public void ShouldNotDeletePage() => _assert.BookPageShouldExist(_bookId, _page.SequenceNumber);
     }
 }

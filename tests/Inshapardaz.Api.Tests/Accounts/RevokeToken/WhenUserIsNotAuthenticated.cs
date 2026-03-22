@@ -2,8 +2,6 @@
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.RevokeToken
 {
@@ -13,15 +11,9 @@ namespace Inshapardaz.Api.Tests.Accounts.RevokeToken
         private HttpResponseMessage _response;
 
         [OneTimeSetUp]
-        public async Task Setup()
-        {
-            _response = await Client.PostObject("/accounts/revoke-token", new RevokeTokenRequest() { Token = RandomData.String });
-        }
+        public async Task Setup() => _response = await Client.PostObject("/accounts/revoke-token", new RevokeTokenRequest() { Token = RandomData.String });
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
     }
 }

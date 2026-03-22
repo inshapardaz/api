@@ -1,6 +1,5 @@
 ﻿using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using System;
 
 namespace Inshapardaz.Api.Tests.Framework.Dto
 {

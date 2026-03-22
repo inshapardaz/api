@@ -1,24 +1,14 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Dapper;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Adapters.Database.MySql.Repositories;
 
-public class CommonWordsRepository : ICommonWordsRepository
+public class CommonWordsRepository(MySqlConnectionProvider connectionProvider) : ICommonWordsRepository
 {
-    private readonly MySqlConnectionProvider _connectionProvider;
-
-    public CommonWordsRepository(MySqlConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-    
     public async Task<IEnumerable<string>> GetWordsForLanguage(string language, CancellationToken cancellationToken)
     {
-        using var connection = _connectionProvider.GetConnection();
+        using var connection = connectionProvider.GetConnection();
         var sql = @"SELECT `Word` FROM CommonWords WHERE `Language` = @Language ORDER By `Word`";
         var command = new CommandDefinition(sql, new
         {
@@ -30,7 +20,7 @@ public class CommonWordsRepository : ICommonWordsRepository
 
     public async Task<Page<CommonWordModel>> GetWords(string language, string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using var connection = _connectionProvider.GetConnection();
+        using var connection = connectionProvider.GetConnection();
         var sql = @"SELECT * FROM CommonWords 
                     WHERE `Language` = @Language
                     AND `Word` LIKE @Word
@@ -71,7 +61,7 @@ public class CommonWordsRepository : ICommonWordsRepository
 
     public async Task<CommonWordModel> GetWordById(string language, long id, CancellationToken cancellationToken)
     {
-        using var connection = _connectionProvider.GetConnection();
+        using var connection = connectionProvider.GetConnection();
         var sql = @"SELECT * FROM CommonWords WHERE `Id` = @Id AND Language = @Language";
         var command = new CommandDefinition(sql, new
         {
@@ -84,7 +74,7 @@ public class CommonWordsRepository : ICommonWordsRepository
 
     public async Task<CommonWordModel> AddWord(CommonWordModel commonWordModel, CancellationToken cancellationToken)
     {
-        using var connection = _connectionProvider.GetConnection();
+        using var connection = connectionProvider.GetConnection();
         var sql = @"Insert Into CommonWords(`Language`, `Word`) VALUES (@Language, @Word);
                     SELECT LAST_INSERT_ID();";
         var command = new CommandDefinition(sql, new
@@ -99,7 +89,7 @@ public class CommonWordsRepository : ICommonWordsRepository
 
     public async Task<CommonWordModel> UpdateWord(CommonWordModel commonWordModel, CancellationToken cancellationToken)
     {
-        using var connection = _connectionProvider.GetConnection();
+        using var connection = connectionProvider.GetConnection();
         var sql = @"UPDATE CommonWords 
                             SET Language  = @Language, 
                                 Word = @Word
@@ -112,7 +102,7 @@ public class CommonWordsRepository : ICommonWordsRepository
 
     public async Task DeleteWord(string language, long id, CancellationToken cancellationToken)
     {
-        using var connection = _connectionProvider.GetConnection();
+        using var connection = connectionProvider.GetConnection();
         var sql = @"DELETE FROM CommonWords WHERE Id = @Id AND `Language` = @Language";
         var command = new CommandDefinition(sql, new { Language = language, Id = id }, cancellationToken: cancellationToken);
         await connection.ExecuteAsync(command);

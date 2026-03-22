@@ -3,9 +3,6 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using NUnit.Framework;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.ResetPassword
 {
@@ -34,10 +31,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ResetPassword
         }
 
         [Test]
-        public void ShouldReturnBadRequest()
-        {
-            _response.ShouldBeBadRequest();
-        }
+        public void ShouldReturnBadRequest() => _response.ShouldBeBadRequest();
 
         [Test]
         public async Task ShouldNotBeAbleToAuthenticateWithNewToken()

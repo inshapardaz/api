@@ -3,22 +3,15 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.ResendActivationCode
 {
     [TestFixture]
-    public class WhenResendingInvitationCode : TestBase
+    public class WhenResendingInvitationCode() : TestBase(Domain.Models.Role.Reader)
     {
         private LibraryDto _library;
         private AccountDto _account;
         private HttpResponseMessage _response;
-
-        public WhenResendingInvitationCode()
-            : base(Domain.Models.Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -29,10 +22,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ResendActivationCode
         }
 
         [Test]
-        public void ShouldReturnOK()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOK() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSentEmailToUser()
@@ -43,9 +33,6 @@ namespace Inshapardaz.Api.Tests.Accounts.ResendActivationCode
         }
 
         [OneTimeTearDown]
-        public void TearDown()
-        {
-            Cleanup();
-        }
+        public void TearDown() => Cleanup();
     }
 }

@@ -7,25 +7,16 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
 {
     [TestFixture]
-    public class WhenGettingIssuesByPeriodicalAsReader : TestBase
+    public class WhenGettingIssuesByPeriodicalAsReader() : TestBase(Role.Reader)
     {
         private PeriodicalDto _periodical;
         private IEnumerable<IssueDto> _issues;
         private HttpResponseMessage _response;
         private PageView<IssueView> _view;
-
-        public WhenGettingIssuesByPeriodicalAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -40,16 +31,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -60,16 +45,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _view.CreateLink().Should().BeNull();
-        }
+        public void ShouldNotHaveCreateLink() => _view.CreateLink().Should().BeNull();
 
         [Test]
-        public void ShouldHaveCorrectNumberOfIssues()
-        {
-            Assert.That(_view.Data.Count(), Is.EqualTo(_issues.Count()));
-        }
+        public void ShouldHaveCorrectNumberOfIssues() => Assert.That(_view.Data.Count(), Is.EqualTo(_issues.Count()));
 
         [Test]
          public void ShouldHaveCorrectIssuesData()

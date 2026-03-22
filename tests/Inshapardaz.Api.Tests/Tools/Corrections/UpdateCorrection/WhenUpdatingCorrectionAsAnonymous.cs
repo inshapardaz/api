@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
@@ -33,21 +31,12 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.UpdateCorrection
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnUnauthorised()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldReturnUnauthorised() => _response.ShouldBeUnauthorized();
 
         [Test]
-        public void ShouldHaveNotUpdatedCorrection()
-        {
-            _assert.ShouldMatchSavedCorrection(_correction);
-        }
+        public void ShouldHaveNotUpdatedCorrection() => _assert.ShouldMatchSavedCorrection(_correction);
     }
 }

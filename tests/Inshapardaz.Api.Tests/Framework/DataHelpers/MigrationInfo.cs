@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using FluentMigrator.Infrastructure;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers

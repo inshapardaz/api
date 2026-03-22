@@ -2,21 +2,13 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Paramore.Darker;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Periodical.Issue;
 
-public class GetIssuesYearQuery : LibraryBaseQuery<IEnumerable<(int Year, int count)>>
+public class GetIssuesYearQuery(int libraryId, int periodicalId)
+    : LibraryBaseQuery<IEnumerable<(int Year, int count)>>(libraryId)
 {
-    public GetIssuesYearQuery(int libraryId, int periodicalId)
-        : base(libraryId)
-    {
-        PeriodicalId = periodicalId;
-    }
-
-    public int PeriodicalId { get; private set; }
+    public int PeriodicalId { get; private set; } = periodicalId;
 
     public int PageNumber { get; private set; }
 
@@ -25,24 +17,19 @@ public class GetIssuesYearQuery : LibraryBaseQuery<IEnumerable<(int Year, int co
     public AssignmentStatus AssignmentStatus { get; set; }
 }
 
-public class GetIssuesYearQueryHandler : QueryHandlerAsync<GetIssuesYearQuery, IEnumerable<(int Year, int count)>>
+public class GetIssuesYearQueryHandler(
+    IIssueRepository issueRepository,
+    IPeriodicalRepository periodicalRepository,
+    IFileRepository fileRepository)
+    : QueryHandlerAsync<GetIssuesYearQuery, IEnumerable<(int Year, int count)>>
 {
-    private readonly IPeriodicalRepository _periodicalRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IIssueRepository _issueRepository;
-
-    public GetIssuesYearQueryHandler(IIssueRepository issueRepository, IPeriodicalRepository periodicalRepository, IFileRepository fileRepository)
-    {
-        _issueRepository = issueRepository;
-        _periodicalRepository = periodicalRepository;
-        _fileRepository = fileRepository;
-    }
+    private readonly IFileRepository _fileRepository = fileRepository;
 
     public override async Task<IEnumerable<(int Year, int count)>> ExecuteAsync(GetIssuesYearQuery command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var periodical = await _periodicalRepository.GetPeriodicalById(command.LibraryId, command.PeriodicalId, cancellationToken);
+        var periodical = await periodicalRepository.GetPeriodicalById(command.LibraryId, command.PeriodicalId, cancellationToken);
         if (periodical == null) return null;
-        var issues = await _issueRepository.GetIssuesYear(command.LibraryId, command.PeriodicalId, command.AssignmentStatus, command.SortDirection, cancellationToken);
+        var issues = await issueRepository.GetIssuesYear(command.LibraryId, command.PeriodicalId, command.AssignmentStatus, command.SortDirection, cancellationToken);
 
         return issues;
     }

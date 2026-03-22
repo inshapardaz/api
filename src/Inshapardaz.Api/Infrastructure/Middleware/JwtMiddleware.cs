@@ -7,16 +7,9 @@ using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Infrastructure.Middleware;
 
-public class JwtMiddleware
+public class JwtMiddleware(RequestDelegate next, IOptions<Settings> appSettings)
 {
-    private readonly RequestDelegate _next;
-    private readonly Settings _appSettings;
-
-    public JwtMiddleware(RequestDelegate next, IOptions<Settings> appSettings)
-    {
-        _next = next;
-        _appSettings = appSettings.Value;
-    }
+    private readonly Settings _appSettings = appSettings.Value;
 
     public async Task Invoke(HttpContext context, IAccountRepository accountRepository)
     {
@@ -27,7 +20,7 @@ public class JwtMiddleware
             await AttachAccountToContext(context, token, accountRepository);
         }
 
-        await _next(context);
+        await next(context);
     }
 
     private async Task AttachAccountToContext(HttpContext context, string token, IAccountRepository accountRepository)

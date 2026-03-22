@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
@@ -14,17 +11,12 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.DeleteBookShelf
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingBookShelfWithPermission : TestBase
+    public class WhenDeletingBookShelfWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private BookShelfAssert _assert;
         private BookShelfDto _expected;
         private string _filePath;
-
-        public WhenDeletingBookShelfWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,28 +30,16 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.DeleteBookShelf
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNoContent()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldReturnNoContent() => _response.ShouldBeNoContent();
 
         [Test]
-        public void ShouldHaveDeletedBookShelf()
-        {
-            _assert.ShouldHaveDeletedBookShelf(_expected.Id);
-        }
+        public void ShouldHaveDeletedBookShelf() => _assert.ShouldHaveDeletedBookShelf(_expected.Id);
 
         [Test]
-        public void ShouldHaveDeletedTheBookShelfImage()
-        {
-            _assert.ShouldHaveDeletedBookShelfImage(_expected.Id, _expected.ImageId.Value, _filePath);
-        }
+        public void ShouldHaveDeletedTheBookShelfImage() => _assert.ShouldHaveDeletedBookShelfImage(_expected.Id, _expected.ImageId.Value, _filePath);
 
         [Test]
         public void ShouldNotDeleteBooks()

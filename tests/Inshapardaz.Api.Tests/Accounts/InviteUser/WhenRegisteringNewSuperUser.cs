@@ -4,23 +4,16 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.InviteUser
 {
     [TestFixture]
-    public class WhenRegisteringNewSuperUser : TestBase
+    public class WhenRegisteringNewSuperUser() : TestBase(Role.Admin)
     {
         private HttpResponseMessage _response;
         private string _name = RandomData.String;
         private string _email = RandomData.Email;
         private LibraryDto _library;
-
-        public WhenRegisteringNewSuperUser() : base(Role.Admin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -37,10 +30,7 @@ namespace Inshapardaz.Api.Tests.Accounts.InviteUser
         }
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveCreatedAccount()

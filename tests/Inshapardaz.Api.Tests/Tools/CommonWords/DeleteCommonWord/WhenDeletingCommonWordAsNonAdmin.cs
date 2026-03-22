@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,16 +9,11 @@ namespace Inshapardaz.Api.Tests.Tools.CommonWords.DeleteCommonWord
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
     [TestFixture(Role.Reader)]
-    public class WhenDeletingCommonWordAsNonAdmin : TestBase
+    public class WhenDeletingCommonWordAsNonAdmin(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private CommonWordAssert _assert;
         private CommonWordDto _commonWord;
-
-        public WhenDeletingCommonWordAsNonAdmin(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -32,21 +25,12 @@ namespace Inshapardaz.Api.Tests.Tools.CommonWords.DeleteCommonWord
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnForbidden()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldReturnForbidden() => _response.ShouldBeForbidden();
 
         [Test]
-        public void ShouldHaveDeletedAuthor()
-        {
-            _assert.ShouldNotHaveDeletedWord(_commonWord.Id);
-        }
+        public void ShouldHaveDeletedAuthor() => _assert.ShouldNotHaveDeletedWord(_commonWord.Id);
     }
 }

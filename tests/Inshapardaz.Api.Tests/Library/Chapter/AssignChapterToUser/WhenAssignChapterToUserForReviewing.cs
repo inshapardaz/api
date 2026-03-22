@@ -4,25 +4,17 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
 {
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenAssignChapterToUserForReviewing
-        : TestBase
+    public class WhenAssignChapterToUserForReviewing(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private ChapterAssert _assert;
         private ChapterDto _chapter;
         private AccountDto _reviewer;
-
-        public WhenAssignChapterToUserForReviewing(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -34,16 +26,10 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldAssignChapterToUser()

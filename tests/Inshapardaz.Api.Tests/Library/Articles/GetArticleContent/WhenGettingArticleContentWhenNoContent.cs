@@ -2,21 +2,13 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
 {
     [TestFixture]
-    public class WhenGettingArticleContentWhenNoContent
-        : TestBase
+    public class WhenGettingArticleContentWhenNoContent() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
-
-        public WhenGettingArticleContentWhenNoContent()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,15 +19,9 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveNotFoundResult()
-        {
-            _response.ShouldBeNotFound();
-        }
+        public void ShouldHaveNotFoundResult() => _response.ShouldBeNotFound();
     }
 }

@@ -3,8 +3,6 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.ForgotPassword
 {
@@ -23,15 +21,9 @@ namespace Inshapardaz.Api.Tests.Accounts.ForgotPassword
         }
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldCreateResetTokenForUser()
-        {
-            AccountAssert.AssertAccountHasResetToken(_account);
-        }
+        public void ShouldCreateResetTokenForUser() => AccountAssert.AssertAccountHasResetToken(_account);
     }
 }

@@ -3,26 +3,17 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
 {
     [TestFixture]
-    public class WhenUpdatingChapterContentsAsReader
-        : TestBase
+    public class WhenUpdatingChapterContentsAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private ChapterDto _chapter;
         private ChapterContentDto _content;
 
         private string _newContents;
-
-        public WhenUpdatingChapterContentsAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -36,15 +27,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbiddenResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbiddenResult() => _response.ShouldBeForbidden();
     }
 }

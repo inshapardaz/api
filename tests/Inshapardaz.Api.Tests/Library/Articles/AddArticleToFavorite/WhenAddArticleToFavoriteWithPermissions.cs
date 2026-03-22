@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
@@ -13,15 +11,11 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleToFavorite
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
     [TestFixture(Role.Reader)]
-    public class WhenAddArticleToFavoriteWithPermissions : TestBase
+    public class WhenAddArticleToFavoriteWithPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private ArticleAssert _assert;
         private ArticleDto _article;
-
-        public WhenAddArticleToFavoriteWithPermissions(Role role) : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -37,21 +31,12 @@ namespace Inshapardaz.Api.Tests.Library.Articles.AddArticleToFavorite
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOKResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOKResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldBeAddedToFavorites()
-        {
-            _assert.ShouldBeAddedToFavorite(_article.Id, AccountId);
-        }
+        public void ShouldBeAddedToFavorites() => _assert.ShouldBeAddedToFavorite(_article.Id, AccountId);
     }
 }

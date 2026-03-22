@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,17 +7,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.BookShelf.UploadBookShelfImage
 {
     [TestFixture]
-    public class WhenUploadingBookShelfImageAsOtherUser : TestBase
+    public class WhenUploadingBookShelfImageAsOtherUser() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private BookShelfAssert _assert;
         private int _bookShelfId;
         private byte[] _newImage;
-
-        public WhenUploadingBookShelfImageAsOtherUser()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -34,21 +27,12 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UploadBookShelfImage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbidResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbidResult() => _response.ShouldBeForbidden();
 
         [Test]
-        public void ShouldNotHaveUpdatedBookShelfImage()
-        {
-            _assert.ShouldNotHaveUpdatedBookShelfImage(_bookShelfId, _newImage);
-        }
+        public void ShouldNotHaveUpdatedBookShelfImage() => _assert.ShouldNotHaveUpdatedBookShelfImage(_bookShelfId, _newImage);
     }
 }

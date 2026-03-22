@@ -1,9 +1,6 @@
 ﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {

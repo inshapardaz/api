@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using FluentAssertions;
 using Inshapardaz.Api.Views;
 using NUnit.Framework;
@@ -126,40 +123,19 @@ namespace Inshapardaz.Api.Tests.Framework.Helpers
             return link;
         }
 
-        public static LinkView SelfLink(this ViewWithLinks view)
-        {
-            return view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.Self, StringComparison.CurrentCultureIgnoreCase));
-        }
+        public static LinkView SelfLink(this ViewWithLinks view) => view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.Self, StringComparison.CurrentCultureIgnoreCase));
 
-        public static LinkView CreateLink(this ViewWithLinks view)
-        {
-            return view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.Create, StringComparison.CurrentCultureIgnoreCase));
-        }
+        public static LinkView CreateLink(this ViewWithLinks view) => view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.Create, StringComparison.CurrentCultureIgnoreCase));
 
-        public static LinkView UpdateLink(this ViewWithLinks view)
-        {
-            return view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.Update, StringComparison.CurrentCultureIgnoreCase));
-        }
+        public static LinkView UpdateLink(this ViewWithLinks view) => view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.Update, StringComparison.CurrentCultureIgnoreCase));
 
-        public static LinkView DeleteLink(this ViewWithLinks view)
-        {
-            return view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.Delete, StringComparison.CurrentCultureIgnoreCase));
-        }
+        public static LinkView DeleteLink(this ViewWithLinks view) => view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.Delete, StringComparison.CurrentCultureIgnoreCase));
 
-        public static LinkView CreateWordLink(this ViewWithLinks view)
-        {
-            return view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.CreateWord, StringComparison.CurrentCultureIgnoreCase));
-        }
+        public static LinkView CreateWordLink(this ViewWithLinks view) => view.Links.SingleOrDefault(l => l.Rel.Equals(RelTypes.CreateWord, StringComparison.CurrentCultureIgnoreCase));
 
-        public static LinkView Link(this ViewWithLinks view, string relType)
-        {
-            return view.Links.SingleOrDefault(l => l.Rel.Equals(relType, StringComparison.CurrentCultureIgnoreCase));
-        }
+        public static LinkView Link(this ViewWithLinks view, string relType) => view.Links.SingleOrDefault(l => l.Rel.Equals(relType, StringComparison.CurrentCultureIgnoreCase));
 
-        public static IEnumerable<LinkView> Links(this ViewWithLinks view, string relType)
-        {
-            return view.Links.Where(l => l.Rel.Equals(relType, StringComparison.CurrentCultureIgnoreCase));
-        }
+        public static IEnumerable<LinkView> Links(this ViewWithLinks view, string relType) => view.Links.Where(l => l.Rel.Equals(relType, StringComparison.CurrentCultureIgnoreCase));
 
         public static LinkView ShouldHaveUrl(this LinkView view, string path)
         {

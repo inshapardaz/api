@@ -2,16 +2,9 @@
 
 namespace Inshapardaz.Api.Infrastructure.Middleware;
 
-public class RequestLoggingMiddleware
+public class RequestLoggingMiddleware(RequestDelegate next, ILogger<StatusCodeMiddleware> logger)
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<StatusCodeMiddleware> _logger;
-
-    public RequestLoggingMiddleware(RequestDelegate next, ILogger<StatusCodeMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    private readonly ILogger<StatusCodeMiddleware> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task Invoke(HttpContext context)
     {
@@ -20,7 +13,7 @@ public class RequestLoggingMiddleware
         {
             sw.Start();
             _logger.LogInformation($"BGN : {context.Request.Method} {context.Request.Path} ");
-            await _next.Invoke(context);
+            await next.Invoke(context);
             _logger.LogInformation($"FIN : {context.Request.Method} {context.Request.Path} - {context.Response.StatusCode}. TimeElapsed : {sw.ElapsedMilliseconds} ms");
         }
         catch

@@ -6,23 +6,15 @@ using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
 {
     [TestFixture]
-    public class WhenGettingIssuesByPeriodicalWithNoIssues
-        : TestBase
+    public class WhenGettingIssuesByPeriodicalWithNoIssues() : TestBase(Role.Writer)
     {
         private PeriodicalDto _periodical;
         private HttpResponseMessage _response;
         private PageView<IssueView> _view;
-
-        public WhenGettingIssuesByPeriodicalWithNoIssues()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -34,16 +26,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()

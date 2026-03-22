@@ -1,5 +1,3 @@
-using System.Net.Http;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -12,17 +10,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueArticles
 {
     [TestFixture]
-    public class WhenGettingIssueArticlesWithNoArticles
-        : TestBase
+    public class WhenGettingIssueArticlesWithNoArticles() : TestBase(Role.Writer)
     {
         private IssueDto _issue;
         private HttpResponseMessage _response;
         private ListView<IssueArticleView> _view;
-
-        public WhenGettingIssueArticlesWithNoArticles()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,16 +27,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -63,9 +49,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [Test]
-        public void ShouldHaveNoArticles()
-        {
-            _view.Data.Should().BeEmpty();
-        }
+        public void ShouldHaveNoArticles() => _view.Data.Should().BeEmpty();
     }
 }

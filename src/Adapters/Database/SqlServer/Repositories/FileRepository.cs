@@ -1,23 +1,14 @@
 ﻿using Dapper;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapters.Database.SqlServer.Repositories;
 
-public class FileRepository : IFileRepository
+public class FileRepository(SqlServerConnectionProvider connectionProvider) : IFileRepository
 {
-    private readonly SqlServerConnectionProvider _connectionProvider;
-
-    public FileRepository(SqlServerConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-
     public async Task<FileModel> GetFileById(long id, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Select *
                             FROM [File]
@@ -31,7 +22,7 @@ public class FileRepository : IFileRepository
     public async Task<FileModel> AddFile(FileModel file, CancellationToken cancellationToken)
     {
         int id;
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Insert Into [File] (FileName, MimeType, FilePath, IsPublic, DateCreated)
                             Output Inserted.Id
@@ -45,7 +36,7 @@ public class FileRepository : IFileRepository
 
     public async Task<FileModel> UpdateFile(FileModel file, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update [File]
                             Set FileName = @FileName,
@@ -62,7 +53,7 @@ public class FileRepository : IFileRepository
 
     public async Task DeleteFile(long id, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Delete From [File] Where Id = @Id";
             var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);

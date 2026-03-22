@@ -4,24 +4,17 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPageById
 {
     [TestFixture]
-    public class WhenGettingBookPageByIdAsReader
-        : TestBase
+    public class WhenGettingBookPageByIdAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
 
         private BookPageDto _expected;
 
         private BookPageAssert _assert;
-
-        public WhenGettingBookPageByIdAsReader() : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -34,22 +27,13 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPageById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveCorrectObjectReturned()
-        {
-            _assert.ShouldMatch(_expected);
-        }
+        public void ShouldHaveCorrectObjectReturned() => _assert.ShouldMatch(_expected);
 
         [Test]
         public void ShouldHaveLinks()

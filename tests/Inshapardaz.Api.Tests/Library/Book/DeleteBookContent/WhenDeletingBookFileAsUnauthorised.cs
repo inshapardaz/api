@@ -3,8 +3,6 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.Contents.DeleteBookContent
 {
@@ -27,21 +25,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.DeleteBookContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnUnauthorised()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldReturnUnauthorised() => _response.ShouldBeUnauthorized();
 
         [Test]
-        public void ShouldNotDeletedBookFile()
-        {
-            _assert.ShouldHaveBookContent(_expected.BookId, _expected.Language, _expected.MimeType);
-        }
+        public void ShouldNotDeletedBookFile() => _assert.ShouldHaveBookContent(_expected.BookId, _expected.Language, _expected.MimeType);
     }
 }

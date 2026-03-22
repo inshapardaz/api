@@ -2,39 +2,23 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.BookShelf;
 
-public class AddBookShelfRequest : LibraryBaseCommand
+public class AddBookShelfRequest(int libraryId, BookShelfModel bookShelf) : LibraryBaseCommand(libraryId)
 {
-    public AddBookShelfRequest(int libraryId, BookShelfModel bookShelf)
-        : base(libraryId)
-    {
-        BookShelf = bookShelf;
-    }
-
-    public BookShelfModel BookShelf { get; }
+    public BookShelfModel BookShelf { get; } = bookShelf;
     public BookShelfModel Result { get; set; }
 }
 
-public class AddBookShelfRequestHandler : RequestHandlerAsync<AddBookShelfRequest>
+public class AddBookShelfRequestHandler(IBookShelfRepository bookShelfRepository, IUserHelper userHelper)
+    : RequestHandlerAsync<AddBookShelfRequest>
 {
-    private readonly IBookShelfRepository _bookShelfRepository;
-    private readonly IUserHelper _userHelper;
-
-    public AddBookShelfRequestHandler(IBookShelfRepository bookShelfRepository, IUserHelper userHelper)
-    {
-        _bookShelfRepository = bookShelfRepository;
-        _userHelper = userHelper;
-    }
-
     [LibraryAuthorize(1)]
     public override async Task<AddBookShelfRequest> HandleAsync(AddBookShelfRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        command.BookShelf.AccountId = _userHelper.AccountId.Value;
-        command.Result = await _bookShelfRepository.AddBookShelf(command.LibraryId, command.BookShelf, cancellationToken);
+        command.BookShelf.AccountId = userHelper.AccountId.Value;
+        command.Result = await bookShelfRepository.AddBookShelf(command.LibraryId, command.BookShelf, cancellationToken);
         return await base.HandleAsync(command, cancellationToken);
     }
 }

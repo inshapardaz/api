@@ -5,29 +5,18 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
-using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class BookContentAssert
+    public class BookContentAssert(
+        IBookTestRepository bookRepository,
+        IFileTestRepository fileRepository,
+        FakeFileStorage fileStorage)
     {
         private HttpResponseMessage _response;
         private int _libraryId;
         private BookContentView _bookContent;
         private LibraryDto _library;
-        private readonly IBookTestRepository _bookRepository;
-        private readonly IFileTestRepository _fileRepository;
-        private readonly FakeFileStorage _fileStorage;
-
-        public BookContentAssert(IBookTestRepository bookRepository,
-            IFileTestRepository fileRepository,
-            FakeFileStorage fileStorage)
-        {
-            _bookRepository = bookRepository;
-            _fileRepository = fileRepository;
-            _fileStorage = fileStorage;
-        }
 
         public BookContentAssert ForResponse(HttpResponseMessage response)
         {
@@ -68,27 +57,27 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public BookContentAssert ShouldNotHaveBookContent(int bookId, string language, string mimeType)
         {
-            var content = _bookRepository.GetBookContent(bookId, language, mimeType);
+            var content = bookRepository.GetBookContent(bookId, language, mimeType);
             content.Should().BeNull();
             return this;
         }
 
         public BookContentAssert ShouldHaveBookContent(int bookId, string language, string mimeType)
         {
-            var content = _bookRepository.GetBookContent(bookId, language, mimeType);
+            var content = bookRepository.GetBookContent(bookId, language, mimeType);
             content.Should().NotBeNull();
             return this;
         }
 
         public BookContentAssert ShouldHaveBookContent(byte[] expected, string fileName)
         {
-            var content = _bookRepository.GetBookContent(_bookContent.BookId, _bookContent.Id);
+            var content = bookRepository.GetBookContent(_bookContent.BookId, _bookContent.Id);
             content.Should().NotBeNull();
 
-            var file = _fileRepository.GetFileById(content.FileId);
+            var file = fileRepository.GetFileById(content.FileId);
             file.FileName.Should().Be(fileName);
-            _fileStorage.DoesFileExists(file.FilePath).Should().BeTrue();
-            var fileContent = _fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
+            fileStorage.DoesFileExists(file.FilePath).Should().BeTrue();
+            var fileContent = fileStorage.GetFile(file.FilePath, CancellationToken.None).Result;
             fileContent.Should().BeEquivalentTo(expected);
             return this;
         }
@@ -136,24 +125,24 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public BookContentAssert ShouldHaveCorrectContents(byte[] expected)
         {
-            var filePath = _bookRepository.GetBookContentPath(_bookContent.BookId, _bookContent.Language, _bookContent.MimeType);
-            var content = _fileStorage.GetFile(filePath, CancellationToken.None).Result;
+            var filePath = bookRepository.GetBookContentPath(_bookContent.BookId, _bookContent.Language, _bookContent.MimeType);
+            var content = fileStorage.GetFile(filePath, CancellationToken.None).Result;
             content.Should().NotBeNull().And.NotEqual(expected);
             return this;
         }
 
         public BookContentAssert ShouldHaveCorrectContentsForMimeType(byte[] expected, string mimeType)
         {
-            var filePath = _bookRepository.GetBookContentPath(_bookContent.BookId, _bookContent.Language, mimeType);
-            var content = _fileStorage.GetFile(filePath, CancellationToken.None).Result;
+            var filePath = bookRepository.GetBookContentPath(_bookContent.BookId, _bookContent.Language, mimeType);
+            var content = fileStorage.GetFile(filePath, CancellationToken.None).Result;
             content.Should().NotBeNull().And.NotEqual(expected);
             return this;
         }
 
         public BookContentAssert ShouldHaveCorrectContentsForLanguage(byte[] expected, string language)
         {
-            var filePath = _bookRepository.GetBookContentPath(_bookContent.BookId, language, _bookContent.MimeType);
-            var content = _fileStorage.GetFile(filePath, CancellationToken.None).Result;
+            var filePath = bookRepository.GetBookContentPath(_bookContent.BookId, language, _bookContent.MimeType);
+            var content = fileStorage.GetFile(filePath, CancellationToken.None).Result;
             content.Should().NotBeNull().And.NotEqual(expected);
             return this;
         }
@@ -176,9 +165,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public BookContentAssert ShouldHaveSavedBookContent()
         {
-            var dbContent = _bookRepository.GetBookContent(_bookContent.BookId, _bookContent.Language, _bookContent.MimeType);
+            var dbContent = bookRepository.GetBookContent(_bookContent.BookId, _bookContent.Language, _bookContent.MimeType);
             dbContent.Should().NotBeNull();
-            var dbFile = _fileRepository.GetFileById(dbContent.FileId);
+            var dbFile = fileRepository.GetFileById(dbContent.FileId);
             _bookContent.BookId.Should().Be(dbContent.BookId);
             _bookContent.Language.Should().Be(dbContent.Language);
             _bookContent.MimeType.Should().Be(dbFile.MimeType);
@@ -216,7 +205,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _bookContent.BookId.Should().Be(bookId);
             _bookContent.Language.Should().Be(content.Language);
 
-            var dbFile = _fileRepository.GetFileById(content.FileId);
+            var dbFile = fileRepository.GetFileById(content.FileId);
             _bookContent.MimeType.Should().Be(dbFile.MimeType);
 
             return this;
@@ -224,10 +213,10 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public BookContentAssert ShouldHaveDeletedContent(BookFileDto content, string mimeType)
         {
-            var dbContent = _bookRepository.GetBookContent(content.Id, content.Language, mimeType);
+            var dbContent = bookRepository.GetBookContent(content.Id, content.Language, mimeType);
             dbContent.Should().BeNull("Book contnet should be deleted");
 
-            var dbFile = _fileRepository.GetFileById(content.FileId);
+            var dbFile = fileRepository.GetFileById(content.FileId);
             dbFile.Should().BeNull("Files for content should be deleted");
             return this;
         }

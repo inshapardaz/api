@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
@@ -8,14 +6,9 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
 {
     [TestFixture]
-    public class WhenUpdatingPeriodicalAsReader : TestBase
+    public class WhenUpdatingPeriodicalAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
-
-        public WhenUpdatingPeriodicalAsReader() 
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,15 +20,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbiddenResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbiddenResult() => _response.ShouldBeForbidden();
     }
 }

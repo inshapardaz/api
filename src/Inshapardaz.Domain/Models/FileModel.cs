@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Inshapardaz.Domain.Models;
+﻿namespace Inshapardaz.Domain.Models;
 
 public class FileModel
 {

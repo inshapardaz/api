@@ -1,9 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssueArticleContents
 {
@@ -24,15 +21,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssu
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveUnauthorizedResult()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldHaveUnauthorizedResult() => _response.ShouldBeUnauthorized();
     }
 }

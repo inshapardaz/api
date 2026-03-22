@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
@@ -13,16 +11,11 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.DeleteBookFromBookShelf
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenAddingBookToOtherUsersBookShelf : TestBase
+    public class WhenAddingBookToOtherUsersBookShelf(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private BookDto _book;
         private BookShelfDto _bookShelf;
-
-        public WhenAddingBookToOtherUsersBookShelf(Role role)
-            :base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -40,16 +33,10 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.DeleteBookFromBookShelf
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbiddenResponse()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbiddenResponse() => _response.ShouldBeForbidden();
 
         [Test]
         public void ShouldNotAddBookToBookShelf()

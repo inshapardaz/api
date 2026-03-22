@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using System.Text;
 
 namespace Inshapardaz.Domain.Helpers;
 
 public static class StringExtentions
 {
-    public static string TrimSpecialCharacters(this string input)
-    {
-        return input.Trim(' ', '\'', '"', '[', ']', '(', ')', ',', '۔', '.', '‌', '،');
-    }
+    public static string TrimSpecialCharacters(this string input) => input.Trim(' ', '\'', '"', '[', ']', '(', ')', ',', '۔', '.', '‌', '،');
 
     public static string RemoveMovements(this string input)
     {
@@ -26,15 +20,9 @@ public static class StringExtentions
         return result.ToString();
     }
 
-    public static string[] SplitIntoSentences(this string input)
-    {
-        return input.Split('?', '۔', '.', '\n');
-    }
+    public static string[] SplitIntoSentences(this string input) => input.Split('?', '۔', '.', '\n');
 
-    public static string[] SplitIntoWords(this string input)
-    {
-        return input.Split(' ');
-    }
+    public static string[] SplitIntoWords(this string input) => input.Split(' ');
 
     public static string[] PreserveSpecialCharacters(this string[] input)
     {

@@ -1,8 +1,4 @@
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Dapper;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
@@ -10,18 +6,12 @@ using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library;
 
-public class ArticleRepository : IArticleRepository
+public class ArticleRepository(MySqlConnectionProvider connectionProvider) : IArticleRepository
 {
-    private readonly MySqlConnectionProvider _connectionProvider;
-
-    public ArticleRepository(MySqlConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
     public async Task<ArticleModel> AddArticle(int libraryId, ArticleModel article, int? accountId, CancellationToken cancellationToken)
     {
         int id;
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO Article (LibraryId, `Title`, `Status`, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, `Type`) 
                             VALUES (@LibraryId, @Title, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Type);
@@ -83,7 +73,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task<ArticleContentModel> AddArticleContent(int libraryId, ArticleContentModel content, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Insert Into ArticleContent (ArticleId, `Language`, `Text`, FileId , Layout)
                             VALUES (@ArticleId, @Language, @Text, @FileId, @Layout)";
@@ -96,7 +86,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task DeleteArticle(int libraryId, long articleId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"DELETE FROM Article WHERE LibraryId = @LibraryId AND Id = @Id";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = articleId }, cancellationToken: cancellationToken);
@@ -106,7 +96,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task DeleteArticleContent(int libraryId, long articleId, string language, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"DELETE ac 
                             FROM ArticleContent ac
@@ -124,14 +114,11 @@ public class ArticleRepository : IArticleRepository
         }
     }
 
-    public Task<ArticleModel> GetArticle(int libraryId, long articleId, CancellationToken cancellationToken)
-    {
-        return GetArticleById(libraryId, articleId, null, cancellationToken);
-    }
+    public Task<ArticleModel> GetArticle(int libraryId, long articleId, CancellationToken cancellationToken) => GetArticleById(libraryId, articleId, null, cancellationToken);
 
     public async Task<ArticleContentModel> GetArticleContent(int libraryId, long articleId, string language, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT ac.*
                             FROM ArticleContent ac
@@ -151,7 +138,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task<IEnumerable<ArticleContentModel>> GetArticleContents(int libraryId, long articleId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT ac.*
                             FROM ArticleContent ac
@@ -165,7 +152,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task<Page<ArticleModel>> GetArticles(int libraryId, string query, int pageNumber, int pageSize, int? accountId, ArticleFilter filter, ArticleSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
             var sortByQuery = GetSortByQuery(sortBy, sortDirection, "at");
@@ -253,7 +240,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task<ArticleModel> UpdateArticle(int libraryId, ArticleModel article, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE Article SET
                             `Title` = @Title,
@@ -346,7 +333,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task<ArticleContentModel> UpdateArticleContent(int libraryId, ArticleContentModel content, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE ArticleContent ac
                                 INNER JOIN Article a ON a.Id = ac.ArticleId 
@@ -372,7 +359,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task<ArticleModel> UpdateReviewerAssignment(int libraryId, long articleId, int? accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE Article
                             SET ReviewerAccountId = @ReviewerAccountId, ReviewerAssignTimeStamp = UTC_TIMESTAMP()
@@ -391,7 +378,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task<ArticleModel> UpdateWriterAssignment(int libraryId, long articleId, int? accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPdate Article
                             SET WriterAccountId = @WriterAccountId, WriterAssignTimeStamp = UTC_TIMESTAMP()
@@ -410,7 +397,7 @@ public class ArticleRepository : IArticleRepository
 
     private async Task<ArticleModel> GetArticleById(int libraryId, long articleId, int? accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             ArticleModel article = null;
 
@@ -548,7 +535,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task UpdateArticleImage(int libraryId, long articleId, long imageId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE Article
                             SET ImageId = @ImageId
@@ -560,7 +547,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task AddArticleToFavorites(int libraryId, int? accountId, long articleId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"REPLACE INTO ArticleFavorite (LibraryId, ArticleId, AccountId) VALUES (@LibraryId, @ArticleId, @AccountId)";
             var command = new CommandDefinition(sql, new
@@ -576,7 +563,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task RemoveArticleFromFavorites(int libraryId, int? accountId, long articleId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"DELETE FROM ArticleFavorite WHERE LibraryId = @Libraryid AND ArticleId = @ArticleId AND AccountId = @AccountId";
             var command = new CommandDefinition(sql, new
@@ -592,7 +579,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task<IEnumerable<ArticleModel>> GetAllArticles(int libraryId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT at.*, fl.FilePath AS ImageUrl,
                             CASE WHEN af.ArticleId IS NULL THEN 0 ELSE 1 END AS IsFavorite,

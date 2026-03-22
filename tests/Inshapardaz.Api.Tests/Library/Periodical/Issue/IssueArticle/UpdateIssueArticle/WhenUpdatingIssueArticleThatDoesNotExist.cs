@@ -4,23 +4,15 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssueArticle
 {
     [TestFixture]
-    public class WhenUpdatingIssueArticleThatDoesNotExist
-        : TestBase
+    public class WhenUpdatingIssueArticleThatDoesNotExist() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private IssueArticleAssert _articleAssert;
         private IssueArticleView _newArticle;
-
-        public WhenUpdatingIssueArticleThatDoesNotExist()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -37,28 +29,16 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _articleAssert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _articleAssert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldSaveTheIssue()
-        {
-            _articleAssert.ShouldHaveSavedArticle();
-        }
+        public void ShouldSaveTheIssue() => _articleAssert.ShouldHaveSavedArticle();
 
         [Test]
         public void ShouldHaveCorrectObjectReturned()

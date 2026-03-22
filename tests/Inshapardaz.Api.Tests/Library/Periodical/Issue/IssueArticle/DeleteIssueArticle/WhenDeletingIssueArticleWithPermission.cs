@@ -4,25 +4,17 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssueArticle
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingIssueArticleWithPermission
-        : TestBase
+    public class WhenDeletingIssueArticleWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IssueArticleAssert _assert;
         private IssueArticleDto _expected;
-
-        public WhenDeletingIssueArticleWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,27 +27,15 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssu
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNoContent()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldReturnNoContent() => _response.ShouldBeNoContent();
 
         [Test]
-        public void ShouldHaveDeletedArticle()
-        {
-            _assert.ShouldHaveDeletedArticle(_expected.Id);
-        }
+        public void ShouldHaveDeletedArticle() => _assert.ShouldHaveDeletedArticle(_expected.Id);
 
         [Test]
-        public void ShouldHaveDeletedTheChapterContents()
-        {
-            _assert.ThatContentsAreDeletedForArticle(_expected.Id);
-        }
+        public void ShouldHaveDeletedTheChapterContents() => _assert.ThatContentsAreDeletedForArticle(_expected.Id);
     }
 }

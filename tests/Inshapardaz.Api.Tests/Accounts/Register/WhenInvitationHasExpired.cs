@@ -3,9 +3,6 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using NUnit.Framework;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.Register
 {
@@ -35,9 +32,6 @@ namespace Inshapardaz.Api.Tests.Accounts.Register
         }
 
         [Test]
-        public void ShouldReturnBadRequest()
-        {
-            _response.ShouldBeBadRequest();
-        }
+        public void ShouldReturnBadRequest() => _response.ShouldBeBadRequest();
     }
 }

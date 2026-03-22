@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
@@ -12,15 +10,11 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicalById
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenGettingPeriodicalByIdWithPermission : TestBase
+    public class WhenGettingPeriodicalByIdWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private PeriodicalDto _expected;
         private PeriodicalAssert _assert;
-
-        public WhenGettingPeriodicalByIdWithPermission(Role role) : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -36,57 +30,30 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicalById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
-        public void ShouldHaveImageLink()
-        {
-            _assert.ShouldHaveImageLink();
-        }
+        public void ShouldHaveImageLink() => _assert.ShouldHaveImageLink();
 
         [Test]
-        public void ShouldHaveUpdateLink()
-        {
-            _assert.ShouldHaveUpdateLink();
-        }
+        public void ShouldHaveUpdateLink() => _assert.ShouldHaveUpdateLink();
 
         [Test]
-        public void ShouldHaveDeleteLink()
-        {
-            _assert.ShouldHaveDeleteLink();
-        }
+        public void ShouldHaveDeleteLink() => _assert.ShouldHaveDeleteLink();
 
         [Test]
-        public void ShouldHaveImageUploadLink()
-        {
-            _assert.ShouldHaveImageUpdateLink();
-        }
+        public void ShouldHaveImageUploadLink() => _assert.ShouldHaveImageUpdateLink();
 
         [Test]
-        public void ShouldHaveCreateIssueLink()
-        {
-            _assert.ShouldHaveCreateIssueLink();
-        }
+        public void ShouldHaveCreateIssueLink() => _assert.ShouldHaveCreateIssueLink();
 
         [Test]
-        public void ShouldReturnCorrectPeriodicalData()
-        {
-            _assert.ShouldBeSameAs(_expected, 3);
-        }
+        public void ShouldReturnCorrectPeriodicalData() => _assert.ShouldBeSameAs(_expected, 3);
     }
 }

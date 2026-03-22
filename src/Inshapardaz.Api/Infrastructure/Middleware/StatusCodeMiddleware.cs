@@ -3,22 +3,15 @@ using System.Net;
 
 namespace Inshapardaz.Api.Infrastructure.Middleware;
 
-public class StatusCodeMiddleware
+public class StatusCodeMiddleware(RequestDelegate next, ILogger<StatusCodeMiddleware> logger)
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<StatusCodeMiddleware> _logger;
-
-    public StatusCodeMiddleware(RequestDelegate next, ILogger<StatusCodeMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-    }
+    private readonly ILogger<StatusCodeMiddleware> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task Invoke(HttpContext context)
     {
         try
         {
-            await _next.Invoke(context);
+            await next.Invoke(context);
         }
         catch (UnauthorizedException)
         {

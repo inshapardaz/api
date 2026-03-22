@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Bogus;
+﻿using Bogus;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -15,16 +11,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
 {
     [TestFixture]
-    public class WhenUpdatingArticleWithAdditionalCategories : TestBase
+    public class WhenUpdatingArticleWithAdditionalCategories() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private ArticleView _expected;
         private ArticleAssert _assert;
         private List<CategoryDto> _categoriesToUpdate;
-
-        public WhenUpdatingArticleWithAdditionalCategories() : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -59,33 +51,18 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOKResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOKResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveUpdatedTheArticle()
-        {
-           _assert.ShouldBeSameAs(_expected);
-        }
+        public void ShouldHaveUpdatedTheArticle() => _assert.ShouldBeSameAs(_expected);
 
         [Test]
-        public void ShouldReturnCorrectCategories()
-        {
-            _assert.ShouldBeSameCategories(_categoriesToUpdate);
-        }
+        public void ShouldReturnCorrectCategories() => _assert.ShouldBeSameCategories(_categoriesToUpdate);
 
         [Test]
-        public void ShouldSaveCorrectCategories()
-        {
-            _assert.ShouldHaveCategories(_categoriesToUpdate);
-        }
+        public void ShouldSaveCorrectCategories() => _assert.ShouldHaveCategories(_categoriesToUpdate);
     }
 }

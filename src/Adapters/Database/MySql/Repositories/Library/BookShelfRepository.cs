@@ -3,25 +3,15 @@ using Dapper;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library;
 
-public class BookShelfRepository : IBookShelfRepository
+public class BookShelfRepository(MySqlConnectionProvider connectionProvider) : IBookShelfRepository
 {
-    private readonly MySqlConnectionProvider _connectionProvider;
-
-    public BookShelfRepository(MySqlConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-
     public async Task<BookShelfModel> AddBookShelf(int libraryId, BookShelfModel bookShelf, CancellationToken cancellationToken)
     {
         int bookShelfId;
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO BookShelf(Name, Description, ImageId, LibraryId, IsPublic, AccountId) 
                             VALUES(@Name, @Description, @ImageId, @LibraryId, @IsPublic, @AccountId);
@@ -43,7 +33,7 @@ public class BookShelfRepository : IBookShelfRepository
 
     public async Task UpdateBookShelf(int libraryId, BookShelfModel bookShelf, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE BookShelf SET 
                     Name = @Name, 
@@ -69,7 +59,7 @@ public class BookShelfRepository : IBookShelfRepository
 
     public async Task DeleteBookShelf(int libraryId, int bookshelfId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"DELETE FROM BookShelf WHERE LibraryId = @LibraryId AND Id = @Id";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = bookshelfId }, cancellationToken: cancellationToken);
@@ -79,7 +69,7 @@ public class BookShelfRepository : IBookShelfRepository
 
     public async Task<BookShelfModel> GetBookShelfById(int libraryId, int bookshelfId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT b.Id, b.Name, b.Description, b.IsPublic, b.AccountId, f.Id As ImageId, f.FilePath AS ImageUrl,
                             (SELECT Count(*)
@@ -99,7 +89,7 @@ public class BookShelfRepository : IBookShelfRepository
 
     public async Task<Page<BookShelfModel>> GetBookShelves(int libraryId, bool onlyPublic, int pageNumber, int pageSize, int? accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT b.Id, b.Name, b.Description, b.IsPublic, b.AccountId, f.Id As ImageId, f.FilePath AS ImageUrl,
                             (SELECT Count(*)
@@ -152,7 +142,7 @@ public class BookShelfRepository : IBookShelfRepository
 
     public async Task<Page<BookShelfModel>> FindBookShelves(int libraryId, string query, bool onlyPublic, int pageNumber, int pageSize, int? accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT b.Id, b.Name, b.Description, b.IsPublic, b.AccountId, f.Id As ImageId, f.FilePath AS ImageUrl,
                             (SELECT Count(*)
@@ -209,7 +199,7 @@ public class BookShelfRepository : IBookShelfRepository
 
     public async Task<Page<BookShelfModel>> GetAllBookShelves(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT b.Id, b.Name, b.Description, b.IsPublic, b.AccountId, f.Id As ImageId, f.FilePath AS ImageUrl,
                             (SELECT Count(*)
@@ -253,7 +243,7 @@ public class BookShelfRepository : IBookShelfRepository
 
     public async Task AddBookToBookShelf(int libraryId, int bookshelfId, int bookId, int index = -1, CancellationToken cancellationToken = default)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             if (index < 0)
             {
@@ -274,7 +264,7 @@ public class BookShelfRepository : IBookShelfRepository
 
     public async Task UpdateBookToBookShelf(int libraryId, BookShelfBook bookShelfBook, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE BookShelfBook SET `Index` = @Index 
                             WHERE BookId = @BookId 
@@ -291,7 +281,7 @@ public class BookShelfRepository : IBookShelfRepository
 
     public async Task RemoveBookFromBookShelf(int libraryId, int bookshelfId, int bookId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"DELETE FROM BookShelfBook WHERE BookId = @BookId AND BookShelfId = @BookShelfId";
             var command = new CommandDefinition(sql, new
@@ -305,7 +295,7 @@ public class BookShelfRepository : IBookShelfRepository
 
     public async Task UpdateBookShelfImage(int libraryId, int bookshelfId, long imageId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE BookShelf 
                             SET ImageId = @ImageId 
@@ -318,7 +308,7 @@ public class BookShelfRepository : IBookShelfRepository
 
     public async Task<IEnumerable<BookShelfBook>> GetBookShelfBooks(int libraryId, int bookShelfId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT * FROM BookShelfBook
                             WHERE BookShelfId = @BookShelfId";
@@ -329,7 +319,7 @@ public class BookShelfRepository : IBookShelfRepository
 
     public async Task<BookShelfBook> GetBookFromBookShelfById(int libraryId, int bookShelfId, int bookId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT * FROM BookShelfBook
                             WHERE BookShelfId = @BookShelfId
@@ -341,7 +331,7 @@ public class BookShelfRepository : IBookShelfRepository
     
     private async Task<int> GetBookShelfBookCount(int bookShelfId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT COUNT(*) FROM BookShelfBook
                             WHERE BookShelfId = @BookShelfId";

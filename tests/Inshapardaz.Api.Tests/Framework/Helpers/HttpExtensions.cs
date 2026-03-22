@@ -1,9 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System.IO;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Framework.Helpers
 {
@@ -126,9 +123,6 @@ namespace Inshapardaz.Api.Tests.Framework.Helpers
             return await client.DeleteAsync(url);
         }
 
-        private static string Serialize(object objectToSerialize)
-        {
-            return JsonConvert.SerializeObject(objectToSerialize, new Newtonsoft.Json.Converters.StringEnumConverter());
-        }
+        private static string Serialize(object objectToSerialize) => JsonConvert.SerializeObject(objectToSerialize, new Newtonsoft.Json.Converters.StringEnumConverter());
     }
 }

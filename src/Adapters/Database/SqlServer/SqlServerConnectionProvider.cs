@@ -1,19 +1,14 @@
-﻿using Inshapardaz.Domain.Adapters;
+﻿using System.Data;
+using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Configuration;
-using Microsoft.Extensions.Options;
-using System.Data;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Options;
 
 namespace Inshapardaz.Adapters.Database.SqlServer;
 
-public class SqlServerConnectionProvider : IProvideConnection
+public class SqlServerConnectionProvider(IOptions<Settings> settings) : IProvideConnection
 {
-    private readonly Settings _settings;
-
-    public SqlServerConnectionProvider(IOptions<Settings> settings)
-    {
-        _settings = settings.Value;
-    }
+    private readonly Settings _settings = settings.Value;
 
     public IDbConnection GetConnection() => new SqlConnection(_settings.Database.ConnectionString);
     public IDbConnection GetLibraryConnection() => GetConnection();

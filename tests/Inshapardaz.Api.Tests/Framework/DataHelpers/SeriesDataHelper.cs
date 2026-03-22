@@ -2,9 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -36,18 +34,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
     }
 
 
-    public class MySqlSeriesTestRepository : ISeriesTestRepository
+    public class MySqlSeriesTestRepository(IProvideConnection connectionProvider) : ISeriesTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public MySqlSeriesTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddSeries(SeriesDto series)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var id = connection.ExecuteScalar<int>("INSERT INTO Series (`Name`, `Description`, ImageId, LibraryId) VALUES (@Name, @Description, @ImageId, @LibraryId); SELECT LAST_INSERT_ID();", series);
                 series.Id = id;
@@ -64,7 +55,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteSeries(IEnumerable<SeriesDto> serieses)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Series WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = serieses.Select(a => a.Id) });
@@ -73,7 +64,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public SeriesDto GetSeriesById(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<SeriesDto>("SELECT * FROM Series WHERE Id = @Id", new { Id = id });
             }
@@ -81,7 +72,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public SeriesDto GetSeriesByBook(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<SeriesDto>(@"SELECT s.* FROM Series s
                                 INNER JOIN Book b ON s.Id = b.SeriesId
@@ -91,7 +82,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public int GetBookCountBySeries(int seriesId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<int>(@"SELECT COUNT(*) FROM Series s
                                 INNER JOIN Book b ON s.Id = b.SeriesId
@@ -101,7 +92,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetSeriesImageUrl(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.FilePath from `File` f
                         INNER JOIN Series s ON f.Id = s.ImageId
@@ -112,7 +103,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetSeriesImage(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"Select f.* from `File` f
                         Inner Join Series s ON f.Id = s.ImageId
@@ -122,18 +113,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         }
     }
 
-    public class SqlServerSeriesTestRepository : ISeriesTestRepository
+    public class SqlServerSeriesTestRepository(IProvideConnection connectionProvider) : ISeriesTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public SqlServerSeriesTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddSeries(SeriesDto series)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var id = connection.ExecuteScalar<int>("INSERT INTO Series (Name, [Description], ImageId, LibraryId) OUTPUT Inserted.Id VALUES (@Name, @Description, @ImageId, @LibraryId)", series);
                 series.Id = id;
@@ -150,7 +134,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteSeries(IEnumerable<SeriesDto> serieses)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Series WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = serieses.Select(a => a.Id) });
@@ -159,7 +143,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public SeriesDto GetSeriesById(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<SeriesDto>("SELECT * FROM Series WHERE Id = @Id", new { Id = id });
             }
@@ -167,7 +151,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public SeriesDto GetSeriesByBook(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<SeriesDto>(@"SELECT s.* FROM Series s
                                 INNER JOIN Book b ON s.Id = b.SeriesId
@@ -177,7 +161,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public int GetBookCountBySeries(int seriesId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<int>(@"SELECT COUNT(*) FROM Series s
                                 INNER JOIN Book b ON s.Id = b.SeriesId
@@ -187,7 +171,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetSeriesImageUrl(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.FilePath from [File] f
                         INNER JOIN Series s ON f.Id = s.ImageId
@@ -198,7 +182,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetSeriesImage(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"Select f.* from [File] f
                         Inner Join Series s ON f.Id = s.ImageId
@@ -233,10 +217,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             connection.Execute(sql, new { Ids = serieses.Select(a => a.Id) });
         }
 
-        public static SeriesDto GetSeriesById(this IDbConnection connection, int id)
-        {
-            return connection.QuerySingleOrDefault<SeriesDto>("SELECT * FROM Series WHERE Id = @Id", new { Id = id });
-        }
+        public static SeriesDto GetSeriesById(this IDbConnection connection, int id) => connection.QuerySingleOrDefault<SeriesDto>("SELECT * FROM Series WHERE Id = @Id", new { Id = id });
 
         public static SeriesDto GetSeriesByBook(this IDbConnection connection, int id)
         {

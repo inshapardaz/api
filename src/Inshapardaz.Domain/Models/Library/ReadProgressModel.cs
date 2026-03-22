@@ -1,5 +1,3 @@
-using System;
-
 namespace Inshapardaz.Domain.Models.Library;
 
 public class ReadProgressModel

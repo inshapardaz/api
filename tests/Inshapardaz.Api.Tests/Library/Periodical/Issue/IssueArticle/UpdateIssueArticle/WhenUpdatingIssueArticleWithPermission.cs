@@ -1,12 +1,9 @@
-﻿using System.Linq;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -16,19 +13,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingIssueArticleWithPermission
-        : TestBase
+    public class WhenUpdatingIssueArticleWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IssueArticleAssert _articleAssert;
         private IssueArticleView _newArticle;
         private IssueDto _issue;
         private IssueArticleDto _oldArticle;
-
-        public WhenUpdatingIssueArticleWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -52,16 +43,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOKResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOKResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveReturnedUpdatedArticle()
@@ -78,10 +63,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         }
 
         [Test]
-        public void ShouldHaveUpdatedArticle()
-        {
-            _articleAssert.ShouldHaveSavedArticle();
-        }
+        public void ShouldHaveUpdatedArticle() => _articleAssert.ShouldHaveSavedArticle();
 
         [Test]
         public void ShouldNotHaveUpdatedOtherArticles()

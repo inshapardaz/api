@@ -2,22 +2,12 @@
 using Inshapardaz.Domain.Exception;
 using Paramore.Darker;
 using Paramore.Darker.Attributes;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Query;
 
-public class AuthorizeAdminDecorator<TQuery, TResult> : IQueryHandlerDecorator<TQuery, TResult>
-   where TQuery : IQuery<TResult>
+public class AuthorizeAdminDecorator<TQuery, TResult>(IUserHelper userHelper) : IQueryHandlerDecorator<TQuery, TResult>
+    where TQuery : IQuery<TResult>
 {
-    private readonly IUserHelper _userHelper;
-
-    public AuthorizeAdminDecorator(IUserHelper userHelper)
-    {
-        _userHelper = userHelper;
-    }
-
     public IQueryContext Context { get; set; }
 
     public void InitializeFromAttributeParams(object[] attributeParams)
@@ -35,8 +25,8 @@ public class AuthorizeAdminDecorator<TQuery, TResult> : IQueryHandlerDecorator<T
         Func<TQuery, CancellationToken, Task<TResult>> fallback,
         CancellationToken cancellationToken = default)
     {
-        var account = _userHelper.Account;
-        var isAuthenticated = _userHelper.IsAuthenticated;
+        var account = userHelper.Account;
+        var isAuthenticated = userHelper.IsAuthenticated;
 
         if (!isAuthenticated || !account.IsSuperAdmin)
         {
@@ -48,20 +38,9 @@ public class AuthorizeAdminDecorator<TQuery, TResult> : IQueryHandlerDecorator<T
     }
 }
 
-public sealed class AuthorizeAdminAttribute : QueryHandlerAttribute
+public sealed class AuthorizeAdminAttribute(int step) : QueryHandlerAttribute(step)
 {
-    public AuthorizeAdminAttribute(int step)
-        : base(step)
-    {
-    }
+    public override object[] GetAttributeParams() => Array.Empty<object>();
 
-    public override object[] GetAttributeParams()
-    {
-        return Array.Empty<object>();
-    }
-
-    public override Type GetDecoratorType()
-    {
-        return typeof(AuthorizeAdminDecorator<,>);
-    }
+    public override Type GetDecoratorType() => typeof(AuthorizeAdminDecorator<,>);
 }

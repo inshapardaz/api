@@ -1,25 +1,18 @@
 ﻿using Inshapardaz.Api.Tests;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataBuilders;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tools.Corrections.AddCorrection
 {
     [TestFixture(Role.Reader)]
     [TestFixture(Role.Writer)]
     [TestFixture(Role.LibraryAdmin)]
-    public class WhenAddingCorrectionAsNonAdmin : TestBase
+    public class WhenAddingCorrectionAsNonAdmin(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
 
-        public WhenAddingCorrectionAsNonAdmin(Role role)
-            :base(role)
-        { }
-        
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -29,15 +22,9 @@ namespace Inshapardaz.Api.Tools.Corrections.AddCorrection
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldBeForbidden()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldBeForbidden() => _response.ShouldBeForbidden();
     }
 }

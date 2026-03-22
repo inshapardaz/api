@@ -6,78 +6,59 @@ using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Paramore.Brighter;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Account;
 
-public class RefreshTokenCommand : RequestBase
+public class RefreshTokenCommand(string token) : RequestBase
 {
-    public RefreshTokenCommand(string token)
-    {
-        Token = token;
-    }
-
-    public string Token { get; }
+    public string Token { get; } = token;
 
     public TokenResponse Response { get; set; }
 }
 
-public class RefreshTokenCommandHandler : RequestHandlerAsync<RefreshTokenCommand>
+public class RefreshTokenCommandHandler(
+    IAccountRepository accountRepository,
+    IOptions<Settings> settings,
+    IGenerateToken tokenGenerator,
+    IGetIPAddress ipAddressGetter,
+    ILogger<RefreshTokenCommandHandler> logger)
+    : RequestHandlerAsync<RefreshTokenCommand>
 
 {
-    private readonly IAccountRepository _accountRepository;
-    private readonly Settings _settings;
-    private readonly IGenerateToken _tokenGenerator;
-    private readonly IGetIPAddress _ipAddressGetter;
-    private readonly ILogger<RefreshTokenCommandHandler> _logger;
-
-    public RefreshTokenCommandHandler(IAccountRepository accountRepository,
-        IOptions<Settings> settings,
-        IGenerateToken tokenGenerator,
-        IGetIPAddress ipAddressGetter,
-        ILogger<RefreshTokenCommandHandler> logger)
-    {
-        _accountRepository = accountRepository;
-        _settings = settings.Value;
-        _tokenGenerator = tokenGenerator;
-        _ipAddressGetter = ipAddressGetter;
-        _logger = logger;
-    }
+    private readonly Settings _settings = settings.Value;
 
     public override async Task<RefreshTokenCommand> HandleAsync(RefreshTokenCommand command, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Refreshing token");
+        logger.LogInformation("Refreshing token");
 
         if (command.Token == null)
         {
-            _logger.LogInformation("Refresh token provided is null");
+            logger.LogInformation("Refresh token provided is null");
             throw new BadRequestException();
         }
-        var refreshToken = await _accountRepository.GetRefreshToken(command.Token, cancellationToken);
+        var refreshToken = await accountRepository.GetRefreshToken(command.Token, cancellationToken);
         if (refreshToken == null)
         {
-            _logger.LogInformation("Refresh token provided is invalid/not issued");
+            logger.LogInformation("Refresh token provided is invalid/not issued");
             throw new NotFoundException();
         }
 
-        var account = await _accountRepository.GetAccountById(refreshToken.AccountId, cancellationToken);
+        var account = await accountRepository.GetAccountById(refreshToken.AccountId, cancellationToken);
         if (account == null)
         {
-            _logger.LogInformation("Account related to Refresh token not found");
+            logger.LogInformation("Account related to Refresh token not found");
             throw new NotFoundException();
         }
 
-        var ipAddress = _ipAddressGetter.GetIPAddressFromRequest();
+        var ipAddress = ipAddressGetter.GetIPAddressFromRequest();
 
-        var newRefreshToken = _tokenGenerator.GenerateRefreshToken(ipAddress);
+        var newRefreshToken = tokenGenerator.GenerateRefreshToken(ipAddress);
 
-        await _accountRepository.RevokeRefreshToken(refreshToken.Token, ipAddress, newRefreshToken.Token, cancellationToken);
+        await accountRepository.RevokeRefreshToken(refreshToken.Token, ipAddress, newRefreshToken.Token, cancellationToken);
 
-        await _accountRepository.RemoveOldRefreshTokens(account, _settings.Security.RefreshTokenTTLInDays, cancellationToken);
+        await accountRepository.RemoveOldRefreshTokens(account, _settings.Security.RefreshTokenTTLInDays, cancellationToken);
 
-        var accessToken = _tokenGenerator.GenerateAccessToken(account);
+        var accessToken = tokenGenerator.GenerateAccessToken(account);
 
         var accessTokenExpiry = DateTime.UtcNow.AddMinutes(_settings.Security.AccessTokenTTLInMinutes);
         var refreshTokenExpiry = DateTime.UtcNow.AddMinutes(_settings.Security.RefreshTokenTTLInDays);

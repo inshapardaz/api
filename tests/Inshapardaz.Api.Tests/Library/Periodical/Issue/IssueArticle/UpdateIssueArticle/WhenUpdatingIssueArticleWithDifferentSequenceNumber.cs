@@ -1,26 +1,17 @@
-﻿using System.Linq;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssueArticle
 {
-    public class WhenUpdatingIssueArticleWithDifferentSequenceNumber
-        : TestBase
+    public class WhenUpdatingIssueArticleWithDifferentSequenceNumber() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private IssueArticleAssert _articleAssert;
         private IssueArticleView _newArticle;
-
-        public WhenUpdatingIssueArticleWithDifferentSequenceNumber()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -48,16 +39,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOKResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOKResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveReturnedUpdatedArticle()
@@ -72,9 +57,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         }
 
         [Test]
-        public void ShouldHaveUpdatedArticle()
-        {
-            _articleAssert.ShouldHaveSavedArticle();
-        }
+        public void ShouldHaveUpdatedArticle() => _articleAssert.ShouldHaveSavedArticle();
     }
 }

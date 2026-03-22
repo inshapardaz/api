@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -10,16 +8,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Series.UpdateSeries
 {
     [TestFixture]
-    public class WhenUpdatingSeriesThatDoesNotExist : TestBase
+    public class WhenUpdatingSeriesThatDoesNotExist() : TestBase(Role.LibraryAdmin)
     {
         private HttpResponseMessage _response;
         private SeriesView _series;
         private SeriesAssert _assert;
-
-        public WhenUpdatingSeriesThatDoesNotExist()
-            : base(Role.LibraryAdmin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -31,27 +24,15 @@ namespace Inshapardaz.Api.Tests.Library.Series.UpdateSeries
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldHaveCreatedTheSeries()
-        {
-            _assert.ShouldHaveSavedSeries();
-        }
+        public void ShouldHaveCreatedTheSeries() => _assert.ShouldHaveSavedSeries();
     }
 }

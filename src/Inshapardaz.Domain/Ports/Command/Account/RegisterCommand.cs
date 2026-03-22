@@ -2,9 +2,6 @@
 using Inshapardaz.Domain.Common;
 using Inshapardaz.Domain.Exception;
 using Paramore.Brighter;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Account;
 
@@ -17,16 +14,9 @@ public class RegisterCommand : RequestBase
     public bool AcceptTerms { get; set; }
 }
 
-public class RegisterCommandHandler : RequestHandlerAsync<RegisterCommand>
+public class RegisterCommandHandler(IAccountRepository accountRepository) : RequestHandlerAsync<RegisterCommand>
 
 {
-    private readonly IAccountRepository _accountRepository;
-
-    public RegisterCommandHandler(IAccountRepository accountRepository)
-    {
-        _accountRepository = accountRepository;
-    }
-
     public override async Task<RegisterCommand> HandleAsync(RegisterCommand command, CancellationToken cancellationToken = default)
     {
         if (!command.AcceptTerms)
@@ -34,7 +24,7 @@ public class RegisterCommandHandler : RequestHandlerAsync<RegisterCommand>
             throw new BadRequestException("Terms must be accepted");
         }
 
-        var account = await _accountRepository.GetAccountByInvitationCode(command.InvitationCode, cancellationToken);
+        var account = await accountRepository.GetAccountByInvitationCode(command.InvitationCode, cancellationToken);
 
         if (account == null || account.InvitationCodeExpiry < DateTime.UtcNow)
         {
@@ -49,7 +39,7 @@ public class RegisterCommandHandler : RequestHandlerAsync<RegisterCommand>
         account.InvitationCodeExpiry = null;
         account.AcceptTerms = true;
 
-        await _accountRepository.UpdateAccount(account, cancellationToken);
+        await accountRepository.UpdateAccount(account, cancellationToken);
 
         return await base.HandleAsync(command, cancellationToken);
     }

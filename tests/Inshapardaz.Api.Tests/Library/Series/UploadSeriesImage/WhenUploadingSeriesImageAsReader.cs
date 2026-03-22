@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,17 +7,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
 {
     [TestFixture]
-    public class WhenUploadingSeriesImageAsReader : TestBase
+    public class WhenUploadingSeriesImageAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private SeriesAssert _assert;
         private int _seriesId;
         private byte[] _newImage;
-
-        public WhenUploadingSeriesImageAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,21 +26,12 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbidResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbidResult() => _response.ShouldBeForbidden();
 
         [Test]
-        public void ShouldNotHaveUpdatedSeriesImage()
-        {
-            _assert.ShouldNotHaveUpdatedSeriesImage(_seriesId, _newImage);
-        }
+        public void ShouldNotHaveUpdatedSeriesImage() => _assert.ShouldNotHaveUpdatedSeriesImage(_seriesId, _newImage);
     }
 }

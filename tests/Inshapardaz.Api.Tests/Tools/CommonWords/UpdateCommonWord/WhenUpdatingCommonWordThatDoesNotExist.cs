@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Tools;
@@ -11,18 +9,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Tools.CommonWords.UpdateCommonWord
 {
     [TestFixture]
-    public class WhenUpdatingCommonWordThatDoesNotExist : TestBase
+    public class WhenUpdatingCommonWordThatDoesNotExist() : TestBase(Role.Admin)
     {
         private HttpResponseMessage _response;
         private CommonWordAssert _assert;
         private CommonWordView _commonWord;
         private readonly string _language = RandomData.Locale;
-        
-        public WhenUpdatingCommonWordThatDoesNotExist()
-            :base(Role.Admin)
-        {
-
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -37,16 +29,10 @@ namespace Inshapardaz.Api.Tests.Tools.CommonWords.UpdateCommonWord
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnCreated()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldReturnCreated() => _response.ShouldBeCreated();
 
         [Test]
         public void ShouldHaveCorrectObjectReturned()

@@ -1,20 +1,13 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
 {
     [TestFixture]
-    public class WhenDeletingBookAsReader : TestBase
+    public class WhenDeletingBookAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
-
-        public WhenDeletingBookAsReader() : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -26,15 +19,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbiddenResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbiddenResult() => _response.ShouldBeForbidden();
     }
 }

@@ -6,14 +6,10 @@ using Inshapardaz.Storage.Azure;
 using Inshapardaz.Adapters.Database.SqlServer.Repositories;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
-using System.Net.Http;
 using Inshapardaz.Domain.Models;
 using Microsoft.AspNetCore.TestHost;
-using System;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using MailKit.Net.Smtp;
-using System.IO;
 using Microsoft.Extensions.Configuration;
 using Inshapardaz.Domain.Adapters.Configuration;
 using Inshapardaz.Domain.Adapters;
@@ -192,10 +188,7 @@ namespace Inshapardaz.Api.Tests
                     .AddTransient<SeriesAssert>();
         }
 
-        protected void AuthenticateClientWithToken(string token)
-        {
-            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        }
+        protected void AuthenticateClientWithToken(string token) => Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
         public HttpClient Client { get; }
 

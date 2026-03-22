@@ -10,42 +10,33 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Controllers;
 
-public class CategoryController : Controller
+public class CategoryController(
+    IAmACommandProcessor commandProcessor,
+    IQueryProcessor queryProcessor,
+    IRenderCategory categoryRenderer)
+    : Controller
 {
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRenderCategory _categoryRenderer;
-
-    public CategoryController(IAmACommandProcessor commandProcessor,
-        IQueryProcessor queryProcessor,
-        IRenderCategory categoryRenderer)
-    {
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-        _categoryRenderer = categoryRenderer;
-    }
-
     [HttpGet("libraries/{libraryId}/categories", Name = nameof(CategoryController.GetCategories))]
     public async Task<IActionResult> GetCategories(int libraryId, CancellationToken token = default(CancellationToken))
     {
         var query = new GetCategoriesQuery(libraryId);
-        var categories = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
+        var categories = await queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
-        return new OkObjectResult(_categoryRenderer.Render(categories, libraryId));
+        return new OkObjectResult(categoryRenderer.Render(categories, libraryId));
     }
 
     [HttpGet("libraries/{libraryId}/categories/{categoryId}", Name = nameof(CategoryController.GetCategoryById))]
     public async Task<IActionResult> GetCategoryById(int libraryId, int categoryId, CancellationToken token = default(CancellationToken))
     {
         var query = new GetCategoryByIdQuery(libraryId, categoryId);
-        var category = await _queryProcessor.ExecuteAsync(query, token);
+        var category = await queryProcessor.ExecuteAsync(query, token);
 
         if (category == null)
         {
             return new NotFoundResult();
         }
 
-        return new OkObjectResult(_categoryRenderer.Render(category, libraryId));
+        return new OkObjectResult(categoryRenderer.Render(category, libraryId));
     }
 
     [HttpPost("libraries/{libraryId}/categories", Name = nameof(CategoryController.CreateCategory))]
@@ -57,9 +48,9 @@ public class CategoryController : Controller
         }
 
         var request = new AddCategoryRequest(libraryId, category.Map());
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _categoryRenderer.Render(request.Result, libraryId);
+        var renderResult = categoryRenderer.Render(request.Result, libraryId);
         return new CreatedResult(renderResult.Links.Self(), renderResult);
     }
 
@@ -73,9 +64,9 @@ public class CategoryController : Controller
 
         category.Id = categoryId;
         var request = new UpdateCategoryRequest(libraryId, category.Map());
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _categoryRenderer.Render(request.Result.Category, libraryId);
+        var renderResult = categoryRenderer.Render(request.Result.Category, libraryId);
 
         if (request.Result.HasAddedNew)
         {
@@ -91,7 +82,7 @@ public class CategoryController : Controller
     public async Task<IActionResult> DeleteCategory(int libraryId, int categoryId, CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteCategoryRequest(libraryId, categoryId);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
 }

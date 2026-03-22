@@ -5,26 +5,18 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AddPage
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenAddingIssuePageWithPermission
-        : TestBase
+    public class WhenAddingIssuePageWithPermission(Role role) : TestBase(role)
     {
         private IssueDto _issue;
         private IssuePageView _page;
         private HttpResponseMessage _response;
         private IssuePageAssert _assert;
-
-        public WhenAddingIssuePageWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,28 +30,16 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AddPage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldSavedThePage()
-        {
-            _assert.ShouldHaveSavedPage();
-        }
+        public void ShouldSavedThePage() => _assert.ShouldHaveSavedPage();
 
         [Test]
         public void ShouldHaveCorrectObjectReturned()

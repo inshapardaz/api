@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -11,9 +8,12 @@ using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
-    public class LibraryDataBuilder
+    public class LibraryDataBuilder(
+        IFileStorage fileStorage,
+        IFileTestRepository fileRepository,
+        ILibraryTestRepository libraryRepository)
     {
-        private readonly FakeFileStorage _fileStorage;
+        private readonly FakeFileStorage _fileStorage = fileStorage as FakeFileStorage;
         private List<FileDto> _files = new List<FileDto>();
         private bool _enablePeriodicals;
         private int? _accountId;
@@ -23,18 +23,6 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public LibraryDto Library => Libraries.FirstOrDefault();
 
         public IEnumerable<LibraryDto> Libraries { get; private set; }
-
-        private IFileTestRepository _fileRepository;
-        private ILibraryTestRepository _libraryRepository;
-
-        public LibraryDataBuilder(IFileStorage fileStorage,
-             IFileTestRepository fileRepository,
-             ILibraryTestRepository libraryRepository)
-        {
-            _fileStorage = fileStorage as FakeFileStorage;
-            _fileRepository = fileRepository;
-            _libraryRepository = libraryRepository;
-        }
 
         internal LibraryDataBuilder StartingWith(string startWith)
         {
@@ -77,7 +65,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                      .With(a => a.FilePath, Framework.Helpers.RandomData.FilePath)
                                      .With(a => a.IsPublic, true)
                                      .Create();
-                _fileRepository.AddFile(libraryImage);
+                fileRepository.AddFile(libraryImage);
 
                 _files.Add(libraryImage);
                 _fileStorage.SetupFileContents(libraryImage.FilePath, Framework.Helpers.RandomData.Bytes);
@@ -94,11 +82,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                  .With(l => l.ImageId, libraryImage?.Id)
                                  .CreateMany(count);
 
-            _libraryRepository.AddLibraries(Libraries);
+            libraryRepository.AddLibraries(Libraries);
 
             if (_accountId.HasValue)
             {
-                _libraryRepository.AssignLibrariesToUser(Libraries, _accountId.Value, _role);
+                libraryRepository.AssignLibrariesToUser(Libraries, _accountId.Value, _role);
             }
 
             return Library;
@@ -107,8 +95,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public void CleanUp()
         {
             if (Libraries != null)
-                _libraryRepository.DeleteLibraries(Libraries.Select(l => l.Id));
-            _fileRepository.DeleteFiles(_files);
+                libraryRepository.DeleteLibraries(Libraries.Select(l => l.Id));
+            fileRepository.DeleteFiles(_files);
         }
 
     }

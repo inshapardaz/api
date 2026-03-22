@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -13,16 +11,11 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UpdateBookShelf
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
     [TestFixture(Role.Reader)]
-    public class WhenUpdatingBookShelf : TestBase
+    public class WhenUpdatingBookShelf(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private BookShelfView _expected;
         private BookShelfAssert _assert;
-
-        public WhenUpdatingBookShelf(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -36,21 +29,12 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UpdateBookShelf
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveUpdatedTheBookShelf()
-        {
-            _assert.ShouldHaveSavedBookShelf(Account.Id);
-        }
+        public void ShouldHaveUpdatedTheBookShelf() => _assert.ShouldHaveSavedBookShelf(Account.Id);
     }
 }

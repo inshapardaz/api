@@ -1,9 +1,6 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Adapters;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -23,18 +20,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         int GetBookPageCount(int bookId);
     }
 
-    public class MySqlBookPageTestRepository : IBookPageTestRepository
+    public class MySqlBookPageTestRepository(IProvideConnection connectionProvider) : IBookPageTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public MySqlBookPageTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddBookPage(BookPageDto bookPage)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO BookPage (BookId, ContentId, ChapterId, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
                         VALUES (@BookId, @ContentId, @ChapterId, @SequenceNumber, @ImageId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status);
@@ -54,7 +44,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteBookPages(IEnumerable<BookPageDto> bookPages)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM BookPage WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = bookPages.Select(f => f.Id) });
@@ -63,7 +53,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<BookPageDto> GetBookPages(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT *
                         FROM BookPage
@@ -76,7 +66,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         
         public BookPageDto GetBookPageByNumber(int bookId, int sequenceNumber)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT *
                         FROM BookPage
@@ -89,7 +79,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public BookPageDto GetBookPageById(int bookId, long pageId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT *
                         FROM BookPage
@@ -102,7 +92,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public int GetBookPageCount(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT Count(*)
                         FROM BookPage
@@ -114,18 +104,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         }
     }
 
-    public class SqlServerBookPageTestRepository : IBookPageTestRepository
+    public class SqlServerBookPageTestRepository(IProvideConnection connectionProvider) : IBookPageTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public SqlServerBookPageTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddBookPage(BookPageDto bookPage)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO BookPage (BookId, ContentId, SequenceNumber, ImageId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
                         Output Inserted.Id
@@ -145,7 +128,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteBookPages(IEnumerable<BookPageDto> bookPages)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM BookPage WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = bookPages.Select(f => f.Id) });
@@ -154,7 +137,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public BookPageDto GetBookPageByNumber(int bookId, int sequenceNumber)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT *
                         FROM BookPage
@@ -167,7 +150,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         
         public IEnumerable<BookPageDto> GetBookPages(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT *
                         FROM BookPage
@@ -180,7 +163,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public BookPageDto GetBookPageById(int bookId, long pageId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT *
                         FROM BookPage
@@ -193,7 +176,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public int GetBookPageCount(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT Count(*)
                         FROM BookPage

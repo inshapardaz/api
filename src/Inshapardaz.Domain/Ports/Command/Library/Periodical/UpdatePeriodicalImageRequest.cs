@@ -4,20 +4,12 @@ using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Periodical;
 
-public class UpdatePeriodicalImageRequest : LibraryBaseCommand
+public class UpdatePeriodicalImageRequest(int libraryId, int periodicalId) : LibraryBaseCommand(libraryId)
 {
-    public UpdatePeriodicalImageRequest(int libraryId, int periodicalId)
-        : base(libraryId)
-    {
-        PeriodicalId = periodicalId;
-    }
-
-    public int PeriodicalId { get; }
+    public int PeriodicalId { get; } = periodicalId;
 
     public FileModel Image { get; set; }
 
@@ -31,23 +23,16 @@ public class UpdatePeriodicalImageRequest : LibraryBaseCommand
     }
 }
 
-public class UpdatePeriodicalImageRequestHandler : RequestHandlerAsync<UpdatePeriodicalImageRequest>
+public class UpdatePeriodicalImageRequestHandler(
+    IPeriodicalRepository periodicalRepository,
+    IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<UpdatePeriodicalImageRequest>
 {
-    private readonly IPeriodicalRepository _periodicalRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public UpdatePeriodicalImageRequestHandler(IPeriodicalRepository PeriodicalRepository, 
-        IAmACommandProcessor commandProcessor)
-    {
-        _periodicalRepository = PeriodicalRepository;
-        _commandProcessor = commandProcessor;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
 
     public override async Task<UpdatePeriodicalImageRequest> HandleAsync(UpdatePeriodicalImageRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var periodical = await _periodicalRepository.GetPeriodicalById(command.LibraryId, command.PeriodicalId, cancellationToken);
+        var periodical = await periodicalRepository.GetPeriodicalById(command.LibraryId, command.PeriodicalId, cancellationToken);
 
         if (periodical == null)
         {
@@ -64,13 +49,13 @@ public class UpdatePeriodicalImageRequestHandler : RequestHandlerAsync<UpdatePer
             IsPublic = true
         };
 
-        await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
 
         command.Result.File = saveContentCommand.Result;
 
         if (!periodical.ImageId.HasValue)
         {
-            await _periodicalRepository.UpdatePeriodicalImage(command.LibraryId, periodical.Id, command.Result.File.Id, cancellationToken);
+            await periodicalRepository.UpdatePeriodicalImage(command.LibraryId, periodical.Id, command.Result.File.Id, cancellationToken);
             command.Result.HasAddedNew = true;
         }
 

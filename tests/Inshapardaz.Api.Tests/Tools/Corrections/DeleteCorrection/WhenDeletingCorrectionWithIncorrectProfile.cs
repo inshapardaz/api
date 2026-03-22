@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,16 +7,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Tools.Corrections.DeleteCorrection
 {
     [TestFixture]
-    public class WhenDeletingCorrectionWithIncorrectProfile : TestBase
+    public class WhenDeletingCorrectionWithIncorrectProfile() : TestBase(Role.Admin)
     {
         private HttpResponseMessage _response;
         private CorrectionAssert _assert;
         private CorrectionDto _correction;
-
-        public WhenDeletingCorrectionWithIncorrectProfile() 
-            : base(Role.Admin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -30,21 +23,12 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.DeleteCorrection
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNoContent()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldReturnNoContent() => _response.ShouldBeNoContent();
 
         [Test]
-        public void ShouldHaveDeletedAuthor()
-        {
-            _assert.ShouldNotHaveDeletedCorrection(_correction.Id);
-        }
+        public void ShouldHaveDeletedAuthor() => _assert.ShouldNotHaveDeletedCorrection(_correction.Id);
     }
 }

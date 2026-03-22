@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -10,13 +8,9 @@ namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
 {
     [TestFixture(Role.Reader)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingCategoryWithoutPermission : TestBase
+    public class WhenUpdatingCategoryWithoutPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
-
-        public WhenUpdatingCategoryWithoutPermission(Role role) : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,15 +21,9 @@ namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbiddenResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbiddenResult() => _response.ShouldBeForbidden();
     }
 }

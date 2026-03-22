@@ -4,20 +4,12 @@ using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Author;
 
-public class UpdateAuthorImageRequest : LibraryBaseCommand
+public class UpdateAuthorImageRequest(int libraryId, int authorId) : LibraryBaseCommand(libraryId)
 {
-    public UpdateAuthorImageRequest(int libraryId, int authorId)
-        : base(libraryId)
-    {
-        AuthorId = authorId;
-    }
-
-    public int AuthorId { get; }
+    public int AuthorId { get; } = authorId;
 
     public FileModel Image { get; set; }
 
@@ -31,22 +23,15 @@ public class UpdateAuthorImageRequest : LibraryBaseCommand
     }
 }
 
-public class UpdateAuthorImageRequestHandler : RequestHandlerAsync<UpdateAuthorImageRequest>
+public class UpdateAuthorImageRequestHandler(
+    IAuthorRepository authorRepository,
+    IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<UpdateAuthorImageRequest>
 {
-    private readonly IAuthorRepository _authorRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public UpdateAuthorImageRequestHandler(IAuthorRepository authorRepository, 
-        IAmACommandProcessor commandProcessor)
-    {
-        _authorRepository = authorRepository;
-        _commandProcessor = commandProcessor;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateAuthorImageRequest> HandleAsync(UpdateAuthorImageRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var author = await _authorRepository.GetAuthorById(command.LibraryId, command.AuthorId, cancellationToken);
+        var author = await authorRepository.GetAuthorById(command.LibraryId, command.AuthorId, cancellationToken);
 
         if (author == null)
         {
@@ -63,12 +48,12 @@ public class UpdateAuthorImageRequestHandler : RequestHandlerAsync<UpdateAuthorI
             IsPublic = true
         };
 
-        await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
         command.Result.File = saveContentCommand.Result;
 
         if (!author.ImageId.HasValue)
         {
-            await _authorRepository.UpdateAuthorImage(command.LibraryId, command.AuthorId, command.Result.File.Id, cancellationToken);
+            await authorRepository.UpdateAuthorImage(command.LibraryId, command.AuthorId, command.Result.File.Id, cancellationToken);
             command.Result.HasAddedNew = true;
         }
 

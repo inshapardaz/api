@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
@@ -10,19 +8,13 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssueArticleContents
 {
     [TestFixture]
-    public class WhenUpdatingIssueArticleContentsWhereContentNotPresent
-        : TestBase
+    public class WhenUpdatingIssueArticleContentsWhereContentNotPresent() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private IssueArticleContentAssert _assert;
         private IssueDto _issue;
         private IssueArticleDto _article;
         private string _newContents;
-
-        public WhenUpdatingIssueArticleContentsWhereContentNotPresent()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,40 +30,22 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldHaveSavedArticleContent()
-        {
-            _assert.ShouldHaveSavedArticleContent();
-        }
+        public void ShouldHaveSavedArticleContent() => _assert.ShouldHaveSavedArticleContent();
 
         [Test]
-        public void ShouldHaveTextReturened()
-        {
-            _assert.ShouldHaveText(_newContents);
-        }
+        public void ShouldHaveTextReturened() => _assert.ShouldHaveText(_newContents);
 
         [Test]
-        public void ShouldHaveCorrectContentSaved()
-        {
-            _assert.ShouldHaveSavedCorrectText(_newContents);
-        }
+        public void ShouldHaveCorrectContentSaved() => _assert.ShouldHaveSavedCorrectText(_newContents);
 
         [Test]
         public void ShouldHaveLinks()

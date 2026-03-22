@@ -4,25 +4,17 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenAddingBookPageWithPermission
-        : TestBase
+    public class WhenAddingBookPageWithPermission(Role role) : TestBase(role)
     {
         private BookPageView _page;
         private HttpResponseMessage _response;
         private BookPageAssert _assert;
-
-        public WhenAddingBookPageWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -36,34 +28,19 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldSavedThePage()
-        {
-            _assert.ShouldHaveSavedPage();
-        }
+        public void ShouldSavedThePage() => _assert.ShouldHaveSavedPage();
 
         [Test]
-        public void ShouldHaveCorrectObjectReturned()
-        {
-            _assert.ShouldMatch(_page);
-        }
+        public void ShouldHaveCorrectObjectReturned() => _assert.ShouldMatch(_page);
 
         [Test]
         public void ShouldHaveLinks()
@@ -75,9 +52,6 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
         }
 
         [Test]
-        public void ShouldHaveSavedTheContentFile()
-        {
-            _assert.ShouldHaveBookPageContent(_page.Text);
-        }
+        public void ShouldHaveSavedTheContentFile() => _assert.ShouldHaveBookPageContent(_page.Text);
     }
 }

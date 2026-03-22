@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using FluentMigrator.Infrastructure;
 
 namespace Inshapardaz.Database.Migrations.MySql.Tests

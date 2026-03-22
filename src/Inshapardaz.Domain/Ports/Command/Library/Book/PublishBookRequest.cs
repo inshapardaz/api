@@ -6,69 +6,42 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.Library.Book.Chapter;
 using Paramore.Brighter;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Book;
 
-public class PublishBookRequest : LibraryBaseCommand
+public class PublishBookRequest(int libraryId, int bookId) : LibraryBaseCommand(libraryId)
 {
-    public PublishBookRequest(int libraryId, int bookId) : base(libraryId)
-    {
-        BookId = bookId;
-    }
-
     public string OutputType { get; set; }
     public string Result { get; set; }
-    public int BookId { get; }
+    public int BookId { get; } = bookId;
     public bool OnlyPublishFile { get; set; }
 }
 
-public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
+public class PublishBookRequestHandler(
+    IBookRepository bookRepository,
+    IChapterRepository chapterRepository,
+    IBookPageRepository bookPageRepository,
+    IWriteWordDocument wordDocumentWriter,
+    IFileStorage fileStorage,
+    IFileRepository fileRepository,
+    IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<PublishBookRequest>
 {
-    private readonly IBookRepository _bookRepository;
-    private readonly IChapterRepository _chapterRepository;
-    private readonly IBookPageRepository _bookPageRepository;
-    private readonly IWriteWordDocument _wordDocumentWriter;
-    private readonly IFileStorage _fileStorage;
-    private readonly IFileRepository _fileRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public PublishBookRequestHandler(IBookRepository bookRepository,
-        IChapterRepository chapterRepository,
-        IBookPageRepository bookPageRepository,
-        IWriteWordDocument wordDocumentWriter,
-        IFileStorage fileStorage,
-        IFileRepository fileRepository,
-        IAmACommandProcessor commandProcessor)
-    {
-        _bookRepository = bookRepository;
-        _chapterRepository = chapterRepository;
-        _bookPageRepository = bookPageRepository;
-        _wordDocumentWriter = wordDocumentWriter;
-        _fileStorage = fileStorage;
-        _fileRepository = fileRepository;
-        _commandProcessor = commandProcessor;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin)]
     public override async Task<PublishBookRequest> HandleAsync(PublishBookRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);
+        var book = await bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);
         byte[] bookImage = null;
         if (book.ImageId.HasValue)
         {
-            var file = await _fileRepository.GetFileById(book.ImageId.Value, cancellationToken);
+            var file = await fileRepository.GetFileById(book.ImageId.Value, cancellationToken);
             if (file != null)
             {
-                bookImage = await _fileStorage.GetFile(file.FilePath, cancellationToken);
+                bookImage = await fileStorage.GetFile(file.FilePath, cancellationToken);
             }
         }
-        var chapters = await _chapterRepository.GetChaptersByBook(command.LibraryId, command.BookId, cancellationToken);
+        var chapters = await chapterRepository.GetChaptersByBook(command.LibraryId, command.BookId, cancellationToken);
         var chapterTexts = new Dictionary<string, string>();
 
         foreach (var chapter in chapters)
@@ -76,19 +49,19 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
             if (command.OnlyPublishFile)
             {
                 string finalContent = string.Empty;
-                var chapterContent = await _chapterRepository.GetChapterContent(command.LibraryId, book.Id, chapter.ChapterNumber, book.Language,
+                var chapterContent = await chapterRepository.GetChapterContent(command.LibraryId, book.Id, chapter.ChapterNumber, book.Language,
                     cancellationToken);
                 if (chapterContent != null && chapterContent.FileId.HasValue)
                 {
-                    var file = await _fileRepository.GetFileById(chapterContent.FileId.Value, cancellationToken);
-                    finalContent = await _fileStorage.GetTextFile(file.FilePath, cancellationToken);
+                    var file = await fileRepository.GetFileById(chapterContent.FileId.Value, cancellationToken);
+                    finalContent = await fileStorage.GetTextFile(file.FilePath, cancellationToken);
                 }
                 
                 chapterTexts.Add(chapter.Title, finalContent ?? string.Empty);
             }
             else
             {
-                var pages = await _bookPageRepository.GetPagesByBookChapter(command.LibraryId, command.BookId,
+                var pages = await bookPageRepository.GetPagesByBookChapter(command.LibraryId, command.BookId,
                     chapter.Id, cancellationToken);
                 var finalText = await CombinePages(pages, cancellationToken);
                 chapterTexts.Add(chapter.Title, finalText);
@@ -97,14 +70,14 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
                 {
                     var cmd = new UpdateChapterContentRequest(command.LibraryId, command.BookId, chapter.ChapterNumber,
                         finalText, book.Language);
-                    await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
+                    await commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
                 }
                 else
                 {
                     var cmd = new AddChapterContentRequest(command.LibraryId, command.BookId, chapter.ChapterNumber,
                         finalText, book.Language);
                     ;
-                    await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
+                    await commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
                 }
             }
         }
@@ -112,7 +85,7 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
         byte[] outputFile = null;
         if (command.OutputType == MimeTypes.MsWord)
         {
-            outputFile = _wordDocumentWriter.ConvertMarkdownToWord(chapterTexts.Values);
+            outputFile = wordDocumentWriter.ConvertMarkdownToWord(chapterTexts.Values);
         }
         else if (command.OutputType == MimeTypes.Epub)
         {
@@ -133,12 +106,12 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
             return await base.HandleAsync(command, cancellationToken);
         }
 
-        var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, book.Language, command.OutputType, cancellationToken);
+        var bookContent = await bookRepository.GetBookContent(command.LibraryId, command.BookId, book.Language, command.OutputType, cancellationToken);
 
         if (bookContent == null)
         {
             FileModel file = await SaveFileToStorage(book, outputFile, command.OutputType, cancellationToken);
-            await _bookRepository.AddBookContent(command.BookId, file.Id, book.Language, cancellationToken);
+            await bookRepository.AddBookContent(command.BookId, file.Id, book.Language, cancellationToken);
         }
         else
         {
@@ -163,8 +136,8 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
                 throw new NotSupportedException($"Mime type '{mimeType}' is not supported.");
             
         }
-        var url = await _fileStorage.StoreFile($"books/{book.Id}/{fileName}", contents, mimeType, cancellationToken);
-        var file = await _fileRepository.AddFile(new FileModel
+        var url = await fileStorage.StoreFile($"books/{book.Id}/{fileName}", contents, mimeType, cancellationToken);
+        var file = await fileRepository.AddFile(new FileModel
         {
             FilePath = url,
             MimeType = mimeType,
@@ -177,15 +150,15 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
     private async Task UpdateFileInStorage(BookModel book, long fileId, byte[] file, CancellationToken cancellationToken)
     {
         var fileName = $"{book.Title.ToSafeFilename()}.docx";
-        var existingDocx = await _fileRepository.GetFileById(fileId, cancellationToken);
+        var existingDocx = await fileRepository.GetFileById(fileId, cancellationToken);
         if (existingDocx != null && !string.IsNullOrWhiteSpace(existingDocx.FilePath))
         {
-            await _fileStorage.DeleteFile(existingDocx.FilePath, cancellationToken);
+            await fileStorage.DeleteFile(existingDocx.FilePath, cancellationToken);
         }
 
-        existingDocx.FilePath = await _fileStorage.StoreFile($"books/{book.Id}/{fileName}", file, MimeTypes.MsWord, cancellationToken);
+        existingDocx.FilePath = await fileStorage.StoreFile($"books/{book.Id}/{fileName}", file, MimeTypes.MsWord, cancellationToken);
 
-        await _fileRepository.UpdateFile(existingDocx, cancellationToken);
+        await fileRepository.UpdateFile(existingDocx, cancellationToken);
     }
 
     private char[] pageBreakSymbols = new char[] { '۔', ':', '“', '"', '\'', '!' };
@@ -213,10 +186,10 @@ public class PublishBookRequestHandler : RequestHandlerAsync<PublishBookRequest>
             var separator = " ";
             if (page.ContentId.HasValue)
             {
-                var file = await _fileRepository.GetFileById(page.ContentId.Value, cancellationToken);
+                var file = await fileRepository.GetFileById(page.ContentId.Value, cancellationToken);
                 if (file != null)
                 {
-                    page.Text = await _fileStorage.GetTextFile(file.FilePath, cancellationToken);
+                    page.Text = await fileStorage.GetTextFile(file.FilePath, cancellationToken);
                 }
             }
             var finalText = page.Text.Trim();

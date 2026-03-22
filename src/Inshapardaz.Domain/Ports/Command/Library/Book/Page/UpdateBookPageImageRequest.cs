@@ -1,28 +1,17 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Book.Page;
 
-public class UpdateBookPageImageRequest : LibraryBaseCommand
+public class UpdateBookPageImageRequest(int libraryId, int bookId, int sequenceNumber) : LibraryBaseCommand(libraryId)
 {
-    public UpdateBookPageImageRequest(int libraryId, int bookId, int sequenceNumber)
-        : base(libraryId)
-    {
-        BookId = bookId;
-        SequenceNumber = sequenceNumber;
-    }
+    public int BookId { get; } = bookId;
 
-    public int BookId { get; }
-
-    public int SequenceNumber { get; }
+    public int SequenceNumber { get; } = sequenceNumber;
 
     public FileModel Image { get; set; }
 
@@ -36,22 +25,15 @@ public class UpdateBookPageImageRequest : LibraryBaseCommand
     }
 }
 
-public class UpdateBookPageImageRequestHandler : RequestHandlerAsync<UpdateBookPageImageRequest>
+public class UpdateBookPageImageRequestHandler(
+    IBookPageRepository bookPageRepository,
+    IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<UpdateBookPageImageRequest>
 {
-    private readonly IBookPageRepository _bookPageRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public UpdateBookPageImageRequestHandler(IBookPageRepository bookPageRepository, 
-        IAmACommandProcessor commandProcessor)
-    {
-        _bookPageRepository = bookPageRepository;
-        _commandProcessor = commandProcessor;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateBookPageImageRequest> HandleAsync(UpdateBookPageImageRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var bookPage = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.SequenceNumber, cancellationToken);
+        var bookPage = await bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.SequenceNumber, cancellationToken);
 
         if (bookPage == null)
         {
@@ -67,10 +49,10 @@ public class UpdateBookPageImageRequestHandler : RequestHandlerAsync<UpdateBookP
             ExistingFileId = bookPage.ImageId
         };
 
-        await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
         command.Image = saveContentCommand.Result;
 
-        await _bookPageRepository.UpdatePageImage(command.LibraryId, command.BookId, command.SequenceNumber, saveContentCommand.Result.Id, cancellationToken);
+        await bookPageRepository.UpdatePageImage(command.LibraryId, command.BookId, command.SequenceNumber, saveContentCommand.Result.Id, cancellationToken);
         command.Result.File = saveContentCommand.Result;
         command.Result.HasAddedNew = !bookPage.ImageId.HasValue;
 

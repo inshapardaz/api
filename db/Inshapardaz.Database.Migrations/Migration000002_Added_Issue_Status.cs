@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data;
-using FluentMigrator;
+﻿using FluentMigrator;
 
 namespace Inshapardaz.Database.Migrations
 {

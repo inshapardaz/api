@@ -5,14 +5,11 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
 {
     [TestFixture]
-    public class WhenUpdatingBookContentWithDifferentLanguage
-        : TestBase
+    public class WhenUpdatingBookContentWithDifferentLanguage() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private string _newLanguage = RandomData.Locale;
@@ -21,11 +18,6 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         private BookContentDto _content;
         private byte[] _contents;
         private BookContentAssert _assert;
-
-        public WhenUpdatingBookContentWithDifferentLanguage()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -41,16 +33,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveCorrectLink()
@@ -62,21 +48,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         }
 
         [Test]
-        public void ShouldHaveCorrectLanguage()
-        {
-            _assert.ShouldHaveCorrectLanguage(_newLanguage);
-        }
+        public void ShouldHaveCorrectLanguage() => _assert.ShouldHaveCorrectLanguage(_newLanguage);
 
         [Test]
-        public void ShouldHaveCorrectMimeType()
-        {
-            _assert.ShouldHaveCorrectMimeType(_content.MimeType);
-        }
+        public void ShouldHaveCorrectMimeType() => _assert.ShouldHaveCorrectMimeType(_content.MimeType);
 
         [Test]
-        public void ShouldHaceCorrectContentSaved()
-        {
-            _assert.ShouldHaveBookContent(_contents, _fileName);
-        }
+        public void ShouldHaceCorrectContentSaved() => _assert.ShouldHaveBookContent(_contents, _fileName);
     }
 }

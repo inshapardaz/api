@@ -2,10 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using Namotion.Reflection;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -21,18 +18,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         void UpdatePeriodical(PeriodicalDto periodical);
     }
 
-    public class MySqlPeriodicalTestRepository : IPeriodicalTestRepository
+    public class MySqlPeriodicalTestRepository(IProvideConnection connectionProvider) : IPeriodicalTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public MySqlPeriodicalTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddPeriodical(PeriodicalDto periodical)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO Periodical (Title, `Description`, `Language`, ImageId, LibraryId, Frequency) 
                     VALUES (@Title, @Description, @Language, @ImageId, @LibraryId, @Frequency);
@@ -44,7 +34,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         
         public void UpdatePeriodical(PeriodicalDto periodical)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"UPDATE Periodical SET 
                                 Title = @Title, 
@@ -69,7 +59,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         public void DeletePeriodicals(IEnumerable<PeriodicalDto> periodicals)
         {
             if (periodicals is null) return;
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Periodical WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = periodicals.Select(a => a.Id) });
@@ -78,7 +68,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeletePeriodical(int periodicalId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Periodical WHERE Id = @Id";
                 connection.Execute(sql, new { Id = periodicalId });
@@ -87,7 +77,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public PeriodicalDto GetPeriodicalById(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<PeriodicalDto>("SELECT * FROM Periodical WHERE Id = @Id", new { Id = id });
             }
@@ -95,7 +85,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetPeriodicalImageUrl(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.FilePath FROM `File` f
                         INNER JOIN Periodical p ON f.Id = p.ImageId
@@ -106,7 +96,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetPeriodicalImage(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.* FROM `File` f
                     INNER JOIN Periodical p ON f.Id = p.ImageId
@@ -116,18 +106,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         }
     }
 
-    public class SqlServerPeriodicalTestRepository : IPeriodicalTestRepository
+    public class SqlServerPeriodicalTestRepository(IProvideConnection connectionProvider) : IPeriodicalTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public SqlServerPeriodicalTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddPeriodical(PeriodicalDto periodical)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO Periodical (Title, [Description], Language, ImageId, LibraryId, Frequency) 
                     OUTPUT Inserted.Id 
@@ -139,7 +122,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void UpdatePeriodical(PeriodicalDto periodical)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"UPDATE Periodical SET 
                                 Title = @Title, 
@@ -163,7 +146,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeletePeriodicals(IEnumerable<PeriodicalDto> periodicals)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Periodical WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = periodicals.Select(a => a.Id) });
@@ -172,7 +155,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeletePeriodical(int periodicalId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Periodical WHERE Id = @Id";
                 connection.Execute(sql, new { Id = periodicalId });
@@ -181,7 +164,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public PeriodicalDto GetPeriodicalById(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<PeriodicalDto>("SELECT * FROM Periodical WHERE Id = @Id", new { Id = id });
             }
@@ -189,7 +172,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetPeriodicalImageUrl(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.FilePath FROM [File] f
                         INNER JOIN Periodical p ON f.Id = p.ImageId
@@ -200,7 +183,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetPeriodicalImage(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.* FROM [File] f
                     INNER JOIN Periodical p ON f.Id = p.ImageId
@@ -247,10 +230,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             connection.Execute(sql, new { Id = periodicalId });
         }
 
-        public static PeriodicalDto GetPeriodicalById(this IDbConnection connection, int id)
-        {
-            return connection.QuerySingleOrDefault<PeriodicalDto>("SELECT * FROM Periodical WHERE Id = @Id", new { Id = id });
-        }
+        public static PeriodicalDto GetPeriodicalById(this IDbConnection connection, int id) => connection.QuerySingleOrDefault<PeriodicalDto>("SELECT * FROM Periodical WHERE Id = @Id", new { Id = id });
 
         public static string GetPeriodicalImageUrl(this IDbConnection connection, int id)
         {

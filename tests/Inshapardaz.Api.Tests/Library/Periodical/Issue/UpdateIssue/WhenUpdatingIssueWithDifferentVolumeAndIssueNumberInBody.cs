@@ -5,24 +5,16 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Inshapardaz.Api.Extensions;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
 {
-    public class WhenUpdatingIssueWithDifferentVolumeAndIssueNumberInBody
-        : TestBase
+    public class WhenUpdatingIssueWithDifferentVolumeAndIssueNumberInBody() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private IssueView _newIssue;
         private IssueDto _oldIssue;
         private IssueAssert _assert;
-
-        public WhenUpdatingIssueWithDifferentVolumeAndIssueNumberInBody()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -42,16 +34,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOKResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOKResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveReturnedUpdatedChapter()
@@ -69,9 +55,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
         }
 
         [Test]
-        public void ShouldHaveUpdatedChapter()
-        {
-            _assert.ShouldHaveSavedIssue();
-        }
+        public void ShouldHaveUpdatedChapter() => _assert.ShouldHaveSavedIssue();
     }
 }

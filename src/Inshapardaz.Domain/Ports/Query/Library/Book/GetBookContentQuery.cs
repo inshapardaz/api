@@ -4,46 +4,34 @@ using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Darker;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Book;
 
-public class GetBookContentQuery : LibraryBaseQuery<BookContentModel>
+public class GetBookContentQuery(
+    int libraryId,
+    int bookId,
+    int contentId,
+    string language,
+    string mimeType,
+    int? accountId)
+    : LibraryBaseQuery<BookContentModel>(libraryId)
 {
-    public GetBookContentQuery(int libraryId, int bookId, int contentId, string language, string mimeType, int? accountId)
-        : base(libraryId)
-    {
-        BookId = bookId;
-        ContentId = contentId;
-        MimeType = mimeType;
-        AccountId = accountId;
-        Language = language;
-    }
-
-    public int BookId { get; set; }
-    public int ContentId { get; }
-    public string MimeType { get; set; }
-    public int? AccountId { get; }
-    public string Language { get; set; }
+    public int BookId { get; set; } = bookId;
+    public int ContentId { get; } = contentId;
+    public string MimeType { get; set; } = mimeType;
+    public int? AccountId { get; } = accountId;
+    public string Language { get; set; } = language;
 }
 
-public class GetBookContentQueryHandler : QueryHandlerAsync<GetBookContentQuery, BookContentModel>
+public class GetBookContentQueryHandler(
+    ILibraryRepository libraryRepository,
+    IBookRepository bookRepository,
+    IFileRepository fileRepository)
+    : QueryHandlerAsync<GetBookContentQuery, BookContentModel>
 {
-    private readonly ILibraryRepository _libraryRepository;
-    private readonly IBookRepository _bookRepository;
-    private readonly IFileRepository _fileRepository;
-
-    public GetBookContentQueryHandler(ILibraryRepository libraryRepository, IBookRepository bookRepository, IFileRepository fileRepository)
-    {
-        _libraryRepository = libraryRepository;
-        _bookRepository = bookRepository;
-        _fileRepository = fileRepository;
-    }
-
     public override async Task<BookContentModel> ExecuteAsync(GetBookContentQuery command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);
+        var book = await bookRepository.GetBookById(command.LibraryId, command.BookId, null, cancellationToken);
         if (book == null)
         {
             throw new NotFoundException();
@@ -56,7 +44,7 @@ public class GetBookContentQueryHandler : QueryHandlerAsync<GetBookContentQuery,
 
         if (string.IsNullOrWhiteSpace(command.Language))
         {
-            var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
+            var library = await libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
             if (library == null)
             {
                 throw new BadRequestException();
@@ -65,12 +53,12 @@ public class GetBookContentQueryHandler : QueryHandlerAsync<GetBookContentQuery,
             command.Language = library.Language;
         }
 
-        var bookContent = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
+        var bookContent = await bookRepository.GetBookContent(command.LibraryId, command.BookId, command.ContentId, cancellationToken);
         if (bookContent != null)
         {
             if (command.AccountId.HasValue)
             {
-                await _bookRepository.AddRecentBook(command.LibraryId, command.AccountId.Value, command.BookId, new ReadProgressModel()
+                await bookRepository.AddRecentBook(command.LibraryId, command.AccountId.Value, command.BookId, new ReadProgressModel()
                 {
                     ProgressType = ProgressType.File,
                     ProgressId = command.ContentId,
@@ -81,7 +69,7 @@ public class GetBookContentQueryHandler : QueryHandlerAsync<GetBookContentQuery,
 
             if (book.IsPublic)
             {
-                bookContent.ContentUrl = await ImageHelper.TryConvertToPublicFile(bookContent.FileId, _fileRepository, cancellationToken);
+                bookContent.ContentUrl = await ImageHelper.TryConvertToPublicFile(bookContent.FileId, fileRepository, cancellationToken);
             }
         }
 

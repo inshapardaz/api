@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,16 +8,11 @@ namespace Inshapardaz.Api.Tests.Library.UploadLibraryImage
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
-    public class WhenUploadingLibraryImage : TestBase
+    public class WhenUploadingLibraryImage(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private LibraryAssert _assert;
         private byte[] _newImage;
-
-        public WhenUploadingLibraryImage(Role Role)
-            : base(Role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -31,21 +24,12 @@ namespace Inshapardaz.Api.Tests.Library.UploadLibraryImage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveUpdatedImage()
-        {
-            _assert.ShouldHaveUpdatedImage(LibraryId, _newImage);
-        }
+        public void ShouldHaveUpdatedImage() => _assert.ShouldHaveUpdatedImage(LibraryId, _newImage);
     }
 }

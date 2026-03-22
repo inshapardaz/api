@@ -2,20 +2,12 @@
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Series;
 
-public class UpdateSeriesRequest : LibraryBaseCommand
+public class UpdateSeriesRequest(int libraryId, SeriesModel series) : LibraryBaseCommand(libraryId)
 {
-    public UpdateSeriesRequest(int libraryId, SeriesModel series)
-        : base(libraryId)
-    {
-        Series = series;
-    }
-
-    public SeriesModel Series { get; }
+    public SeriesModel Series { get; } = series;
 
     public UpdateSeriesResult Result { get; } = new UpdateSeriesResult();
 
@@ -27,24 +19,17 @@ public class UpdateSeriesRequest : LibraryBaseCommand
     }
 }
 
-public class UpdateSeriesRequestHandler : RequestHandlerAsync<UpdateSeriesRequest>
+public class UpdateSeriesRequestHandler(ISeriesRepository seriesRepository) : RequestHandlerAsync<UpdateSeriesRequest>
 {
-    private readonly ISeriesRepository _seriesRepository;
-
-    public UpdateSeriesRequestHandler(ISeriesRepository seriesRepository)
-    {
-        _seriesRepository = seriesRepository;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateSeriesRequest> HandleAsync(UpdateSeriesRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var result = await _seriesRepository.GetSeriesById(command.LibraryId, command.Series.Id, cancellationToken);
+        var result = await seriesRepository.GetSeriesById(command.LibraryId, command.Series.Id, cancellationToken);
 
         if (result == null)
         {
             command.Series.Id = default;
-            var newSeries = await _seriesRepository.AddSeries(command.LibraryId, command.Series, cancellationToken);
+            var newSeries = await seriesRepository.AddSeries(command.LibraryId, command.Series, cancellationToken);
             command.Result.HasAddedNew = true;
             command.Result.Series = newSeries;
         }
@@ -52,7 +37,7 @@ public class UpdateSeriesRequestHandler : RequestHandlerAsync<UpdateSeriesReques
         {
             result.Name = command.Series.Name;
             result.Description = command.Series.Description;
-            await _seriesRepository.UpdateSeries(command.LibraryId, result, cancellationToken);
+            await seriesRepository.UpdateSeries(command.LibraryId, result, cancellationToken);
             command.Result.Series = command.Series;
         }
 

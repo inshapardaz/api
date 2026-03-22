@@ -4,22 +4,15 @@ using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
 {
     [TestFixture]
-    public class WhenUpdatingLibraryThatDoesNotExist : TestBase
+    public class WhenUpdatingLibraryThatDoesNotExist() : TestBase(Role.Admin, createLibrary: false)
     {
         private HttpResponseMessage _response;
         private LibraryView _expectedLibrary;
         private LibraryAssert _assert;
-
-        public WhenUpdatingLibraryThatDoesNotExist()
-            : base(Role.Admin, createLibrary: false)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -32,28 +25,16 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldHaveCreatedLibraryInDataStore()
-        {
-            _assert.ShouldHaveUpdatedLibrary();
-        }
+        public void ShouldHaveCreatedLibraryInDataStore() => _assert.ShouldHaveUpdatedLibrary();
 
         [Test]
         public void ShouldHaveLinks()

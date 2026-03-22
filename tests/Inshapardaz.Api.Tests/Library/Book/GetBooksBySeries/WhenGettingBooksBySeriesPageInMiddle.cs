@@ -4,26 +4,16 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetBooksBySeries
 {
     [TestFixture]
-    public class WhenGettingBooksBySeriesPageInMiddle
-        : TestBase
+    public class WhenGettingBooksBySeriesPageInMiddle() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<BookView> _assert;
         private SeriesDto _series;
         private IEnumerable<BookDto> _SeriesBooks;
-
-        public WhenGettingBooksBySeriesPageInMiddle()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -37,16 +27,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksBySeries
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -56,10 +40,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksBySeries
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
 
         [Test]
         public void ShouldHaveNextLink()

@@ -3,20 +3,14 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.ChangePassword
 {
     [TestFixture]
-    public class WhenOldPasswordIsIncorrect : TestBase
+    public class WhenOldPasswordIsIncorrect() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private string _password;
-
-        public WhenOldPasswordIsIncorrect() : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -32,10 +26,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ChangePassword
         }
 
         [Test]
-        public void ShouldReturnBadRequest()
-        {
-            _response.ShouldBeBadRequest();
-        }
+        public void ShouldReturnBadRequest() => _response.ShouldBeBadRequest();
 
         [Test]
         public async Task ShouldNotBeAbleToAuthenticateWithNewPassword()

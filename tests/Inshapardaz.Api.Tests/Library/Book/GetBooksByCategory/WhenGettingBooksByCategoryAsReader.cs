@@ -4,26 +4,17 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
 {
     [TestFixture]
-    public class WhenGettingBooksByCategoryAsReader
-        : TestBase
+    public class WhenGettingBooksByCategoryAsReader() : TestBase(Role.Reader)
 
     {
         private HttpResponseMessage _response;
         private PagingAssert<BookView> _assert;
         private CategoryDto _category;
         private IEnumerable<BookDto> _categoryBooks;
-
-        public WhenGettingBooksByCategoryAsReader() : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,40 +29,22 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByCategory
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books");
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books");
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
 
         [Test]
-        public void ShouldNotHaveNextLink()
-        {
-            _assert.ShouldNotHaveNextLink();
-        }
+        public void ShouldNotHaveNextLink() => _assert.ShouldNotHaveNextLink();
 
         [Test]
-        public void ShouldNotHavePreviousLink()
-        {
-            _assert.ShouldNotHavePreviousLink();
-        }
+        public void ShouldNotHavePreviousLink() => _assert.ShouldNotHavePreviousLink();
 
         [Test]
         public void ShouldReturnCorrectPage()

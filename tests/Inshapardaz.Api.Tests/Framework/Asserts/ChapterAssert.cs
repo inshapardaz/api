@@ -5,27 +5,14 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class ChapterAssert
+    public class ChapterAssert(IChapterTestRepository chapterRepository, FakeFileStorage fileStorage)
     {
         private HttpResponseMessage _response;
         private int _libraryId;
         private ChapterView _chapter;
-
-        private readonly IChapterTestRepository _chapterRepository;
-        private readonly FakeFileStorage _fileStorage;
-
-        public ChapterAssert(IChapterTestRepository chapterRepository, FakeFileStorage fileStorage)
-        {
-            _fileStorage = fileStorage;
-            _chapterRepository = chapterRepository;
-        }
 
         public ChapterAssert ForView(ChapterView view)
         {
@@ -72,7 +59,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ChapterAssert ShouldBeSavedAssignmentForWriting(AccountDto account)
         {
-            var dbChapter = _chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            var dbChapter = chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
             dbChapter.WriterAccountId.Should().Be(account.Id);
             dbChapter.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
@@ -80,7 +67,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ChapterAssert ShouldBeSavedNoAssignmentForWriting()
         {
-            var dbChapter = _chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            var dbChapter = chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
             dbChapter.WriterAccountId.Should().BeNull();
             dbChapter.WriterAssignTimeStamp.Should().BeNull();
             return this;
@@ -104,7 +91,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ChapterAssert ShouldBeSavedAssignmentForReviewing(AccountDto account)
         {
-            var dbChapter = _chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            var dbChapter = chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
             dbChapter.ReviewerAccountId.Should().Be(account.Id);
             dbChapter.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
@@ -112,7 +99,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ChapterAssert ShouldBeSavedNoAssignmentForReviewing()
         {
-            var dbChapter = _chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            var dbChapter = chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
             dbChapter.ReviewerAccountId.Should().BeNull();
             dbChapter.ReviewerAssignTimeStamp.Should().BeNull();
             return this;
@@ -120,7 +107,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ChapterAssert ShouldHaveSavedChapter()
         {
-            var dbChapter = _chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
+            var dbChapter = chapterRepository.GetChapterByBookAndChapter(_chapter.BookId, _chapter.Id);
             dbChapter.Should().NotBeNull();
             _chapter.Title.Should().Be(dbChapter.Title);
             _chapter.BookId.Should().Be(dbChapter.BookId);
@@ -150,19 +137,19 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ChapterAssert ShouldHaveDeletedChapter(int chapterId)
         {
-            var chapter = _chapterRepository.GetChapterById(chapterId);
+            var chapter = chapterRepository.GetChapterById(chapterId);
             chapter.Should().BeNull();
             return this;
         }
 
         public ChapterAssert ThatContentsAreDeletedForChapter(int chapterId, IEnumerable<string> filePaths)
         {
-            var contents = _chapterRepository.GetContentByChapter(chapterId);
+            var contents = chapterRepository.GetContentByChapter(chapterId);
             contents.Should().BeNullOrEmpty();
 
             foreach (var filePath in filePaths)
             {
-                _fileStorage.DoesFileExists(filePath).Should().BeFalse();
+                fileStorage.DoesFileExists(filePath).Should().BeFalse();
             }
             return this;
         }
@@ -234,7 +221,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ChapterAssert ShouldHaveCorrectContents()
         {
-            var contents = _chapterRepository.GetContentByChapter(_chapter.Id);
+            var contents = chapterRepository.GetContentByChapter(_chapter.Id);
 
             contents.Should().HaveSameCount(_chapter.Contents);
 

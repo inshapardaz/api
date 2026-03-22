@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
@@ -10,16 +8,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.BookShelf.UpdateBookInBookShelf
 {
     [TestFixture]
-    public class WhenUpdatingBookInBookShelf : TestBase
+    public class WhenUpdatingBookInBookShelf() : TestBase(Domain.Models.Role.Reader)
     {
         private HttpResponseMessage _response;
         private BookDto _book;
         private BookShelfDto _bookShelf;
         private int ExpectedIndex = RandomData.Number;
-        public WhenUpdatingBookInBookShelf()
-            :base(Domain.Models.Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -37,16 +31,10 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UpdateBookInBookShelf
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldUpdateBookInBookShelf()

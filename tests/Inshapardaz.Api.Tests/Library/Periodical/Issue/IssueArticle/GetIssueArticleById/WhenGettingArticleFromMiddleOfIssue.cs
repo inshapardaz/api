@@ -3,24 +3,15 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueArticleById
 {
     [TestFixture]
-    public class WhenGettingArticleFromMiddleOfIssue
-        : TestBase
+    public class WhenGettingArticleFromMiddleOfIssue() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private IssueArticleDto _expected;
         private IssueArticleAssert _assert;
-
-        public WhenGettingArticleFromMiddleOfIssue()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -34,16 +25,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveCorrectObjectReturned()
@@ -61,15 +46,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [Test]
-        public void ShouldHavePreviousLink()
-        {
-            _assert.ShouldHavePreviousLink(_expected.SequenceNumber - 1);
-        }
+        public void ShouldHavePreviousLink() => _assert.ShouldHavePreviousLink(_expected.SequenceNumber - 1);
 
         [Test]
-        public void ShouldHaveNextLink()
-        {
-            _assert.ShouldHaveNextLink(_expected.SequenceNumber + 1);
-        }
+        public void ShouldHaveNextLink() => _assert.ShouldHaveNextLink(_expected.SequenceNumber + 1);
     }
 }

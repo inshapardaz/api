@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -11,14 +8,10 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
 {
     [TestFixture]
-    public class WhenGettingArticlesReadbyMultipleUsers : TestBase
+    public class WhenGettingArticlesReadbyMultipleUsers() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<ArticleView> _assert;
-
-        public WhenGettingArticlesReadbyMultipleUsers() : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -41,34 +34,19 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/articles", 1, 12);
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/articles", 1, 12);
 
         [Test]
-        public void ShouldHaveNextLink()
-        {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/articles", 2, 12);
-        }
+        public void ShouldHaveNextLink() => _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/articles", 2, 12);
 
         [Test]
-        public void ShouldNotHavePreviousLink()
-        {
-            _assert.ShouldNotHavePreviousLink();
-        }
+        public void ShouldNotHavePreviousLink() => _assert.ShouldNotHavePreviousLink();
 
         [Test]
         public void ShouldReturnExpectedArticles()
@@ -87,8 +65,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
                             .ShouldHavePublicImageLink()
                             .ShouldHaveRemoveFavoriteLink()
                             .ShouldHaveContents(
-                                ArticleBuilder.Contents.Where(c => c.ArticleId == actual.Id).ToList(),
-                                false)
+                                ArticleBuilder.Contents.Where(c => c.ArticleId == actual.Id).ToList())
                             .ShouldBeSameAs(expected);
             }
         }

@@ -2,10 +2,6 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapterSequence
 {
@@ -28,15 +24,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapterSequence
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveUnauthorizedResult()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldHaveUnauthorizedResult() => _response.ShouldBeUnauthorized();
     }
 }

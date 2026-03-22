@@ -7,19 +7,13 @@ using Inshapardaz.Storage.S3;
 
 namespace Inshapardaz.LibraryMigrator;
 
-public class Migrator
+public class Migrator(string source, DatabaseTypes sourceType, string destination, DatabaseTypes destinationType)
 {
-    RepositoryFactory SourceRepositoryFactory { get; }
-    RepositoryFactory DestinationRepositoryFactory { get; }
+    RepositoryFactory SourceRepositoryFactory { get; } = new(source, sourceType);
+    RepositoryFactory DestinationRepositoryFactory { get; } = new(destination, destinationType);
 
     private readonly bool _writeTextToDatabase = true;
     IFileStorage _fileStore;
-
-    public Migrator(string source, DatabaseTypes sourceType, string destination, DatabaseTypes destinationType)
-    {
-        SourceRepositoryFactory = new RepositoryFactory(source, sourceType);
-        DestinationRepositoryFactory = new RepositoryFactory(destination, destinationType);
-    }
 
     public async Task Migrate(int libraryId, bool correctionsOnly, bool production, CancellationToken cancellationToken)
     {

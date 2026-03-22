@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
@@ -9,14 +7,9 @@ namespace Inshapardaz.Api.Tests.Library.Author.DeleteAuthor
 {
     [TestFixture(Role.Reader)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingAuthorAsNonAdmin : TestBase
+    public class WhenDeletingAuthorAsNonAdmin(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
-
-        public WhenDeletingAuthorAsNonAdmin(Role Role)
-            : base(Role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -28,15 +21,9 @@ namespace Inshapardaz.Api.Tests.Library.Author.DeleteAuthor
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbiddenResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbiddenResult() => _response.ShouldBeForbidden();
     }
 }

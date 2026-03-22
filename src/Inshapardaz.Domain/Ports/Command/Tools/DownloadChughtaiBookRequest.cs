@@ -1,5 +1,4 @@
-﻿using System;
-using Inshapardaz.Domain.Adapters.Configuration;
+﻿using Inshapardaz.Domain.Adapters.Configuration;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Helpers;
@@ -9,27 +8,16 @@ using Inshapardaz.Domain.Ports.Command.Library.Book;
 using Inshapardaz.Domain.Ports.Command.Library.Book.Page;
 using Microsoft.Extensions.Options;
 using Paramore.Brighter;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Chughtai.Downloader.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Inshapardaz.Domain.Ports.Command.Tools;
 
-public class DownloadChughtaiBookRequest : RequestBase
+public class DownloadChughtaiBookRequest(string url, string sessionId) : RequestBase
 {
-    public DownloadChughtaiBookRequest(string url, string sessionId)
-    {
-        Url = url;
-        SessionId = sessionId;
-    }
-
-    public string Url { get; }
-    public string SessionId { get; }
+    public string Url { get; } = url;
+    public string SessionId { get; } = sessionId;
 
     public bool CreatePdf { get; set; }
 
@@ -45,52 +33,34 @@ public class DownloadChughtaiBookRequest : RequestBase
     }
 }
 
-public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadChughtaiBookRequest>
+public class DownloadChughtaiBookRequestHandler(
+    IAmACommandProcessor commandProcessor,
+    IOptions<Settings> settings,
+    IBookRepository bookRepository,
+    IBookPageRepository bookPageRepository,
+    IFileRepository fileRepository,
+    IFileStorage fileStorage,
+    IAuthorRepository authorRepository,
+    ILogger<DownloadChughtaiBookRequestHandler> logger)
+    : RequestHandlerAsync<DownloadChughtaiBookRequest>
 {
-    private readonly IBookRepository _bookRepository;
-    private readonly IBookPageRepository _bookPageRepository;
-    private readonly IAuthorRepository _authorRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly Settings _settings;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
-    private readonly ILogger<DownloadChughtaiBookRequestHandler> _logger;
-
-    public DownloadChughtaiBookRequestHandler(
-        IAmACommandProcessor commandProcessor,
-        IOptions<Settings> settings,
-        IBookRepository bookRepository,
-        IBookPageRepository bookPageRepository,
-        IFileRepository fileRepository,
-        IFileStorage fileStorage,
-        IAuthorRepository authorRepository,
-        ILogger<DownloadChughtaiBookRequestHandler> logger)
-    {
-        _commandProcessor = commandProcessor;
-        _settings = settings.Value;
-        _bookRepository = bookRepository;
-        _bookPageRepository = bookPageRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
-        _authorRepository = authorRepository;
-        _logger = logger;
-    }
+    private readonly Settings _settings = settings.Value;
 
     [AuthorizeAdmin(1)]
     public override async Task<DownloadChughtaiBookRequest> HandleAsync(DownloadChughtaiBookRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var book = await _bookRepository.GetBookBySource(_settings.DefaultLibraryId, command.Url, cancellationToken);
+        var book = await bookRepository.GetBookBySource(_settings.DefaultLibraryId, command.Url, cancellationToken);
         if (book != null)
         {
-            var bookContents = await _bookRepository.GetBookContents(_settings.DefaultLibraryId, book.Id, cancellationToken);
+            var bookContents = await bookRepository.GetBookContents(_settings.DefaultLibraryId, book.Id, cancellationToken);
             if (command.CreatePdf)
             {
                 if (bookContents.Any(c => c.MimeType == MimeTypes.Pdf))
                 {
-                    var file = await _fileRepository.GetFileById(bookContents.First(c => c.MimeType == MimeTypes.Pdf).FileId, cancellationToken);
+                    var file = await fileRepository.GetFileById(bookContents.First(c => c.MimeType == MimeTypes.Pdf).FileId, cancellationToken);
                     if (file != null)
                     {
-                        var contents = await _fileStorage.GetFile(file.FilePath, cancellationToken);
+                        var contents = await fileStorage.GetFile(file.FilePath, cancellationToken);
                         if (contents != null)
                         {
                             var result = new DownloadChughtaiBookRequest.Result
@@ -110,7 +80,7 @@ public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadCh
             }
             else
             {
-                var pages = await _bookPageRepository.GetAllPagesByBook(_settings.DefaultLibraryId, book.Id, cancellationToken);
+                var pages = await bookPageRepository.GetAllPagesByBook(_settings.DefaultLibraryId, book.Id, cancellationToken);
                 if (pages != null && pages.Any(p => p.ImageId.HasValue))
                 {
                     using (var memoryStream = new MemoryStream())
@@ -119,10 +89,10 @@ public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadCh
                         {
                             foreach (var page in pages.Where(p => p.ImageId.HasValue))
                             {
-                                var file = await _fileRepository.GetFileById(page.ImageId.Value, cancellationToken);
+                                var file = await fileRepository.GetFileById(page.ImageId.Value, cancellationToken);
                                 if (file != null && file.Contents != null)
                                 {
-                                    var contents = await _fileStorage.GetFile(file.FilePath, cancellationToken);
+                                    var contents = await fileStorage.GetFile(file.FilePath, cancellationToken);
 
                                     var archiveFile = archive.CreateEntry(file.FileName);
                                     using (var entryStream = archiveFile.Open())
@@ -164,7 +134,7 @@ public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadCh
 
     private async Task DownloadBook(BookModel book, DownloadChughtaiBookRequest command, CancellationToken cancellationToken)
     {
-        var exporter = new Chughtai.Downloader.BookDownloader(_logger);
+        var exporter = new Chughtai.Downloader.BookDownloader(logger);
         var path = $"../data/downloads/{Guid.NewGuid():D}";
         string filePath = null;
         if (string.IsNullOrWhiteSpace(command.SessionId))
@@ -236,18 +206,18 @@ public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadCh
     {
         foreach (var page in pages.OrderByDescending(x => x.SequenceNumber))
         {
-            await _bookPageRepository.DeletePage(_settings.DefaultLibraryId, book.Id, page.SequenceNumber, cancellationToken);
+            await bookPageRepository.DeletePage(_settings.DefaultLibraryId, book.Id, page.SequenceNumber, cancellationToken);
         }
     }
     public async Task<BookModel> CreateNewBook(BookInfo bookInfo, string source, CancellationToken cancellationToken)
     {
         var authorName = bookInfo.Authors?.FirstOrDefault() ?? "Unknown";
-        var authors = await _authorRepository.FindAuthors(_settings.DefaultLibraryId, authorName, AuthorTypes.Writer, 1, 1, AuthorSortByType.Name, SortDirection.Ascending, cancellationToken);
+        var authors = await authorRepository.FindAuthors(_settings.DefaultLibraryId, authorName, AuthorTypes.Writer, 1, 1, AuthorSortByType.Name, SortDirection.Ascending, cancellationToken);
         AuthorModel author = null;
 
         if (!authors.Data.Any())
         {
-            author = await _authorRepository.AddAuthor(_settings.DefaultLibraryId,
+            author = await authorRepository.AddAuthor(_settings.DefaultLibraryId,
                 new AuthorModel
                 {
                     Name = authorName,
@@ -259,7 +229,7 @@ public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadCh
             author = authors.Data.First();
         }
 
-        var book = await _bookRepository.AddBook(_settings.DefaultLibraryId, new BookModel
+        var book = await bookRepository.AddBook(_settings.DefaultLibraryId, new BookModel
         {
             Title = bookInfo.Title,
             Authors = [author],
@@ -280,7 +250,7 @@ public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadCh
                 }
             };
 
-            await _commandProcessor.SendAsync(updateImgRequest, cancellationToken: cancellationToken);
+            await commandProcessor.SendAsync(updateImgRequest, cancellationToken: cancellationToken);
         }
 
         return book;
@@ -297,7 +267,7 @@ public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadCh
                 FileName = Path.GetFileName(filePath)
             }
         };
-        await _commandProcessor.SendAsync(cmdAddBookContent, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(cmdAddBookContent, cancellationToken: cancellationToken);
 
         // var amdAddBookPages = new InternalUploadBookPagesRequest(_settings.DefaultLibraryId, book.Id)
         // {
@@ -328,6 +298,6 @@ public class DownloadChughtaiBookRequestHandler : RequestHandlerAsync<DownloadCh
             Files = files
         };
 
-        await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
     }
 }

@@ -3,9 +3,6 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
 {
@@ -31,16 +28,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -50,22 +41,13 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
 
         [Test]
-        public void ShouldNotHaveNextLink()
-        {
-            _assert.ShouldNotHaveNextLink();
-        }
+        public void ShouldNotHaveNextLink() => _assert.ShouldNotHaveNextLink();
 
         [Test]
-        public void ShouldNotHavePreviousLink()
-        {
-            _assert.ShouldNotHavePreviousLink();
-        }
+        public void ShouldNotHavePreviousLink() => _assert.ShouldNotHavePreviousLink();
 
         [Test]
         public void ShouldReturnCorrectPage()
@@ -77,9 +59,6 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetFavoriteBooks
         }
 
         [Test]
-        public void ShouldReturnExpectedBooks()
-        {
-            _assert.ShouldHaveNoData();
-        }
+        public void ShouldReturnExpectedBooks() => _assert.ShouldHaveNoData();
     }
 }

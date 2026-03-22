@@ -7,10 +7,9 @@ using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Infrastructure.Middleware;
 
-public class CookieAuthenticationMiddleware
+public class CookieAuthenticationMiddleware(RequestDelegate next, IOptions<Settings> appSettings)
 {
-    private readonly RequestDelegate _next;
-    private readonly Settings _appSettings;
+    private readonly Settings _appSettings = appSettings.Value;
 
     private readonly string[] _pathsToIgnore = new string[]
     {
@@ -18,18 +17,12 @@ public class CookieAuthenticationMiddleware
         "/accounts/refresh-token",
         "/accounts/revoke-token",
     };
-    
-    public CookieAuthenticationMiddleware(RequestDelegate next, IOptions<Settings> appSettings)
-    {
-        _next = next;
-        _appSettings = appSettings.Value;
-    }
 
     public async Task Invoke(HttpContext context, IAccountRepository accountRepository)
     {
         if (_pathsToIgnore.Any(x => x.Equals(context.Request.Path, StringComparison.InvariantCultureIgnoreCase)))
         {
-            await _next(context);
+            await next(context);
         }
         
         if (context.Items["AccountId"] is null)
@@ -42,7 +35,7 @@ public class CookieAuthenticationMiddleware
             }
         }
 
-        await _next(context);
+        await next(context);
     }
 
     private async Task AttachAccountToContext(HttpContext context, string token, IAccountRepository accountRepository)

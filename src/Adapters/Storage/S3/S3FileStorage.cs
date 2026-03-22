@@ -1,24 +1,13 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Inshapardaz.Domain.Adapters.Repositories;
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Storage.S3;
 
 
-public class S3FileStorage : IFileStorage
+public class S3FileStorage(S3Configuration configuration) : IFileStorage
 {
-    private readonly S3Configuration _configuration;
-
-    public S3FileStorage(S3Configuration configuration)
-    {
-        _configuration = configuration;
-    }
-
     public bool SupportsPublicLink => false;
 
     public async Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken)
@@ -27,8 +16,8 @@ public class S3FileStorage : IFileStorage
         {
             var client = GetClient();
             var request = new GetObjectRequest();
-            request.Key = $"{_configuration.FolderName}/{filePath}";
-            request.BucketName = _configuration.BucketName;
+            request.Key = $"{configuration.FolderName}/{filePath}";
+            request.BucketName = configuration.BucketName;
             var response = await client.GetObjectAsync(request, cancellationToken);
             return await ReadAllContents(response.ResponseStream);
         }
@@ -44,8 +33,8 @@ public class S3FileStorage : IFileStorage
         {
             var client = GetClient();
             var request = new GetObjectRequest();
-            request.Key = $"{_configuration.FolderName}/{filePath}";
-            request.BucketName = _configuration.BucketName;
+            request.Key = $"{configuration.FolderName}/{filePath}";
+            request.BucketName = configuration.BucketName;
             var response = await client.GetObjectAsync(request, cancellationToken);
             return await ReadAllText(response.ResponseStream);
         }
@@ -59,10 +48,10 @@ public class S3FileStorage : IFileStorage
     {
         var client = GetClient();
         var request = new PutObjectRequest();
-        request.BucketName = _configuration.BucketName;
+        request.BucketName = configuration.BucketName;
         request.ContentType = mimeType;
         request.InputStream = new MemoryStream(content);
-        request.Key = $"{_configuration.FolderName}/{name}";
+        request.Key = $"{configuration.FolderName}/{name}";
         request.CannedACL = "private";
         var response = await client.PutObjectAsync(request, cancellationToken);
         return name;
@@ -72,10 +61,10 @@ public class S3FileStorage : IFileStorage
     {
         var client = GetClient();
         var request = new PutObjectRequest();
-        request.BucketName = _configuration.BucketName;
+        request.BucketName = configuration.BucketName;
         request.ContentType = mimeType ?? MimeTypes.Text;
         request.InputStream = new MemoryStream(content);
-        request.Key = $"{_configuration.FolderName}/{name}";
+        request.Key = $"{configuration.FolderName}/{name}";
         request.CannedACL = "public-read";
         var response = await client.PutObjectAsync(request, cancellationToken);
         return name;
@@ -85,10 +74,10 @@ public class S3FileStorage : IFileStorage
     {
         var client = GetClient();
         var request = new PutObjectRequest();
-        request.BucketName = _configuration.BucketName;
+        request.BucketName = configuration.BucketName;
         request.ContentType = MimeTypes.Text;
         request.ContentBody = content;
-        request.Key = $"{_configuration.FolderName}/{name}";
+        request.Key = $"{configuration.FolderName}/{name}";
         request.CannedACL = "private ";
         var response = await client.PutObjectAsync(request, cancellationToken);
         return name;
@@ -98,8 +87,8 @@ public class S3FileStorage : IFileStorage
     {
         var client = GetClient();
         var request = new DeleteObjectRequest();
-        request.BucketName = _configuration.BucketName;
-        request.Key = $"{_configuration.FolderName}/{filePath}";
+        request.BucketName = configuration.BucketName;
+        request.Key = $"{configuration.FolderName}/{filePath}";
         await client.DeleteObjectAsync(request, cancellationToken);
     }
 
@@ -107,8 +96,8 @@ public class S3FileStorage : IFileStorage
     {
         var client = GetClient();
         var request = new DeleteObjectRequest();
-        request.BucketName = _configuration.BucketName;
-        request.Key = $"{_configuration.FolderName}/{filePath}";
+        request.BucketName = configuration.BucketName;
+        request.Key = $"{configuration.FolderName}/{filePath}";
         await client.DeleteObjectAsync(request, cancellationToken);
     }
 
@@ -118,8 +107,8 @@ public class S3FileStorage : IFileStorage
         try
         {
             var request = new GetObjectMetadataRequest();
-            request.BucketName = _configuration.BucketName;
-            request.Key = $"{_configuration.FolderName}/{filePath}";
+            request.BucketName = configuration.BucketName;
+            request.Key = $"{configuration.FolderName}/{filePath}";
             await client.GetObjectMetadataAsync(request, cancellationToken);
             await DeleteFile(filePath, cancellationToken);
         }
@@ -134,8 +123,8 @@ public class S3FileStorage : IFileStorage
         try
         {
             var request = new DeleteObjectRequest();
-            request.BucketName = _configuration.BucketName;
-            request.Key = $"{_configuration.FolderName}/{filePath}";
+            request.BucketName = configuration.BucketName;
+            request.Key = $"{configuration.FolderName}/{filePath}";
             await client.DeleteObjectAsync(request, cancellationToken);
         }
         catch
@@ -146,11 +135,11 @@ public class S3FileStorage : IFileStorage
     private AmazonS3Client GetClient()
     {
         AmazonS3Config config = new AmazonS3Config();
-        config.ServiceURL = _configuration.ServiceUrl;
+        config.ServiceURL = configuration.ServiceUrl;
 
         return new AmazonS3Client(
-                _configuration.AccessKey,
-                _configuration.AccessSecret,
+                configuration.AccessKey,
+                configuration.AccessSecret,
                 config);
     }
 
@@ -181,8 +170,8 @@ public class S3FileStorage : IFileStorage
     {
         GetPreSignedUrlRequest preSignedUrlRequest = new GetPreSignedUrlRequest
         {
-            BucketName = _configuration.BucketName,
-            Key = $"{_configuration.FolderName}/{filePath}",
+            BucketName = configuration.BucketName,
+            Key = $"{configuration.FolderName}/{filePath}",
             Expires = DateTime.UtcNow.AddMinutes(30)
         };
 

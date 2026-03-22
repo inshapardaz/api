@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Tools;
@@ -11,18 +9,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Tools.CommonWords.UpdateCommonWord
 {
     [TestFixture]
-    public class WhenUpdatingCommonWordAdmin : TestBase
+    public class WhenUpdatingCommonWordAdmin() : TestBase(Role.Admin)
     {
         private HttpResponseMessage _response;
         private CommonWordAssert _assert;
         private CommonWordDto _commonWord;
         private CommonWordView _update;
-
-        public WhenUpdatingCommonWordAdmin()
-            :base(Role.Admin)
-        {
-
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,16 +30,10 @@ namespace Inshapardaz.Api.Tests.Tools.CommonWords.UpdateCommonWord
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveUpdatedCorrection()

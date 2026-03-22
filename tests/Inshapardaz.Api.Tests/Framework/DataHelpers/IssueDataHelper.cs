@@ -3,9 +3,7 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -36,18 +34,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         IssueContentDto GetIssueContent(long issueId);
     }
 
-    public class MySqlIssueTestRepository : IIssueTestRepository
+    public class MySqlIssueTestRepository(IProvideConnection connectionProvider) : IIssueTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public MySqlIssueTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddIssue(IssueDto issue)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO Issue (PeriodicalId, Volumenumber, IssueNumber, ImageId, IssueDate, IsPublic, Status)
                         VALUES (@PeriodicalId, @Volumenumber, @IssueNumber, @ImageId, @IssueDate, @IsPublic, @Status);
@@ -69,7 +60,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddIssueFile(int issueId, IssueContentDto contentDto)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO IssueContent (IssueId, FileId, Language, MimeType)
                     VALUES (@IssueId, @FileId, @Language, @MimeType);
@@ -81,7 +72,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueDto GetIssueById(int issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM Issue WHERE Id = @Id";
                 return connection.QuerySingleOrDefault<IssueDto>(sql, new { Id = issueId });
@@ -90,7 +81,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueDto> GetIssuesByPeriodical(int periodicalId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT i.* FROM Issue i
                         INNER JOIN Periodical p on p.Id = i.PeriodicalId
@@ -101,7 +92,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetIssueImageUrl(int issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.FilePath FROM `File` f
                     INNER JOIN Issue i ON f.Id = i.ImageId
@@ -112,7 +103,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetIssueImage(int issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.* from `File` f
                     INNER JOIN Issue i ON f.Id = i.ImageId
@@ -123,7 +114,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteIssues(IEnumerable<IssueDto> issues)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Issue WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = issues.Select(f => f.Id) });
@@ -132,7 +123,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueContentDto> GetIssueContents(int issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"SELECT ic.*, f.MimeType From IssueContent ic
                     INNER Join Issue i ON i.Id = ic.IssueId
@@ -148,7 +139,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueContentDto GeIssueContent(int issueId, string language, string mimetype)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"Select * From IssueContent ic
                            INNER Join Issue i ON i.Id = ic.IssueId
@@ -166,7 +157,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetIssueContentPath(long issueId, string language, string mimetype)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"SELECT f.FilePath 
                            FROM IssueContent ic
@@ -187,7 +178,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueContentDto GetIssueContent(long issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"SELECT * 
                            FROM IssueContent ic
@@ -203,18 +194,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         }
     }
 
-    public class SqlServerIssueTestRepository : IIssueTestRepository
+    public class SqlServerIssueTestRepository(IProvideConnection connectionProvider) : IIssueTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public SqlServerIssueTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddIssue(IssueDto issue)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO Issue (PeriodicalId, Volumenumber, IssueNumber, ImageId, IssueDate, IsPublic, Status)
                         OUTPUT INSERTED.ID
@@ -236,7 +220,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddIssueFile(int issueId, IssueContentDto contentDto)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO IssueContent (IssueId, FileId, Language, MimeType)
                     OUTPUT INSERTED.Id
@@ -248,7 +232,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueDto GetIssueById(int issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM Issue WHERE Id = @Id";
                 return connection.QuerySingleOrDefault<IssueDto>(sql, new { Id = issueId });
@@ -257,7 +241,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueDto> GetIssuesByPeriodical(int periodicalId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT i.* FROM Issue i
                         INNER JOIN Periodical p on p.Id = i.PeriodicalId
@@ -268,7 +252,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetIssueImageUrl(int issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.FilePath FROM [File] f
                     INNER JOIN Issue i ON f.Id = i.ImageId
@@ -279,7 +263,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetIssueImage(int issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.* from [File] f
                     INNER JOIN Issue i ON f.Id = i.ImageId
@@ -290,7 +274,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteIssues(IEnumerable<IssueDto> issues)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Issue WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = issues.Select(f => f.Id) });
@@ -299,7 +283,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueContentDto> GetIssueContents(int issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"SELECT ic.*, f.MimeType From IssueContent ic
                     INNER Join Issue i ON i.Id = ic.IssueId
@@ -315,7 +299,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueContentDto GeIssueContent(int issueId, string language, string mimetype)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"Select * From IssueContent ic
                            INNER Join Issue i ON i.Id = ic.IssueId
@@ -333,7 +317,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetIssueContentPath(long issueId, string language, string mimetype)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"SELECT f.FilePath 
                            FROM IssueContent ic
@@ -354,7 +338,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueContentDto GetIssueContent(long issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"SELECT * 
                            FROM IssueContent ic

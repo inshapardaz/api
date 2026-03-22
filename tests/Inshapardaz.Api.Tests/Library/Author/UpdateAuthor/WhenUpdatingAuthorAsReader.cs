@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
@@ -8,13 +6,9 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Author.UpdateAuthor
 {
     [TestFixture]
-    public class WhenUpdatingAuthorAsReader : TestBase
+    public class WhenUpdatingAuthorAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
-
-        public WhenUpdatingAuthorAsReader() : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,15 +21,9 @@ namespace Inshapardaz.Api.Tests.Library.Author.UpdateAuthor
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbiddenResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbiddenResult() => _response.ShouldBeForbidden();
     }
 }

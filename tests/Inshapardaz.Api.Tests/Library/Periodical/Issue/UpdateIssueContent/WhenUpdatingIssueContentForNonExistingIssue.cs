@@ -2,21 +2,13 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
 {
     [TestFixture]
-    public class WhenUpdatingIssueContentForNonExistingIssue
-        : TestBase
+    public class WhenUpdatingIssueContentForNonExistingIssue() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
-
-        public WhenUpdatingIssueContentForNonExistingIssue() 
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,15 +19,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnBadRequestResult()
-        {
-            _response.ShouldBeBadRequest();
-        }
+        public void ShouldReturnBadRequestResult() => _response.ShouldBeBadRequest();
     }
 }

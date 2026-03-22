@@ -1,9 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,18 +9,12 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenGettingPublicArticleContentWithPermission
-        : TestBase
+    public class WhenGettingPublicArticleContentWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private ArticleContentAssert _assert;
         private ArticleDto _article;
         private ArticleContentDto _content;
-
-        public WhenGettingPublicArticleContentWithPermission(Role role)
-        : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -37,28 +28,16 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
-        public void ShouldHaveArticleLink()
-        {
-            _assert.ShouldHaveArticleLink();
-        }
+        public void ShouldHaveArticleLink() => _assert.ShouldHaveArticleLink();
 
         [Test]
         public void ShouldHaveEditLinks()
@@ -68,15 +47,9 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
         }
 
         [Test]
-        public void ShouldHaveTextReturened()
-        {
-            _assert.ShouldHaveText(_content);
-        }
+        public void ShouldHaveTextReturened() => _assert.ShouldHaveText(_content);
 
         [Test]
-        public void ShouldReturnCorrectArticleData()
-        {
-            _assert.ShouldMatch(_content, _article);
-        }
+        public void ShouldReturnCorrectArticleData() => _assert.ShouldMatch(_content, _article);
     }
 }

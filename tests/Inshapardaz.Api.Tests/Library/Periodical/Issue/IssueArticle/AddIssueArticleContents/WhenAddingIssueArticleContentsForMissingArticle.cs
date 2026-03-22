@@ -2,21 +2,13 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueArticleContents
 {
     [TestFixture]
-    public class WhenAddingIssueArticleContentsForMissingArticle
-        : TestBase
+    public class WhenAddingIssueArticleContentsForMissingArticle() : TestBase(Role.LibraryAdmin)
     {
         private HttpResponseMessage _response;
-
-        public WhenAddingIssueArticleContentsForMissingArticle()
-            : base(Role.LibraryAdmin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -29,15 +21,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.AddIssueAr
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveBadRequestResult()
-        {
-            _response.ShouldBeBadRequest();
-        }
+        public void ShouldHaveBadRequestResult() => _response.ShouldBeBadRequest();
     }
 }

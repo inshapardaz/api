@@ -2,21 +2,13 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
 {
     [TestFixture]
-    public class WhenAddingChapterContentsForWrongLibrary
-        : TestBase
+    public class WhenAddingChapterContentsForWrongLibrary() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
-
-        public WhenAddingChapterContentsForWrongLibrary()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -28,15 +20,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbiddenResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbiddenResult() => _response.ShouldBeForbidden();
     }
 }

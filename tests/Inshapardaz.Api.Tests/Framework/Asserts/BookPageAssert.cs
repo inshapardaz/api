@@ -4,29 +4,17 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using System;
-using System.Net.Http;
-using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class BookPageAssert
+    public class BookPageAssert(
+        IBookPageTestRepository bookPageRepository,
+        IFileTestRepository fileRepository,
+        FakeFileStorage fileStorage)
     {
-        private readonly IBookPageTestRepository _bookPageRepository;
-        private readonly IFileTestRepository _fileRepository;
-        private readonly FakeFileStorage _fileStorage;
         public HttpResponseMessage _response;
         private BookPageView _bookPage;
         private int _libraryId;
-
-        public BookPageAssert(IBookPageTestRepository bookPageRepository,
-            IFileTestRepository fileRepository,
-            FakeFileStorage fileStorage)
-        {
-            _fileRepository = fileRepository;
-            _fileStorage = fileStorage;
-            _bookPageRepository = bookPageRepository;
-        }
 
 
         public BookPageAssert ForResponse(HttpResponseMessage response)
@@ -58,12 +46,12 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public BookPageAssert ShouldHaveNoBookPage(int bookId, long pageId, long? imageId)
         {
-            var page = _bookPageRepository.GetBookPageById(bookId, pageId);
+            var page = bookPageRepository.GetBookPageById(bookId, pageId);
             page.Should().BeNull();
 
             if (imageId != null)
             {
-                var image = _fileRepository.GetFileById(imageId.Value);
+                var image = fileRepository.GetFileById(imageId.Value);
                 image.Should().BeNull();
             }
             return this;
@@ -78,12 +66,12 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public BookPageAssert BookPageShouldExist(int bookId, int pageNumber)
         {
-            var page = _bookPageRepository.GetBookPageByNumber(bookId, pageNumber);
+            var page = bookPageRepository.GetBookPageByNumber(bookId, pageNumber);
             page.Should().NotBeNull();
 
             if (page.ImageId != null)
             {
-                var image = _fileRepository.GetFileById(page.ImageId.Value);
+                var image = fileRepository.GetFileById(page.ImageId.Value);
                 image.Should().NotBeNull();
             }
             return this;
@@ -91,10 +79,10 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public BookPageAssert ShouldHaveNoBookPageImage(int bookId, int pageNumber, long imageId)
         {
-            var page = _bookPageRepository.GetBookPageByNumber(bookId, pageNumber);
+            var page = bookPageRepository.GetBookPageByNumber(bookId, pageNumber);
             page.ImageId.Should().BeNull();
 
-            var image = _fileRepository.GetFileById(imageId);
+            var image = fileRepository.GetFileById(imageId);
             image.Should().BeNull();
             return this;
         }
@@ -107,19 +95,19 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public BookPageAssert ShouldHaveSavedPage()
         {
-            _bookPageRepository.GetBookPageByNumber(_bookPage.BookId, _bookPage.SequenceNumber);
+            bookPageRepository.GetBookPageByNumber(_bookPage.BookId, _bookPage.SequenceNumber);
             return this;
         }
 
         public BookPageAssert ShouldHaveUpdatedBookPageImage(int bookId, int pageNumber, byte[] newImage)
         {
-            var page = _bookPageRepository.GetBookPageByNumber(bookId, pageNumber);
+            var page = bookPageRepository.GetBookPageByNumber(bookId, pageNumber);
             page.ImageId.Should().BeGreaterThan(0);
 
-            var image = _fileRepository.GetFileById(page.ImageId.Value);
+            var image = fileRepository.GetFileById(page.ImageId.Value);
             image.Should().NotBeNull();
 
-            var content = _fileStorage.GetFile(image.FilePath, CancellationToken.None).Result;
+            var content = fileStorage.GetFile(image.FilePath, CancellationToken.None).Result;
             content.Should().BeEquivalentTo(newImage);
             return this;
         }
@@ -134,10 +122,10 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public BookPageAssert ShouldHaveAddedBookPageImage(int bookId, int pageNumber)
         {
-            var page = _bookPageRepository.GetBookPageByNumber(bookId, pageNumber);
+            var page = bookPageRepository.GetBookPageByNumber(bookId, pageNumber);
             page.ImageId.Should().BeGreaterThan(0);
 
-            var image = _fileRepository.GetFileById(page.ImageId.Value);
+            var image = fileRepository.GetFileById(page.ImageId.Value);
             image.Should().NotBeNull();
             return this;
         }
@@ -281,20 +269,20 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public BookPageAssert ShouldHaveBookPageContent(string text)
         {
-            var page = _bookPageRepository.GetBookPageByNumber(_bookPage.BookId, _bookPage.SequenceNumber);
+            var page = bookPageRepository.GetBookPageByNumber(_bookPage.BookId, _bookPage.SequenceNumber);
             page.ContentId.Should().NotBeNull();
 
-            var file = _fileRepository.GetFileById(page.ContentId.Value);
-            var fileContents = _fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            var file = fileRepository.GetFileById(page.ContentId.Value);
+            var fileContents = fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
             fileContents.Should().BeEquivalentTo(text);
             return this;
         }
 
         public BookPageAssert ShouldHaveNoBookPageContent(long contentId, string filePath)
         {
-            var file = _fileRepository.GetFileById(contentId);
+            var file = fileRepository.GetFileById(contentId);
             file.Should().BeNull();
-            _fileStorage.DoesFileExists(filePath).Should().BeFalse();
+            fileStorage.DoesFileExists(filePath).Should().BeFalse();
             return this;
         }
     }

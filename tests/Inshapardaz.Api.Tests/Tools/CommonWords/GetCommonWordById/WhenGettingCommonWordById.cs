@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,16 +7,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Tools.CommonWords.GetCommonWordById
 {
     [TestFixture]
-    public class WhenGettingCommonWordById : TestBase
+    public class WhenGettingCommonWordById() : TestBase(Domain.Models.Role.Admin)
     {
         private HttpResponseMessage _response;
         private CommonWordDto _expected;
         private CommonWordAssert _assert;
-
-        public WhenGettingCommonWordById()
-            : base(Domain.Models.Role.Admin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -31,39 +24,21 @@ namespace Inshapardaz.Api.Tests.Tools.CommonWords.GetCommonWordById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
-        
-        [Test]
-        public void ShouldHaveUpdateLink()
-        {
-            _assert.ShouldHaveUpdateLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
-        public void ShouldHaveDeleteLink()
-        {
-            _assert.ShouldHaveDeleteLink();
-        }
+        public void ShouldHaveUpdateLink() => _assert.ShouldHaveUpdateLink();
 
         [Test]
-        public void ShouldReturnCorrectData()
-        {
-            _assert.ShouldHaveCorrectWordReturned(_expected);
-        }
+        public void ShouldHaveDeleteLink() => _assert.ShouldHaveDeleteLink();
+
+        [Test]
+        public void ShouldReturnCorrectData() => _assert.ShouldHaveCorrectWordReturned(_expected);
     }
 }

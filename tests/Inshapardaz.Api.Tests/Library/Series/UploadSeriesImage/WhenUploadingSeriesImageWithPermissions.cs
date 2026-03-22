@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,17 +9,12 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUploadingSeriesImageWithPermissions : TestBase
+    public class WhenUploadingSeriesImageWithPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private SeriesAssert _assert;
         private int _seriesId;
         private byte[] _newImage;
-
-        public WhenUploadingSeriesImageWithPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -34,21 +27,12 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveUpdatedSeriesImage()
-        {
-            _assert.ShouldHaveUpdatedSeriesImage(_seriesId, _newImage);
-        }
+        public void ShouldHaveUpdatedSeriesImage() => _assert.ShouldHaveUpdatedSeriesImage(_seriesId, _newImage);
     }
 }

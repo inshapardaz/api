@@ -2,15 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Inshapardaz.Api.Views.Library;
 
-public class PublishBookRequestView
+public class PublishBookRequestView(string outputType)
 {
-    public PublishBookRequestView(string outputType)
-    {
-        OutputType = outputType;
-    }
-
     [Required]
-    public string OutputType { get; set; }
+    public string OutputType { get; set; } = outputType;
 
     public bool OnlyPublishFile { get; set; }
 }

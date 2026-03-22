@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -9,15 +6,10 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
 {
     [TestFixture]
-    public class WhenGettingSeriesLastPage : TestBase
+    public class WhenGettingSeriesLastPage() : TestBase(Domain.Models.Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<SeriesView> _assert;
-
-        public WhenGettingSeriesLastPage()
-            :base(Domain.Models.Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -29,34 +21,19 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/series");
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/series");
 
         [Test]
-        public void ShouldHavePreviousLink()
-        {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/series", 4);
-        }
+        public void ShouldHavePreviousLink() => _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/series", 4);
 
         [Test]
-        public void ShouldNotHaveNextLink()
-        {
-            _assert.ShouldNotHaveNextLink();
-        }
+        public void ShouldNotHaveNextLink() => _assert.ShouldNotHaveNextLink();
 
         [Test]
         public void ShouldHaveCorrectSeriesData()

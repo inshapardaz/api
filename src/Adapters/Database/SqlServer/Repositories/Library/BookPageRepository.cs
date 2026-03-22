@@ -2,26 +2,16 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapters.Database.SqlServer.Repositories.Library;
 
 //TODO: Add inner join to book to verify library
-public class BookPageRepository : IBookPageRepository
+public class BookPageRepository(SqlServerConnectionProvider connectionProvider) : IBookPageRepository
 {
-    private readonly SqlServerConnectionProvider _connectionProvider;
-
-    public BookPageRepository(SqlServerConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-
     public async Task<BookPageModel> AddPage(int libraryId, BookPageModel bookPage, CancellationToken cancellationToken)
     {
         int pageId;
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Insert Into BookPage(BookId, SequenceNumber, ContentId, Status, Text, ImageId, ChapterId)
                             OUTPUT Inserted.Id
@@ -45,7 +35,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task<BookPageModel> GetPageBySequenceNumber(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                             p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
@@ -67,7 +57,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task DeletePage(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Delete p From BookPage p
                             INNER JOIN Book b ON b.Id = p.BookId
@@ -80,7 +70,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task<BookPageModel> UpdatePage(int libraryId, int bookId, int sequenceNumber, long? contentId, long? imageId, EditingStatus status, long? chapterId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update p
                             SET p.ImageId = @ImageId, 
@@ -108,7 +98,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task<BookPageModel> UpdatePageImage(int libraryId, int bookId, int sequenceNumber, long imageId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update p
                             SET p.ImageId = @ImageId
@@ -124,7 +114,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task DeletePageImage(int libraryId, int bookId, int sequenceNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update p
                             SET ImageId = NULL
@@ -137,7 +127,7 @@ public class BookPageRepository : IBookPageRepository
     }
     public async Task<int> GetPageCount(int libraryId, int bookId, int oldSequenceNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
 
         {
             var sql = @"SELECT COUNT(p.*)
@@ -153,7 +143,7 @@ public class BookPageRepository : IBookPageRepository
         EditingStatus status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter,
         SortDirection sortDirection, int? assignedTo, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sortDirectionValue = sortDirection == SortDirection.Descending ? "DESC" : "ASC";
             var sql = @$"SELECT p.BookId, p.SequenceNumber, p.Status, 
@@ -239,7 +229,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task<BookPageModel> UpdateWriterAssignment(int libraryId, int bookId, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update p
                             SET p.WriterAccountId = @WriterAccountId, p.WriterAssignTimeStamp = GETUTCDATE()
@@ -255,7 +245,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task<BookPageModel> UpdateReviewerAssignment(int libraryId, int bookId, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update p
                             SET p.ReviewerAccountId = @ReviewerAccountId, p.ReviewerAssignTimeStamp = GETUTCDATE()
@@ -271,7 +261,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task<BookPageModel> GetFirstPageIndexByChapterNumber(int libraryId, int bookId, int chapterNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, p.ContentId, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                                 p.ReviewerAccountId, p.Text, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
@@ -297,7 +287,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task<int> GetLastPageNumberForBook(int libraryId, int bookId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT Max(p.SequenceNumber)
                             FROM BookPage AS p
@@ -313,7 +303,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task<IEnumerable<BookPageModel>> GetAllPagesByBook(int libraryId, int bookId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, 
                             p.WriterAccountId, p.WriterAssignTimeStamp, 
@@ -333,7 +323,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task<Page<BookPageModel>> GetPagesByUser(int libraryId, int accountId, EditingStatus statusFilter, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, 
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
@@ -390,7 +380,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task<IEnumerable<BookPageModel>> GetPagesByBookChapter(int libraryId, int bookId, long chapterId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT p.BookId, p.SequenceNumber, p.Status, 
                             p.WriterAccountId, p.WriterAssignTimeStamp, 
@@ -410,7 +400,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task ReorderPages(int libraryId, int bookId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT p.Id, row_number() OVER (ORDER BY p.SequenceNumber) as 'SequenceNumber'
                             From BookPage p
@@ -434,7 +424,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task UpdatePageSequenceNumber(int libraryId, int bookId, int oldSequenceNumber, int newSequenceNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
 
             var sql = @"DECLARE @maxPosition INT;
@@ -477,7 +467,7 @@ public class BookPageRepository : IBookPageRepository
 
     public async Task<IEnumerable<UserPageSummaryItem>> GetUserPageSummary(int libraryId, int accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT 1 As Status, Count(BookPage.Id) As Count 
                             FROM BookPage INNER JOIN Book ON Book.Id = BookPage.BookId
@@ -505,7 +495,7 @@ public class BookPageRepository : IBookPageRepository
 
     private async Task<BookPageModel> GetPageById(int pageId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT p.BookId, p.SequenceNumber, p.Text, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                             p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 

@@ -12,24 +12,13 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Controllers;
 
-public class PeriodicalController : Controller
+public class PeriodicalController(
+    IAmACommandProcessor commandProcessor,
+    IQueryProcessor queryProcessor,
+    IRenderPeriodical periodicalRenderer,
+    IRenderFile fileRenderer)
+    : Controller
 {
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRenderPeriodical _periodicalRenderer;
-    private readonly IRenderFile _fileRenderer;
-
-    public PeriodicalController(IAmACommandProcessor commandProcessor,
-        IQueryProcessor queryProcessor,
-        IRenderPeriodical periodicalRenderer,
-        IRenderFile fileRenderer)
-    {
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-        _periodicalRenderer = periodicalRenderer;
-        _fileRenderer = fileRenderer;
-    }
-
     [HttpGet("libraries/{libraryId}/periodicals", Name = nameof(PeriodicalController.GetPeriodicals))]
     public async Task<IActionResult> GetPeriodicals(int libraryId,
         string query,
@@ -56,7 +45,7 @@ public class PeriodicalController : Controller
             Direction = sortDirection,
             SortBy = sortBy
         };
-        var result = await _queryProcessor.ExecuteAsync(periodicalsQuery, token);
+        var result = await queryProcessor.ExecuteAsync(periodicalsQuery, token);
 
         var args = new PageRendererArgs<PeriodicalModel, PeriodicalFilter, PeriodicalSortByType>
         {
@@ -72,18 +61,18 @@ public class PeriodicalController : Controller
             Filters = filter
         };
 
-        return new OkObjectResult(_periodicalRenderer.Render(args, libraryId));
+        return new OkObjectResult(periodicalRenderer.Render(args, libraryId));
     }
 
     [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}", Name = nameof(PeriodicalController.GetPeriodicalById))]
     public async Task<IActionResult> GetPeriodicalById(int libraryId, int periodicalId, CancellationToken token = default(CancellationToken))
     {
         var query = new GetPeriodicalByIdQuery(libraryId, periodicalId);
-        var periodical = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
+        var periodical = await queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
         if (periodical != null)
         {
-            return new OkObjectResult(_periodicalRenderer.Render(periodical, libraryId));
+            return new OkObjectResult(periodicalRenderer.Render(periodical, libraryId));
         }
 
         return new NotFoundResult();
@@ -98,9 +87,9 @@ public class PeriodicalController : Controller
         }
 
         var request = new AddPeriodicalRequest(libraryId, periodical.Map());
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _periodicalRenderer.Render(request.Result, libraryId);
+        var renderResult = periodicalRenderer.Render(request.Result, libraryId);
         return new CreatedResult(renderResult.Links.Self(), renderResult);
     }
 
@@ -115,9 +104,9 @@ public class PeriodicalController : Controller
         PeriodicalModel periodicalModel = periodical.Map();
         periodicalModel.Id = periodicalId;
         var request = new UpdatePeriodicalRequest(libraryId, periodicalModel);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _periodicalRenderer.Render(request.Result.Periodical, libraryId);
+        var renderResult = periodicalRenderer.Render(request.Result.Periodical, libraryId);
         if (request.Result.HasAddedNew)
         {
             return new CreatedResult(renderResult.Links.Self(), renderResult);
@@ -132,7 +121,7 @@ public class PeriodicalController : Controller
     public async Task<IActionResult> DeletePeriodical(int libraryId, int periodicalId, CancellationToken token = default(CancellationToken))
     {
         var request = new DeletePeriodicalRequest(libraryId, periodicalId);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
 
@@ -155,11 +144,11 @@ public class PeriodicalController : Controller
             }
         };
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         if (request.Result.HasAddedNew)
         {
-            var response = _fileRenderer.Render(libraryId, request.Result.File);
+            var response = fileRenderer.Render(libraryId, request.Result.File);
             return new CreatedResult(response.Links.Self(), response);
         }
 

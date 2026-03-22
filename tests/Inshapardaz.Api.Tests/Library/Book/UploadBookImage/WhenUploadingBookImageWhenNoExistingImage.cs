@@ -3,22 +3,15 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
 {
     [TestFixture]
-    public class WhenUploadingBookImageWhenNoExistingImage : TestBase
+    public class WhenUploadingBookImageWhenNoExistingImage() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private BookAssert _assert;
         private int _bookId;
-
-        public WhenUploadingBookImageWhenNoExistingImage()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,21 +31,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
         }
 
         [Test]
-        public void ShouldHaveHttpResponseMessage()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveHttpResponseMessage() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectImageLocationHeader(_bookId);
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectImageLocationHeader(_bookId);
 
         [Test]
-        public void ShouldHaveAddedImageToBook()
-        {
-            _assert.ShouldHaveAddedBookImage(_bookId);
-        }
+        public void ShouldHaveAddedImageToBook() => _assert.ShouldHaveAddedBookImage(_bookId);
     }
 }

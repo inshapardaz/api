@@ -4,25 +4,15 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
 {
     [TestFixture]
-    public class WhenGettingRecentBooksPageInMiddle
-        : TestBase
+    public class WhenGettingRecentBooksPageInMiddle() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<BookView> _assert;
         private IEnumerable<BookDto> _books;
-
-        public WhenGettingRecentBooksPageInMiddle()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -37,16 +27,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -56,16 +40,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         }
 
         [Test]
-        public void ShouldHaveNextLink()
-        {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 3, 10, new KeyValuePair<string, string>("read", bool.TrueString));
-        }
+        public void ShouldHaveNextLink() => _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 3, 10, new KeyValuePair<string, string>("read", bool.TrueString));
 
         [Test]
-        public void ShouldHavePreviousLink()
-        {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 1, 10, new KeyValuePair<string, string>("read", bool.TrueString));
-        }
+        public void ShouldHavePreviousLink() => _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 1, 10, new KeyValuePair<string, string>("read", bool.TrueString));
 
         [Test]
         public void ShouldReturnCorrectPage()

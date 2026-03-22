@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
@@ -13,18 +11,12 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.UpdateCorrection
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
     [TestFixture(Role.Reader)]
-    public class WhenUpdatingCorrectionAsNonAdmin : TestBase
+    public class WhenUpdatingCorrectionAsNonAdmin(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private CorrectionAssert _assert;
         private CorrectionDto _correction;
         private CorrectionView _update;
-
-        public WhenUpdatingCorrectionAsNonAdmin(Role role)
-            :base(role)
-        {
-
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -42,21 +34,12 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.UpdateCorrection
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnForbidden()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldReturnForbidden() => _response.ShouldBeForbidden();
 
         [Test]
-        public void ShouldHaveNotUpdatedCorrection()
-        {
-            _assert.ShouldMatchSavedCorrection(_correction);
-        }
+        public void ShouldHaveNotUpdatedCorrection() => _assert.ShouldMatchSavedCorrection(_correction);
     }
 }

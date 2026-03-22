@@ -2,9 +2,6 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleImage
 {
@@ -36,15 +33,9 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleImage
         }
 
         [Test]
-        public void ShouldHaveUnauthorisedResult()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldHaveUnauthorisedResult() => _response.ShouldBeUnauthorized();
 
         [Test]
-        public void ShouldNotHaveUpdatedArticleImage()
-        {
-            _assert.ShouldNotHaveUpdatedArticleImage(_articleId, _oldImage);
-        }
+        public void ShouldNotHaveUpdatedArticleImage() => _assert.ShouldNotHaveUpdatedArticleImage(_articleId, _oldImage);
     }
 }

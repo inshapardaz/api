@@ -1,29 +1,18 @@
-using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
 {
-    public class WhenGettingIssuesByPeriodicalForYear
-        : TestBase
+    public class WhenGettingIssuesByPeriodicalForYear() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private IEnumerable<IssueDto> _issues;
         private PeriodicalDto _periodical;
         private PagingAssert<IssueView> _assert;
-
-        public WhenGettingIssuesByPeriodicalForYear()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -36,40 +25,22 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/periodicals/{_periodical.Id}/issues", new KeyValuePair<string, string>("year", "1999"));
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/periodicals/{_periodical.Id}/issues", new KeyValuePair<string, string>("year", "1999"));
 
         [Test]
-        public void ShouldHaveNextLink()
-        {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/periodicals/{_periodical.Id}/issues", 3, 5, new KeyValuePair<string, string>("year", "1999"));
-        }
+        public void ShouldHaveNextLink() => _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/periodicals/{_periodical.Id}/issues", 3, 5, new KeyValuePair<string, string>("year", "1999"));
 
         [Test]
-        public void ShouldHavePreviousLink()
-        {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/periodicals/{_periodical.Id}/issues", 1, 5, new KeyValuePair<string, string>("year", "1999"));
-        }
+        public void ShouldHavePreviousLink() => _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/periodicals/{_periodical.Id}/issues", 1, 5, new KeyValuePair<string, string>("year", "1999"));
 
         [Test]
-        public void ShouldHaveCreateLink()
-        {
-            _assert.ShouldHaveCreateLink($"/libraries/{LibraryId}/periodicals/{_periodical.Id}/issues");
-        }
+        public void ShouldHaveCreateLink() => _assert.ShouldHaveCreateLink($"/libraries/{LibraryId}/periodicals/{_periodical.Id}/issues");
 
         [Test]
         public void ShouldHaveCorrectIssuessData()

@@ -10,26 +10,17 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Controllers;
 
-public class CommonWordController : Controller
+public class CommonWordController(
+    IAmACommandProcessor commandProcessor,
+    IQueryProcessor queryProcessor,
+    IRenderCommonWord commonWordRenderer)
+    : Controller
 {
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRenderCommonWord _commonWordRenderer;
-
-    public CommonWordController(IAmACommandProcessor commandProcessor, 
-        IQueryProcessor queryProcessor, 
-        IRenderCommonWord commonWordRenderer)
-    {
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-        _commonWordRenderer = commonWordRenderer;
-    }
-
     [HttpGet("/tools/{language}/words/list", Name = nameof(GetAllCommonWords))]
     public async Task<IActionResult> GetAllCommonWords(string language, CancellationToken cancellationToken)
     {
         var query = new GetAllWordsForLanguageQuery(language);
-        var result = await _queryProcessor.ExecuteAsync(query, cancellationToken: cancellationToken);
+        var result = await queryProcessor.ExecuteAsync(query, cancellationToken: cancellationToken);
         if (result is null || !result.Any())
         {
             return NotFound();
@@ -51,7 +42,7 @@ public class CommonWordController : Controller
             PageNumber = pageNumber,
             PageSize = pageSize
         };
-        var result = await _queryProcessor.ExecuteAsync(wordsQuery, cancellationToken: cancellationToken);
+        var result = await queryProcessor.ExecuteAsync(wordsQuery, cancellationToken: cancellationToken);
         
         var args = new PageRendererArgs<CommonWordModel>
         {
@@ -64,19 +55,19 @@ public class CommonWordController : Controller
             },
         };
         
-        return Ok(_commonWordRenderer.Render(args, language));
+        return Ok(commonWordRenderer.Render(args, language));
     }
     
     [HttpGet("/tools/{language}/words/{id:long}", Name = nameof(GetCommonWordById))]
     public async Task<IActionResult> GetCommonWordById(string language, long id, CancellationToken cancellationToken)
     {
         var query = new GetCommonWordByIdQuery(language, id);
-        var result = await _queryProcessor.ExecuteAsync(query, cancellationToken: cancellationToken);
+        var result = await queryProcessor.ExecuteAsync(query, cancellationToken: cancellationToken);
         if (result is null)
         {
             return NotFound();
         }
-        var response = _commonWordRenderer.Render(result, language);
+        var response = commonWordRenderer.Render(result, language);
         return Ok(response);
     }
     
@@ -85,8 +76,8 @@ public class CommonWordController : Controller
     {
         commonWordModel.Language = language;
         var query = new AddCommonWordRequest(commonWordModel);
-        await _commandProcessor.SendAsync(query, cancellationToken: cancellationToken);
-        var response = _commonWordRenderer.Render(query.Result, language);
+        await commandProcessor.SendAsync(query, cancellationToken: cancellationToken);
+        var response = commonWordRenderer.Render(query.Result, language);
         return Created(response.Links.Self(), response);
     }
     
@@ -96,8 +87,8 @@ public class CommonWordController : Controller
         commonWordModel.Id = id;
         commonWordModel.Language = language;
         var command = new UpdateCommonWordRequest(commonWordModel);
-        await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
-        var response = _commonWordRenderer.Render(command.Result.WordModel, language);
+        await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        var response = commonWordRenderer.Render(command.Result.WordModel, language);
         if (command.Result.HasAddedNew)
         {
             return Created(response.Links.Self(), response);
@@ -110,7 +101,7 @@ public class CommonWordController : Controller
     public async Task<IActionResult> DeleteCommonWord(long id, string language, CancellationToken cancellationToken)
     {
         var query = new DeleteCommonWordRequest(id, language);
-        await _commandProcessor.SendAsync(query, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(query, cancellationToken: cancellationToken);
         return NoContent();
     }
 }

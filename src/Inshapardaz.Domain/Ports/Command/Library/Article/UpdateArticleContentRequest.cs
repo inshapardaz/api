@@ -5,18 +5,11 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Article;
 
-public class UpdateArticleContentRequest : LibraryBaseCommand
+public class UpdateArticleContentRequest(int libraryId) : LibraryBaseCommand(libraryId)
 {
-    public UpdateArticleContentRequest(int libraryId)
-        : base(libraryId)
-    {
-    }
-
     public ArticleContentModel Content { get; set; }
 
 
@@ -30,25 +23,16 @@ public class UpdateArticleContentRequest : LibraryBaseCommand
     }
 }
 
-public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateArticleContentRequest>
+public class UpdateArticleContentRequestHandler(
+    IArticleRepository articleRepository,
+    ILibraryRepository libraryRepository,
+    IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<UpdateArticleContentRequest>
 {
-    private readonly IArticleRepository _articleRepository;
-    private readonly ILibraryRepository _libraryRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public UpdateArticleContentRequestHandler(IArticleRepository articleRepository, 
-        ILibraryRepository libraryRepository, 
-        IAmACommandProcessor commandProcessor)
-    {
-        _articleRepository = articleRepository;
-        _libraryRepository = libraryRepository;
-        _commandProcessor = commandProcessor;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateArticleContentRequest> HandleAsync(UpdateArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var article = await _articleRepository.GetArticle(command.LibraryId, command.Content.ArticleId, cancellationToken);
+        var article = await articleRepository.GetArticle(command.LibraryId, command.Content.ArticleId, cancellationToken);
 
         if (article == null)
         {
@@ -57,7 +41,7 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateArti
 
         if (string.IsNullOrWhiteSpace(command.Content.Language))
         {
-            var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
+            var library = await libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
             if (library == null)
             {
                 throw new BadRequestException();
@@ -66,7 +50,7 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateArti
             command.Content.Language = library.Language;
         }
 
-        var content = await _articleRepository.GetArticleContent(command.LibraryId, command.Content.ArticleId, command.Content.Language, cancellationToken);
+        var content = await articleRepository.GetArticleContent(command.LibraryId, command.Content.ArticleId, command.Content.Language, cancellationToken);
 
         var fileName = FilePathHelper.GetArticleContentFileName(command.Content.Language);
         var saveFileCommand = new SaveTextFileCommand(
@@ -78,12 +62,12 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateArti
             ExistingFileId = content?.FileId
         }; 
 
-        await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
         command.Content.FileId = saveFileCommand.Result.Id;
 
         if (content == null)
         {
-            command.Result.Content = await _articleRepository.AddArticleContent(
+            command.Result.Content = await articleRepository.AddArticleContent(
                 command.LibraryId,
                 command.Content,
                 cancellationToken);
@@ -91,7 +75,7 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateArti
         }
         else
         {
-            command.Result.Content = await _articleRepository.UpdateArticleContent(command.LibraryId,
+            command.Result.Content = await articleRepository.UpdateArticleContent(command.LibraryId,
                                                     command.Content,
                                                     cancellationToken);
         }

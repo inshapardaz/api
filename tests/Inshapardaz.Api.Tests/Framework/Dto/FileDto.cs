@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Inshapardaz.Api.Tests.Framework.Dto
+﻿namespace Inshapardaz.Api.Tests.Framework.Dto
 {
     public class FileDto
     {

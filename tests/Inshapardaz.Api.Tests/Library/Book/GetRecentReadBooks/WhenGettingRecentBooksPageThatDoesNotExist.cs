@@ -3,23 +3,14 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
 {
     [TestFixture]
-    public class WhenGettingRecentBooksPageThatDoesNotExist
-        : TestBase
+    public class WhenGettingRecentBooksPageThatDoesNotExist() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<BookView> _assert;
-
-        public WhenGettingRecentBooksPageThatDoesNotExist()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -34,16 +25,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -53,16 +38,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         }
 
         [Test]
-        public void ShouldNotHaveNextLink()
-        {
-            _assert.ShouldNotHaveNextLink();
-        }
+        public void ShouldNotHaveNextLink() => _assert.ShouldNotHaveNextLink();
 
         [Test]
-        public void ShouldNotHavePreviousLink()
-        {
-            _assert.ShouldNotHavePreviousLink();
-        }
+        public void ShouldNotHavePreviousLink() => _assert.ShouldNotHavePreviousLink();
 
         [Test]
         public void ShouldReturnCorrectPage()
@@ -74,9 +53,6 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         }
 
         [Test]
-        public void ShouldReturnExpectedBooks()
-        {
-            _assert.ShouldHaveNoData();
-        }
+        public void ShouldReturnExpectedBooks() => _assert.ShouldHaveNoData();
     }
 }

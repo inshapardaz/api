@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
@@ -13,17 +9,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
 {
     [TestFixture]
-    public class WhenSearchinArticlesWithMultipleAuthorsAndCategories : TestBase
+    public class WhenSearchinArticlesWithMultipleAuthorsAndCategories() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<ArticleView> _assert;
         private IEnumerable<CategoryDto> _categories;
         private IEnumerable<AuthorDto> _authors;
-
-        public WhenSearchinArticlesWithMultipleAuthorsAndCategories()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,34 +29,19 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/articles", 2, 10);
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/articles", 2);
 
         [Test]
-        public void ShouldHaveNextLink()
-        {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/articles", 3, 10);
-        }
+        public void ShouldHaveNextLink() => _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/articles", 3);
 
         [Test]
-        public void ShouldHavePreviousLink()
-        {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/articles", 1, 10);
-        }
+        public void ShouldHavePreviousLink() => _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/articles", 1);
 
         [Test]
         public void ShouldReturnExpectedArticles()

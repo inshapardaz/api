@@ -4,23 +4,15 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
 {
     [TestFixture]
-    public class WhenAddingChapterContentsWithoutLanguage
-        : TestBase
+    public class WhenAddingChapterContentsWithoutLanguage() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private ChapterDto _chapter;
         private ChapterContentAssert _assert;
-
-        public WhenAddingChapterContentsWithoutLanguage()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -32,21 +24,12 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveUsedLibraryLanguageForContent()
-        {
-            _assert.ShouldHaveDefaultLibraryLanguage();
-        }
+        public void ShouldHaveUsedLibraryLanguageForContent() => _assert.ShouldHaveDefaultLibraryLanguage();
     }
 }

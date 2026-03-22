@@ -2,21 +2,13 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueArticleContents
 {
     [TestFixture]
-    public class WhenGettingIssueArticleContentWhenNoChapterNotExists
-        : TestBase
+    public class WhenGettingIssueArticleContentWhenNoChapterNotExists() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
-
-        public WhenGettingIssueArticleContentWhenNoChapterNotExists()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,15 +19,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveNotFoundResult()
-        {
-            _response.ShouldBeNotFound();
-        }
+        public void ShouldHaveNotFoundResult() => _response.ShouldBeNotFound();
     }
 }

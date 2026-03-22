@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,16 +9,11 @@ namespace Inshapardaz.Api.Tests.Library.UploadLibraryImage
 
     [TestFixture(Role.Writer)]
     [TestFixture(Role.Reader)]
-    public class WhenUploadingLibraryImageAsNonAdmin : TestBase
+    public class WhenUploadingLibraryImageAsNonAdmin(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private LibraryAssert _assert;
         private byte[] _newImage;
-
-        public WhenUploadingLibraryImageAsNonAdmin(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -32,21 +25,12 @@ namespace Inshapardaz.Api.Tests.Library.UploadLibraryImage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbidResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbidResult() => _response.ShouldBeForbidden();
 
         [Test]
-        public void ShouldNotHaveUpdatedLibraryImage()
-        {
-            _assert.ShouldNotHaveUpdatedLibraryImage(LibraryId, _newImage);
-        }
+        public void ShouldNotHaveUpdatedLibraryImage() => _assert.ShouldNotHaveUpdatedLibraryImage(LibraryId, _newImage);
     }
 }

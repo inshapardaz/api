@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,16 +7,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Tools.CommonWords.DeleteCommonWord
 {
     [TestFixture]
-    public class WhenDeletingCommonWordAsAdmin : TestBase
+    public class WhenDeletingCommonWordAsAdmin() : TestBase(Role.Admin)
     {
         private HttpResponseMessage _response;
         private CommonWordAssert _assert;
         private CommonWordDto _commonWordDto;
-
-        public WhenDeletingCommonWordAsAdmin()
-            : base(Role.Admin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -30,21 +23,12 @@ namespace Inshapardaz.Api.Tests.Tools.CommonWords.DeleteCommonWord
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNoContent()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldReturnNoContent() => _response.ShouldBeNoContent();
 
         [Test]
-        public void ShouldHaveDeletedAuthor()
-        {
-            _assert.ShouldHaveDeletedCommonWord(_commonWordDto.Id);
-        }
+        public void ShouldHaveDeletedAuthor() => _assert.ShouldHaveDeletedCommonWord(_commonWordDto.Id);
     }
 }

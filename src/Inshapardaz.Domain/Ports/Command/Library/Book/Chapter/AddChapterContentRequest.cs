@@ -5,52 +5,33 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Book.Chapter;
 
-public class AddChapterContentRequest : BookRequest
+public class AddChapterContentRequest(int libraryId, int bookId, int chapterNumber, string contents, string language)
+    : BookRequest(libraryId, bookId)
 {
-    public AddChapterContentRequest(int libraryId, int bookId, int chapterNumber, string contents, string language)
-        : base(libraryId, bookId)
-    {
-        ChapterNumber = chapterNumber;
-        Contents = contents;
-        Language = language;
-    }
+    public int ChapterNumber { get; set; } = chapterNumber;
 
-    public int ChapterNumber { get; set; }
+    public string Contents { get; } = contents;
 
-    public string Contents { get; }
-
-    public string Language { get; set; }
+    public string Language { get; set; } = language;
 
     public ChapterContentModel Result { get; set; }
 }
 
-public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterContentRequest>
+public class AddChapterContentRequestHandler(
+    ILibraryRepository libraryRepository,
+    IChapterRepository chapterRepository,
+    IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<AddChapterContentRequest>
 {
-    private readonly IChapterRepository _chapterRepository;
-    private readonly ILibraryRepository _libraryRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public AddChapterContentRequestHandler(
-        ILibraryRepository libraryRepository,
-        IChapterRepository chapterRepository,
-        IAmACommandProcessor commandProcessor)
-    {
-        _chapterRepository = chapterRepository;
-        _libraryRepository = libraryRepository;
-        _commandProcessor = commandProcessor;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<AddChapterContentRequest> HandleAsync(AddChapterContentRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         if (string.IsNullOrWhiteSpace(command.Language))
         {
-            var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
+            var library = await libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
             if (library == null)
             {
                 throw new BadRequestException();
@@ -59,7 +40,7 @@ public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterCon
             command.Language = library.Language;
         }
 
-        var chapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
+        var chapter = await chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
         if (chapter != null)
         {
             var fileName = FilePathHelper.BookChapterContentFileName;
@@ -69,7 +50,7 @@ public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterCon
                 MimeType = MimeTypes.Markdown
             };
 
-            await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
+            await commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
 
             var chapterContent = new ChapterContentModel
             {
@@ -80,7 +61,7 @@ public class AddChapterContentRequestHandler : RequestHandlerAsync<AddChapterCon
                 FileId = saveFileCommand.Result?.Id
             };
 
-            command.Result = await _chapterRepository.AddChapterContent(command.LibraryId, chapterContent, cancellationToken);
+            command.Result = await chapterRepository.AddChapterContent(command.LibraryId, chapterContent, cancellationToken);
             command.Result.Text = command.Contents;
         }
 

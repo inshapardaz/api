@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using NUnit.Framework;
 
@@ -23,15 +21,9 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UpdateBookShelf
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbiddenResult()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldHaveForbiddenResult() => _response.ShouldBeUnauthorized();
     }
 }

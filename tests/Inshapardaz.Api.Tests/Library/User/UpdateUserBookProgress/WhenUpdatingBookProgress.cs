@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Extensions;
+﻿using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
@@ -13,18 +11,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.User.UpdateUserBookProgress
 {
     [TestFixture]
-    public class WhenUpdatingBookProgress
-        : TestBase
+    public class WhenUpdatingBookProgress() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private ReadProgressAssert _assert;
         private ReadProgressView _payload;
         private BookDto _book;
-
-        public WhenUpdatingBookProgress()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -40,27 +32,15 @@ namespace Inshapardaz.Api.Tests.Library.User.UpdateUserBookProgress
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveCorrectReturnObject()
-        {
-            _assert.ShouldMatch(_payload);
-        }
-        
+        public void ShouldHaveCorrectReturnObject() => _assert.ShouldMatch(_payload);
+
         [Test]
-        public void ShouldHaveSavedProgress()
-        {
-            _assert.ShouldHaveSaved(_book.Id, AccountId, _payload);
-        }
+        public void ShouldHaveSavedProgress() => _assert.ShouldHaveSaved(_book.Id, AccountId, _payload);
     }
 }

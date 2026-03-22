@@ -2,8 +2,6 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Accounts;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.Authenticate
 {
@@ -22,9 +20,6 @@ namespace Inshapardaz.Api.Tests.Accounts.Authenticate
         }
 
         [Test]
-        public void ShouldReturnFailure()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldReturnFailure() => _response.ShouldBeUnauthorized();
     }
 }

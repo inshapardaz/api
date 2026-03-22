@@ -1,9 +1,5 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Bogus;
+﻿using Bogus;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Tools;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -11,17 +7,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Tools.CommonWords.GetCommonWords
 {
     [TestFixture]
-    public class WhenGettingCommonWordsLastPage : TestBase
+    public class WhenGettingCommonWordsLastPage() : TestBase(Domain.Models.Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<CommonWordView> _assert;
         private readonly string _language = new Faker().Random.String2(4);
 
-
-        public WhenGettingCommonWordsLastPage()
-            :base(Domain.Models.Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,34 +24,19 @@ namespace Inshapardaz.Api.Tests.Tools.CommonWords.GetCommonWords
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/tools/{_language}/words", 5, 10);
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/tools/{_language}/words", 5);
 
         [Test]
-        public void ShouldHavePreviousLink()
-        {
-            _assert.ShouldHavePreviousLink($"/tools/{_language}/words", 4);
-        }
+        public void ShouldHavePreviousLink() => _assert.ShouldHavePreviousLink($"/tools/{_language}/words", 4);
 
         [Test]
-        public void ShouldNotHaveNextLink()
-        {
-            _assert.ShouldNotHaveNextLink();
-        }
+        public void ShouldNotHaveNextLink() => _assert.ShouldNotHaveNextLink();
 
         [Test]
         public void ShouldHaveCorrectData()

@@ -3,20 +3,12 @@ using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.BookShelf;
 
-public class UpdateBookShelfRequest : LibraryBaseCommand
+public class UpdateBookShelfRequest(int libraryId, BookShelfModel bookShelf) : LibraryBaseCommand(libraryId)
 {
-    public UpdateBookShelfRequest(int libraryId, BookShelfModel bookShelf)
-        : base(libraryId)
-    {
-        BookShelf = bookShelf;
-    }
-
-    public BookShelfModel BookShelf { get; }
+    public BookShelfModel BookShelf { get; } = bookShelf;
 
     public UpdateBookShelfResult Result { get; } = new UpdateBookShelfResult();
 
@@ -28,23 +20,15 @@ public class UpdateBookShelfRequest : LibraryBaseCommand
     }
 }
 
-public class UpdateBookShelfRequestHandler : RequestHandlerAsync<UpdateBookShelfRequest>
+public class UpdateBookShelfRequestHandler(IBookShelfRepository bookShelfRepository, IUserHelper userHelper)
+    : RequestHandlerAsync<UpdateBookShelfRequest>
 {
-    private readonly IBookShelfRepository _bookShelfRepository;
-    private readonly IUserHelper _userHelper;
-
-    public UpdateBookShelfRequestHandler(IBookShelfRepository bookShelfRepository, IUserHelper userHelper)
-    {
-        _bookShelfRepository = bookShelfRepository;
-        _userHelper = userHelper;
-    }
-
     [LibraryAuthorize(1)]
     public override async Task<UpdateBookShelfRequest> HandleAsync(UpdateBookShelfRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var result = await _bookShelfRepository.GetBookShelfById(command.LibraryId, command.BookShelf.Id, cancellationToken);
+        var result = await bookShelfRepository.GetBookShelfById(command.LibraryId, command.BookShelf.Id, cancellationToken);
 
-        if (result != null && result.AccountId != _userHelper.AccountId)
+        if (result != null && result.AccountId != userHelper.AccountId)
         {
             throw new ForbiddenException();
         }
@@ -52,8 +36,8 @@ public class UpdateBookShelfRequestHandler : RequestHandlerAsync<UpdateBookShelf
         if (result == null)
         {
             command.BookShelf.Id = default;
-            command.BookShelf.AccountId = _userHelper.AccountId.Value;
-            var newBookShelf = await _bookShelfRepository.AddBookShelf(command.LibraryId, command.BookShelf, cancellationToken);
+            command.BookShelf.AccountId = userHelper.AccountId.Value;
+            var newBookShelf = await bookShelfRepository.AddBookShelf(command.LibraryId, command.BookShelf, cancellationToken);
             command.Result.HasAddedNew = true;
             command.Result.BookShelf = newBookShelf;
         }
@@ -62,7 +46,7 @@ public class UpdateBookShelfRequestHandler : RequestHandlerAsync<UpdateBookShelf
             result.Name = command.BookShelf.Name;
             result.Description = command.BookShelf.Description;
             result.IsPublic = command.BookShelf.IsPublic;
-            await _bookShelfRepository.UpdateBookShelf(command.LibraryId, result, cancellationToken);
+            await bookShelfRepository.UpdateBookShelf(command.LibraryId, result, cancellationToken);
             command.Result.BookShelf = command.BookShelf;
         }
 

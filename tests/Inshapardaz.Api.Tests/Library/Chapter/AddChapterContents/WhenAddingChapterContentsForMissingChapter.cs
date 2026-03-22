@@ -2,21 +2,13 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
 {
     [TestFixture]
-    public class WhenAddingChapterContentsForMissingChapter
-        : TestBase
+    public class WhenAddingChapterContentsForMissingChapter() : TestBase(Role.LibraryAdmin)
     {
         private HttpResponseMessage _response;
-
-        public WhenAddingChapterContentsForMissingChapter()
-            : base(Role.LibraryAdmin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -26,15 +18,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.AddChapterContents
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveBadRequestResult()
-        {
-            _response.ShouldBeBadRequest();
-        }
+        public void ShouldHaveBadRequestResult() => _response.ShouldBeBadRequest();
     }
 }

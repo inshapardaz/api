@@ -1,23 +1,14 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueArticleContents
 {
     [TestFixture]
-    public class WhenGettingIssueArticleContentLanguageNotExisting
-        : TestBase
+    public class WhenGettingIssueArticleContentLanguageNotExisting() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
-
-        public WhenGettingIssueArticleContentLanguageNotExisting()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -30,15 +21,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNotFound()
-        {
-            _response.ShouldBeNotFound();
-        }
+        public void ShouldReturnNotFound() => _response.ShouldBeNotFound();
     }
 }

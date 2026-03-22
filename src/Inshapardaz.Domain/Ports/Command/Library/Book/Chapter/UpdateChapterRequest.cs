@@ -2,8 +2,6 @@
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Book.Chapter;
 
@@ -30,31 +28,25 @@ public class UpdateChapterRequest : BookRequest
     }
 }
 
-public class UpdateChapterRequestHandler : RequestHandlerAsync<UpdateChapterRequest>
+public class UpdateChapterRequestHandler(IChapterRepository chapterRepository)
+    : RequestHandlerAsync<UpdateChapterRequest>
 {
-    private readonly IChapterRepository _chapterRepository;
-
-    public UpdateChapterRequestHandler(IChapterRepository chapterRepository)
-    {
-        _chapterRepository = chapterRepository;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateChapterRequest> HandleAsync(UpdateChapterRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var result = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
+        var result = await chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
 
         if (result == null)
         {
             var chapter = command.Chapter;
             chapter.Id = default;
-            command.Result.Chapter = await _chapterRepository.AddChapter(command.LibraryId, command.BookId, chapter, cancellationToken);
+            command.Result.Chapter = await chapterRepository.AddChapter(command.LibraryId, command.BookId, chapter, cancellationToken);
             command.Result.HasAddedNew = true;
         }
         else
         {
             command.Chapter.Id = result.Id;
-            command.Result.Chapter = await _chapterRepository.UpdateChapter(command.LibraryId, command.BookId, command.ChapterNumber, command.Chapter, cancellationToken);
+            command.Result.Chapter = await chapterRepository.UpdateChapter(command.LibraryId, command.BookId, command.ChapterNumber, command.Chapter, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Bogus;
+﻿using Bogus;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
@@ -13,16 +11,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
 {
     [TestFixture]
-    public class WhenUpdatingPeriodicalThatDoesNotExist : TestBase
+    public class WhenUpdatingPeriodicalThatDoesNotExist() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private PeriodicalView _expected;
         private PeriodicalAssert _periodicalAssert;
-
-        public WhenUpdatingPeriodicalThatDoesNotExist() 
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -40,28 +33,16 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _periodicalAssert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _periodicalAssert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldSaveTheBook()
-        {
-            _periodicalAssert.ShouldHaveSavedPeriodical();
-        }
+        public void ShouldSaveTheBook() => _periodicalAssert.ShouldHaveSavedPeriodical();
 
         [Test]
         public void ShouldHaveLinks()

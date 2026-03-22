@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -11,15 +9,10 @@ namespace Inshapardaz.Api.Tests.Library.Author.AddAuthor
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
-    public class WhenAddingAuthorWithPermissions : TestBase
+    public class WhenAddingAuthorWithPermissions(Role role) : TestBase(role)
     {
         private AuthorAssert _authorAssert;
         private HttpResponseMessage _response;
-
-        public WhenAddingAuthorWithPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -32,28 +25,16 @@ namespace Inshapardaz.Api.Tests.Library.Author.AddAuthor
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _authorAssert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _authorAssert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldSaveTheAuthor()
-        {
-            _authorAssert.ShouldHaveSavedAuthor();
-        }
+        public void ShouldSaveTheAuthor() => _authorAssert.ShouldHaveSavedAuthor();
 
         [Test]
         public void ShouldHaveLinks()

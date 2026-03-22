@@ -1,44 +1,28 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Darker;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Periodical.Issue;
 
-public class GetIssueByIdQuery : LibraryBaseQuery<IssueModel>
+public class GetIssueByIdQuery(int libraryId, int periodicalId, int volumeNumber, int issueNumber)
+    : LibraryBaseQuery<IssueModel>(libraryId)
 {
-    public GetIssueByIdQuery(int libraryId, int periodicalId, int volumeNumber, int issueNumber)
-        : base(libraryId)
-    {
-        PeriodicalId = periodicalId;
-        VolumeNumber = volumeNumber;
-        IssueNumber = issueNumber;
-    }
-
-    public int PeriodicalId { get; private set; }
-    public int VolumeNumber { get; }
-    public int IssueNumber { get; }
+    public int PeriodicalId { get; private set; } = periodicalId;
+    public int VolumeNumber { get; } = volumeNumber;
+    public int IssueNumber { get; } = issueNumber;
 }
 
-public class GetIssueByIdQueryHandler : QueryHandlerAsync<GetIssueByIdQuery, IssueModel>
+public class GetIssueByIdQueryHandler(IIssueRepository issueRepository)
+    : QueryHandlerAsync<GetIssueByIdQuery, IssueModel>
 {
-    private readonly IIssueRepository _issueRepository;
-
-    public GetIssueByIdQueryHandler(IIssueRepository issueRepository)
-    {
-        _issueRepository = issueRepository;
-    }
-
     public override async Task<IssueModel> ExecuteAsync(GetIssueByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+        var issue = await issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
 
         if (issue != null)
         {
-            var status = (await _issueRepository.GetIssuePageSummary(command.LibraryId, [issue.Id], cancellationToken)).FirstOrDefault();
+            var status = (await issueRepository.GetIssuePageSummary(command.LibraryId, [issue.Id], cancellationToken)).FirstOrDefault();
 
             if (status != null)
             {
@@ -54,7 +38,7 @@ public class GetIssueByIdQueryHandler : QueryHandlerAsync<GetIssueByIdQuery, Iss
                 }
             }
             
-            var contents = await _issueRepository.GetIssueContents(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+            var contents = await issueRepository.GetIssueContents(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
 
             issue.Contents = contents.ToList();
         }

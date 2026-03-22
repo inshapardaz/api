@@ -1,8 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.CheckInvitationCode
 {
@@ -20,15 +18,9 @@ namespace Inshapardaz.Api.Tests.Accounts.CheckInvitationCode
         }
 
         [Test]
-        public void ShouldReturnOK()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOK() => _response.ShouldBeOk();
 
         [OneTimeTearDown]
-        public void TearDown()
-        {
-            Cleanup();
-        }
+        public void TearDown() => Cleanup();
     }
 }

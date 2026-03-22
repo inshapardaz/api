@@ -1,34 +1,20 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
 using Paramore.Darker;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Query.Account;
 
-public class GetInvitationStatusQuery : IQuery<InvitationStatuses>
+public class GetInvitationStatusQuery(string invitationCode) : IQuery<InvitationStatuses>
 {
-    public GetInvitationStatusQuery(string invitationCode)
-    {
-        InvitationCode = invitationCode;
-    }
-
-    public string InvitationCode { get; }
+    public string InvitationCode { get; } = invitationCode;
 }
 
-public class GetInvitationStatusQueryHandler : QueryHandlerAsync<GetInvitationStatusQuery, InvitationStatuses>
+public class GetInvitationStatusQueryHandler(IAccountRepository accountRepository)
+    : QueryHandlerAsync<GetInvitationStatusQuery, InvitationStatuses>
 {
-    private readonly IAccountRepository _accountRepository;
-
-    public GetInvitationStatusQueryHandler(IAccountRepository accountRepository)
-    {
-        _accountRepository = accountRepository;
-    }
-
     public override async Task<InvitationStatuses> ExecuteAsync(GetInvitationStatusQuery query, CancellationToken cancellationToken = new CancellationToken())
     {
-        var account = await _accountRepository.GetAccountByInvitationCode(query.InvitationCode, cancellationToken);
+        var account = await accountRepository.GetAccountByInvitationCode(query.InvitationCode, cancellationToken);
 
         if (account == null) return InvitationStatuses.NotFound;
         if (account.InvitationCodeExpiry < DateTime.UtcNow) return InvitationStatuses.Expired;

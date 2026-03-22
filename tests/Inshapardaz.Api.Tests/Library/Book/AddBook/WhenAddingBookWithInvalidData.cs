@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Bogus;
+﻿using Bogus;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.DataBuilders;
 using Inshapardaz.Api.Tests.Framework.Helpers;
@@ -16,13 +13,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
     public partial class WhenAddingBookWithInvalidData
     {
         [TestFixture]
-        public class AndUsingNonExistingLibrary : TestBase
+        public class AndUsingNonExistingLibrary() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
-
-            public AndUsingNonExistingLibrary() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -34,27 +27,17 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             }
 
             [OneTimeTearDown]
-            public void Teardown()
-            {
-                Cleanup();
-            }
+            public void Teardown() => Cleanup();
 
             [Test]
-            public void ShouldHaveBadRequestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadRequestResult() => _response.ShouldBeBadRequest();
         }
 
         [TestFixture]
-        public class AndUsingAuthorFromOtherLibrary : TestBase
+        public class AndUsingAuthorFromOtherLibrary() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
             private LibraryDataBuilder _library2Builder;
-
-            public AndUsingAuthorFromOtherLibrary() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -76,20 +59,13 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             }
 
             [Test]
-            public void ShouldHaveBadReqestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadReqestResult() => _response.ShouldBeBadRequest();
         }
 
         [TestFixture]
-        public class AndUsingNonExistingAuthor : TestBase
+        public class AndUsingNonExistingAuthor() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
-
-            public AndUsingNonExistingAuthor() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -100,26 +76,16 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             }
 
             [OneTimeTearDown]
-            public void Teardown()
-            {
-                Cleanup();
-            }
+            public void Teardown() => Cleanup();
 
             [Test]
-            public void ShouldHaveBadReqestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadReqestResult() => _response.ShouldBeBadRequest();
         }
 
         [TestFixture]
-        public class AndUsingNonExistingSeries : TestBase
+        public class AndUsingNonExistingSeries() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
-
-            public AndUsingNonExistingSeries() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -131,27 +97,17 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             }
 
             [OneTimeTearDown]
-            public void Teardown()
-            {
-                Cleanup();
-            }
+            public void Teardown() => Cleanup();
 
             [Test]
-            public void ShouldHaveBadReqestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadReqestResult() => _response.ShouldBeBadRequest();
         }
 
         [TestFixture]
-        public class AndUsingSeriesFromOtherLibrary : TestBase
+        public class AndUsingSeriesFromOtherLibrary() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
             private LibraryDataBuilder _library2Builder;
-
-            public AndUsingSeriesFromOtherLibrary() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -174,20 +130,13 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             }
 
             [Test]
-            public void ShouldHaveBadReqestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadReqestResult() => _response.ShouldBeBadRequest();
         }
 
         [TestFixture]
-        public class AndUsingNonExistingCategory : TestBase
+        public class AndUsingNonExistingCategory() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
-
-            public AndUsingNonExistingCategory() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -204,27 +153,17 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             }
 
             [OneTimeTearDown]
-            public void Teardown()
-            {
-                Cleanup();
-            }
+            public void Teardown() => Cleanup();
 
             [Test]
-            public void ShouldHaveBadReqestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadReqestResult() => _response.ShouldBeBadRequest();
         }
 
         [TestFixture]
-        public class AndUsingCategorysFromOtherLibrary : TestBase
+        public class AndUsingCategorysFromOtherLibrary() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
             private LibraryDataBuilder _library2Builder;
-
-            public AndUsingCategorysFromOtherLibrary() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -252,10 +191,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
             }
 
             [Test]
-            public void ShouldHaveBadReqestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadReqestResult() => _response.ShouldBeBadRequest();
         }
     }
 }

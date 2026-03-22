@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Inshapardaz.Domain.Models;
+﻿namespace Inshapardaz.Domain.Models;
 
 public class Page<T>
 {

@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -12,17 +8,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
 {
     [TestFixture]
-    public class WhenSearchingBooksWithMultipleAuthorsAndCategories : TestBase
+    public class WhenSearchingBooksWithMultipleAuthorsAndCategories() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<BookView> _assert;
         private IEnumerable<CategoryDto> _categories;
         private IEnumerable<AuthorDto> _authors;
-
-        public WhenSearchingBooksWithMultipleAuthorsAndCategories()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,34 +29,19 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooks
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books");
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books");
 
         [Test]
-        public void ShouldHaveNextLink()
-        {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 3);
-        }
+        public void ShouldHaveNextLink() => _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/books", 3);
 
         [Test]
-        public void ShouldHavePreviousLink()
-        {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 1);
-        }
+        public void ShouldHavePreviousLink() => _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/books", 1);
 
         [Test]
         public void ShouldReturnExpectedBooks()

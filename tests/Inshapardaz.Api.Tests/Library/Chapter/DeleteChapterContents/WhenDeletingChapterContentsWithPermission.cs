@@ -3,26 +3,17 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.DeleteChapterContents
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingChapterContentsWithPermission
-        : TestBase
+    public class WhenDeletingChapterContentsWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private ChapterContentAssert _assert;
         private ChapterContentDto _content;
-
-        public WhenDeletingChapterContentsWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,21 +26,12 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.DeleteChapterContents
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveNoContentResult()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldHaveNoContentResult() => _response.ShouldBeNoContent();
 
         [Test]
-        public void ShouldHaveDeletedChapterContent()
-        {
-            _assert.ShouldHaveDeletedContent(_content);
-        }
+        public void ShouldHaveDeletedChapterContent() => _assert.ShouldHaveDeletedContent(_content);
     }
 }

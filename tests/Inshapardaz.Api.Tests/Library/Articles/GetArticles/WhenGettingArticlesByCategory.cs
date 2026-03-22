@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
@@ -13,15 +9,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
 {
     [TestFixture]
-    public class WhenGettingArticlesByCategory : TestBase
+    public class WhenGettingArticlesByCategory() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<ArticleView> _assert;
         private CategoryDto _category1, _category2;
-
-        public WhenGettingArticlesByCategory() : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -37,16 +29,10 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -56,10 +42,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
 
         [Test]
         public void ShouldHaveNextLink()

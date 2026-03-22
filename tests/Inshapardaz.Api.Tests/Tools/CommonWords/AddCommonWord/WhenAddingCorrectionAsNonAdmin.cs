@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
@@ -10,14 +8,10 @@ namespace Inshapardaz.Api.Tests.Tools.CommonWords.AddCommonWord
     [TestFixture(Role.Reader)]
     [TestFixture(Role.Writer)]
     [TestFixture(Role.LibraryAdmin)]
-    public class WhenAddingCommomWordAsNonAdmin : TestBase
+    public class WhenAddingCommomWordAsNonAdmin(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
 
-        public WhenAddingCommomWordAsNonAdmin(Role role)
-            :base(role)
-        { }
-        
         [OneTimeSetUp]
         public async Task Setup()
         {
@@ -27,15 +21,9 @@ namespace Inshapardaz.Api.Tests.Tools.CommonWords.AddCommonWord
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldBeForbidden()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldBeForbidden() => _response.ShouldBeForbidden();
     }
 }

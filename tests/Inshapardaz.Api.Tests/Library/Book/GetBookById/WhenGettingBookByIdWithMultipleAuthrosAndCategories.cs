@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
@@ -11,17 +8,13 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Book.GetBookById
 {
     [TestFixture]
-    public class WhenGettingBookByIdWithMultipleAuthrosAndCategories : TestBase
+    public class WhenGettingBookByIdWithMultipleAuthrosAndCategories() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private BookDto _expected;
         private BookAssert _assert;
         private IEnumerable<CategoryDto> _categories;
         private IEnumerable<AuthorDto> _authors;
-
-        public WhenGettingBookByIdWithMultipleAuthrosAndCategories() : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -42,94 +35,49 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBookById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
-        public void ShouldHaveChaptersLink()
-        {
-            _assert.ShouldHaveChaptersLink();
-        }
+        public void ShouldHaveChaptersLink() => _assert.ShouldHaveChaptersLink();
 
         [Test]
-        public void ShouldHaveContents()
-        {
-            _assert.ShouldHaveContents(haveEditableLinks: true);
-        }
+        public void ShouldHaveContents() => _assert.ShouldHaveContents(haveEditableLinks: true);
 
         [Test]
-        public void ShouldHaveImageLink()
-        {
-            _assert.ShouldHavePublicImageLink();
-        }
+        public void ShouldHaveImageLink() => _assert.ShouldHavePublicImageLink();
 
         [Test]
-        public void ShouldHaveSeriesLink()
-        {
-            _assert.ShouldHaveSeriesLink();
-        }
+        public void ShouldHaveSeriesLink() => _assert.ShouldHaveSeriesLink();
 
         [Test]
-        public void ShouldHaveUpdateLink()
-        {
-            _assert.ShouldHaveUpdateLink();
-        }
+        public void ShouldHaveUpdateLink() => _assert.ShouldHaveUpdateLink();
 
         [Test]
-        public void ShouldHaveDeleteLink()
-        {
-            _assert.ShouldHaveDeleteLink();
-        }
+        public void ShouldHaveDeleteLink() => _assert.ShouldHaveDeleteLink();
 
         [Test]
-        public void ShouldHavePagesLink()
-        {
-            _assert.ShouldHavePagesLink();
-        }
+        public void ShouldHavePagesLink() => _assert.ShouldHavePagesLink();
 
         [Test]
-        public void ShouldHavePagesUploadLink()
-        {
-            _assert.ShouldHavePagesUploadLink();
-        }
+        public void ShouldHavePagesUploadLink() => _assert.ShouldHavePagesUploadLink();
 
         [Test]
-        public void ShouldHaveImageUploadLink()
-        {
-            _assert.ShouldHaveImageUpdateLink();
-        }
+        public void ShouldHaveImageUploadLink() => _assert.ShouldHaveImageUpdateLink();
 
         [Test]
-        public void ShouldHaveCreateChapterLink()
-        {
-            _assert.ShouldHaveCreateChaptersLink();
-        }
+        public void ShouldHaveCreateChapterLink() => _assert.ShouldHaveCreateChaptersLink();
 
         [Test]
-        public void ShouldHaveAddContentLink()
-        {
-            _assert.ShouldHaveAddContentLink();
-        }
+        public void ShouldHaveAddContentLink() => _assert.ShouldHaveAddContentLink();
 
         [Test]
-        public void ShouldHaveAddFavoriteLinks()
-        {
-            _assert.ShouldHaveAddFavoriteLink();
-        }
+        public void ShouldHaveAddFavoriteLinks() => _assert.ShouldHaveAddFavoriteLink();
 
         [Test]
         public void ShouldReturnCorrectBookData()

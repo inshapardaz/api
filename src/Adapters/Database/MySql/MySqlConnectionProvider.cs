@@ -6,14 +6,9 @@ using MySql.Data.MySqlClient;
 
 namespace Inshapardaz.Adapters.Database.MySql;
 
-public class MySqlConnectionProvider : IProvideConnection
+public class MySqlConnectionProvider(IOptions<Settings> settings) : IProvideConnection
 {
-    private readonly Settings _settings;
-
-    public MySqlConnectionProvider(IOptions<Settings> settings)
-    {
-        _settings = settings.Value;
-    }
+    private readonly Settings _settings = settings.Value;
 
     public IDbConnection GetConnection()
     {

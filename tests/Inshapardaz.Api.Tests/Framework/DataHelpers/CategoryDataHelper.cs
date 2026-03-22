@@ -2,10 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -37,17 +34,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         void AddArticleToCategories(long articleId, IEnumerable<CategoryDto> categories);
     }
 
-    public class MySqlCategoryTestRepository : ICategoryTestRepository
+    public class MySqlCategoryTestRepository(IProvideConnection connectionProvider) : ICategoryTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public MySqlCategoryTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
         public void AddCategory(CategoryDto category)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var id = connection.ExecuteScalar<int>("INSERT INTO Category (`Name`, LibraryId) VALUES (@Name, @LibraryId); SELECT LAST_INSERT_ID();", category);
                 category.Id = id;
@@ -64,7 +55,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteCategories(IEnumerable<CategoryDto> categories)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Category WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = categories.Select(a => a.Id) });
@@ -73,21 +64,18 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public CategoryDto GetCategoryById(int libraryId, int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<CategoryDto>("SELECT * FROM Category WHERE Id = @Id AND LibraryId = @LibraryId",
                 new { Id = id, LibraryId = libraryId });
             }
         }
 
-        public bool DoesCategoryExists(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public bool DoesCategoryExists(int id) => throw new NotImplementedException();
 
         public IEnumerable<CategoryDto> GetCategoriesByBook(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<CategoryDto>(@"SELECT c.* FROM Category c
                                 INNER JOIN BookCategory bc ON c.Id = bc.CategoryId
@@ -97,7 +85,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<CategoryDto> GetCategoriesByPeriodical(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<CategoryDto>(@"SELECT c.* From Category c
                                 INNER JOIN PeriodicalCategory pc ON c.Id = pc.CategoryId
@@ -107,7 +95,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<CategoryDto> GetCategoriesByArticle(long id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<CategoryDto>(@"SELECT c.* FROM Category c
                                 INNER JOIN ArticleCategory bc ON c.Id = bc.CategoryId
@@ -117,7 +105,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBooksToCategory(IEnumerable<BookDto> books, CategoryDto category)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 foreach (var book in books)
                 {
@@ -129,7 +117,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBookToCategories(int bookId, IEnumerable<CategoryDto> categories)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 foreach (var category in categories)
                 {
@@ -141,7 +129,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddPeriodicalToCategory(IEnumerable<PeriodicalDto> periodicals, CategoryDto category)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 foreach (var periodical in periodicals)
                 {
@@ -153,7 +141,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddPeriodicalToCategories(int periodicalId, IEnumerable<CategoryDto> categories)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 foreach (var category in categories)
                 {
@@ -165,7 +153,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddArticleToCategories(long articleId, IEnumerable<CategoryDto> categories)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 foreach (var category in categories)
                 {
@@ -175,17 +163,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             }
         }
     }
-    public class SqlServerCategoryTestRepository : ICategoryTestRepository
+    public class SqlServerCategoryTestRepository(IProvideConnection connectionProvider) : ICategoryTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public SqlServerCategoryTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
         public void AddCategory(CategoryDto category)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var id = connection.ExecuteScalar<int>("INSERT INTO Category (Name, LibraryId) OUTPUT Inserted.Id VALUES (@Name, @LibraryId)", category);
                 category.Id = id;
@@ -202,7 +184,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteCategories(IEnumerable<CategoryDto> categories)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Category WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = categories.Select(a => a.Id) });
@@ -211,21 +193,18 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public CategoryDto GetCategoryById(int libraryId, int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<CategoryDto>("SELECT * FROM Category WHERE Id = @Id AND LibraryId = @LibraryId",
                 new { Id = id, LibraryId = libraryId });
             }
         }
 
-        public bool DoesCategoryExists(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public bool DoesCategoryExists(int id) => throw new NotImplementedException();
 
         public IEnumerable<CategoryDto> GetCategoriesByBook(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<CategoryDto>(@"SELECT c.* FROM Category c
                                 INNER JOIN BookCategory bc ON c.Id = bc.CategoryId
@@ -235,7 +214,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<CategoryDto> GetCategoriesByPeriodical(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<CategoryDto>(@"SELECT c.* From Category c
                                 INNER JOIN PeriodicalCategory pc ON c.Id = pc.CategoryId
@@ -245,7 +224,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<CategoryDto> GetCategoriesByArticle(long id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<CategoryDto>(@"SELECT c.* FROM Category c
                                 INNER JOIN ArticleCategory bc ON c.Id = bc.CategoryId
@@ -255,7 +234,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBooksToCategory(IEnumerable<BookDto> books, CategoryDto category)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 foreach (var book in books)
                 {
@@ -267,7 +246,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBookToCategories(int bookId, IEnumerable<CategoryDto> categories)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 foreach (var category in categories)
                 {
@@ -279,7 +258,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddPeriodicalToCategory(IEnumerable<PeriodicalDto> periodicals, CategoryDto category)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 foreach (var periodical in periodicals)
                 {
@@ -291,7 +270,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddPeriodicalToCategories(int periodicalId, IEnumerable<CategoryDto> categories)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 foreach (var category in categories)
                 {
@@ -303,7 +282,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddArticleToCategories(long articleId, IEnumerable<CategoryDto> categories)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 foreach (var category in categories)
                 {
@@ -346,10 +325,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                 new { Id = id, LibraryId = libraryId });
         }
 
-        public static bool DoesCategoryExists(this IDbConnection connection, int id)
-        {
-            throw new NotImplementedException();
-        }
+        public static bool DoesCategoryExists(this IDbConnection connection, int id) => throw new NotImplementedException();
 
         public static IEnumerable<CategoryDto> GetCategoriesByBook(this IDbConnection connection, int id)
         {

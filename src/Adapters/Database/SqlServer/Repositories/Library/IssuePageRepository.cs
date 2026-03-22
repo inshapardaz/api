@@ -2,31 +2,19 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapters.Database.SqlServer.Repositories.Library;
 
-public class IssuePageRepository : IIssuePageRepository
+public class IssuePageRepository(SqlServerConnectionProvider connectionProvider) : IIssuePageRepository
 {
-    private readonly SqlServerConnectionProvider _connectionProvider;
-
-    public IssuePageRepository(SqlServerConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-
     public Task<IEnumerable<IssuePageModel>> GetPagesByIssueArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long articleId,
-        CancellationToken cancellationToken)
-    {
+        CancellationToken cancellationToken) =>
         throw new System.NotImplementedException();
-    }
 
     public async Task<IssuePageModel> AddPage(int libraryId, IssuePageModel issuePage, CancellationToken cancellationToken)
     {
         int pageId;
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO IssuePage(IssueId, 
                             SequenceNumber, 
@@ -76,7 +64,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task<IssuePageModel> GetPageBySequenceNumber(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.FileId, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                             p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 
@@ -110,7 +98,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task DeletePage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Delete p From IssuePage p
                             INNER JOIN Issue i ON i.Id = p.IssueId
@@ -135,7 +123,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task<IssuePageModel> UpdatePage(int libraryId, IssuePageModel issuePage, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update p
                             SET p.FileId = @FileId, 
@@ -182,7 +170,7 @@ public class IssuePageRepository : IIssuePageRepository
     {
         int pageId;
 
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update p
                             SET p.FileId = @FileId, 
@@ -219,7 +207,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task<IssuePageModel> UpdatePageImage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, long imageId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update p
                             SET p.ImageId = @ImageId
@@ -248,7 +236,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task DeletePageImage(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update p
                             SET ImageId = NULL
@@ -274,7 +262,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task<int> GetPageCount(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
 
         {
             var sql = @"SELECT COUNT(p.*)
@@ -300,7 +288,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task<Page<IssuePageModel>> GetPagesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int pageNumber, int pageSize, EditingStatus status, AssignmentFilter assignmentFilter, AssignmentFilter reviewerAssignmentFilter, int? assignedTo, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber,
                                    p.SequenceNumber, p.Status, 
@@ -399,7 +387,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task<IssuePageModel> UpdateWriterAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update p
                             SET p.WriterAccountId = @WriterAccountId, p.WriterAssignTimeStamp = GETUTCDATE()
@@ -428,7 +416,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task<IssuePageModel> UpdateReviewerAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? assignedAccountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update p
                             SET p.ReviewerAccountId = @ReviewerAccountId, p.ReviewerAssignTimeStamp = GETUTCDATE()
@@ -457,7 +445,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task<int> GetLastPageNumberForIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT Max(p.SequenceNumber)
                             FROM IssuePage AS p
@@ -483,7 +471,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task<IEnumerable<IssuePageModel>> GetAllPagesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Status, 
                             p.WriterAccountId, p.WriterAssignTimeStamp, 
@@ -513,7 +501,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task<Page<IssuePageModel>> GetPagesByUser(int libraryId, int accountId, EditingStatus statusFilter, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.Status, 
                                    p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp,
@@ -573,7 +561,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task ReorderPages(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT p.Id, row_number() OVER (ORDER BY p.SequenceNumber) as 'SequenceNumber'
                             FROM IssuePage p
@@ -603,7 +591,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task UpdatePageSequenceNumber(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int oldSequenceNumber, int newSequenceNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
 
             var sql = @"DECLARE @maxPosition INT;
@@ -668,7 +656,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task<IEnumerable<UserPageSummaryItem>> GetUserPageSummary(int libraryId, int accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT 1 As Status, Count(p.Id) As Count 
                             FROM IsseuPage p 
@@ -712,7 +700,7 @@ public class IssuePageRepository : IIssuePageRepository
 
     public async Task<IssuePageModel> GetPageById(int pageId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT i.PeriodicalId, i.VolumeNumber, i.IssueNumber, p.SequenceNumber, p.FileId, p.Status, p.WriterAccountId, a.Name As WriterAccountName, p.WriterAssignTimeStamp, 
                             p.ReviewerAccountId, ar.Name As ReviewerAccountName, p.ReviewerAssignTimeStamp, 

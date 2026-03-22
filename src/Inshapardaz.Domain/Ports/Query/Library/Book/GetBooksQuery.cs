@@ -4,26 +4,16 @@ using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Darker;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Book;
 
-public class GetBooksQuery : LibraryBaseQuery<Page<BookModel>>
+public class GetBooksQuery(int libraryId, int pageNumber, int pageSize, int? accountId)
+    : LibraryBaseQuery<Page<BookModel>>(libraryId)
 {
-    public GetBooksQuery(int libraryId, int pageNumber, int pageSize, int? accountId)
-        : base(libraryId)
-    {
-        PageNumber = pageNumber;
-        PageSize = pageSize;
-        AccountId = accountId;
-    }
+    public int PageNumber { get; private set; } = pageNumber;
 
-    public int PageNumber { get; private set; }
-
-    public int PageSize { get; private set; }
-    public int? AccountId { get; }
+    public int PageSize { get; private set; } = pageSize;
+    public int? AccountId { get; } = accountId;
     public string Query { get; set; }
 
     public BookSortByType SortBy { get; set; }
@@ -32,24 +22,16 @@ public class GetBooksQuery : LibraryBaseQuery<Page<BookModel>>
     public SortDirection SortDirection { get; set; }
 }
 
-public class GetBooksQueryHandler : QueryHandlerAsync<GetBooksQuery, Page<BookModel>>
+public class GetBooksQueryHandler(IBookRepository bookRepository, IFileRepository fileRepository)
+    : QueryHandlerAsync<GetBooksQuery, Page<BookModel>>
 {
-    private readonly IBookRepository _bookRepository;
-    private readonly IFileRepository _fileRepository;
-
-    public GetBooksQueryHandler(IBookRepository bookRepository, IFileRepository fileRepository)
-    {
-        _bookRepository = bookRepository;
-        _fileRepository = fileRepository;
-    }
-
     public override async Task<Page<BookModel>> ExecuteAsync(GetBooksQuery command, CancellationToken cancellationToken = new CancellationToken())
     {
         var books = string.IsNullOrWhiteSpace(command.Query)
-         ? await _bookRepository.GetBooks(command.LibraryId, command.PageNumber, command.PageSize, command.AccountId, command.Filter, command.SortBy, command.SortDirection, cancellationToken)
-         : await _bookRepository.SearchBooks(command.LibraryId, command.Query, command.PageNumber, command.PageSize, command.AccountId, command.Filter, command.SortBy, command.SortDirection, cancellationToken);
+         ? await bookRepository.GetBooks(command.LibraryId, command.PageNumber, command.PageSize, command.AccountId, command.Filter, command.SortBy, command.SortDirection, cancellationToken)
+         : await bookRepository.SearchBooks(command.LibraryId, command.Query, command.PageNumber, command.PageSize, command.AccountId, command.Filter, command.SortBy, command.SortDirection, cancellationToken);
 
-        var statuses = await _bookRepository.GetBookPageSummary(command.LibraryId, books.Data.Select(b => b.Id).ToList(), cancellationToken);
+        var statuses = await bookRepository.GetBookPageSummary(command.LibraryId, books.Data.Select(b => b.Id).ToList(), cancellationToken);
 
         foreach (var status in statuses)
         {
@@ -73,10 +55,10 @@ public class GetBooksQueryHandler : QueryHandlerAsync<GetBooksQuery, Page<BookMo
         {
             if (book != null && book.ImageUrl == null && book.ImageId.HasValue)
             {
-                book.ImageUrl = await ImageHelper.TryConvertToPublicFile(book.ImageId.Value, _fileRepository, cancellationToken);
+                book.ImageUrl = await ImageHelper.TryConvertToPublicFile(book.ImageId.Value, fileRepository, cancellationToken);
             }
 
-            var contents = await _bookRepository.GetBookContents(command.LibraryId, book.Id, cancellationToken);
+            var contents = await bookRepository.GetBookContents(command.LibraryId, book.Id, cancellationToken);
 
             book.Contents = contents.ToList();
         }

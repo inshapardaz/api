@@ -2,21 +2,13 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssueArticleContents
 {
     [TestFixture]
-    public class WhenDeletingIssueArticleContentThatDoesNotExists
-        : TestBase
+    public class WhenDeletingIssueArticleContentThatDoesNotExists() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
-
-        public WhenDeletingIssueArticleContentThatDoesNotExists()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -28,15 +20,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssu
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNoContentResult()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldReturnNoContentResult() => _response.ShouldBeNoContent();
     }
 }

@@ -4,23 +4,15 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssueContent
 {
     [TestFixture]
-    public class WhenDeletingIssueContentAsReader
-        : TestBase
+    public class WhenDeletingIssueContentAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private IssueContentAssert _assert;
         private IssueContentDto _expected;
-
-        public WhenDeletingIssueContentAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,21 +25,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssueContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnForbidden()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldReturnForbidden() => _response.ShouldBeForbidden();
 
         [Test]
-        public void ShouldNotDeletedContent()
-        {
-            _assert.ShouldHaveIssueContent(_expected.Id, _expected.Language, _expected.MimeType);
-        }
+        public void ShouldNotDeletedContent() => _assert.ShouldHaveIssueContent(_expected.Id, _expected.Language, _expected.MimeType);
     }
 }

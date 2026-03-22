@@ -4,25 +4,18 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.DeletePage
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingIssuePageWithPermissions : TestBase
+    public class WhenDeletingIssuePageWithPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IssuePageAssert _assert;
         private IssuePageDto _page;
         private int _issueId;
-
-        public WhenDeletingIssuePageWithPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,21 +28,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.DeletePage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            BookBuilder.CleanUp();
-        }
+        public void Teardown() => BookBuilder.CleanUp();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldDeletePage()
-        {
-            _assert.ShouldHaveNoIssuePage(_issueId, _page.Id, _page.ImageId);
-        }
+        public void ShouldDeletePage() => _assert.ShouldHaveNoIssuePage(_issueId, _page.Id, _page.ImageId);
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using FluentMigrator.Runner;
-using System;
 using Inshapardaz.Database.Migrations;
 
 namespace Inshapardaz.Adapters.Database.SqlServer;

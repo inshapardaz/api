@@ -1,8 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Elastic.Channels;
-using Elastic.Ingest.Elasticsearch;
-using Elastic.Serilog.Sinks;
 using Inshapardaz.Adapter.Ocr.Google;
 using Inshapardaz.Adapters.Database.MySql;
 using Inshapardaz.Adapters.Database.SqlServer;
@@ -26,7 +23,6 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Net.Http.Headers;
 using Serilog;
 using Serilog.Events;
-using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseKestrel(o => o.Limits.MaxRequestBodySize = null);

@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
@@ -11,16 +9,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
 {
     [TestFixture]
-    public class WhenGettingBookPagesForPageThaDoesNotExist : TestBase
+    public class WhenGettingBookPagesForPageThaDoesNotExist() : TestBase(Role.Reader)
     {
         private BookDto _book;
         private HttpResponseMessage _response;
         private PagingAssert<BookPageView> _assert;
-
-        public WhenGettingBookPagesForPageThaDoesNotExist()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,28 +26,16 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books/{_book.Id}/pages");
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/books/{_book.Id}/pages");
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
 
         [Test]
         public void ShouldNotHaveNavigationLinks()
@@ -64,9 +45,6 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
         }
 
         [Test]
-        public void ShouldReturNoBookPages()
-        {
-            _assert.Data.Should().BeEmpty();
-        }
+        public void ShouldReturNoBookPages() => _assert.Data.Should().BeEmpty();
     }
 }

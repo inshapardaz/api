@@ -3,47 +3,38 @@ using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Darker;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Periodical.Issue;
 
-public class GetIssueContentQuery : LibraryBaseQuery<IssueContentModel>
+public class GetIssueContentQuery(
+    int libraryId,
+    int periodicalId,
+    int volumeNumber,
+    int issueNumber,
+    int contentId,
+    int? accountId)
+    : LibraryBaseQuery<IssueContentModel>(libraryId)
 {
-    public GetIssueContentQuery(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int contentId, int? accountId)
-        : base(libraryId)
-    {
-        PeriodicalId = periodicalId;
-        VolumeNumber = volumeNumber;
-        IssueNumber = issueNumber;
-        AccountId = accountId;
-        ContentId = contentId;
-    }
+    public int PeriodicalId { get; set; } = periodicalId;
+    public int VolumeNumber { get; set; } = volumeNumber;
+    public int IssueNumber { get; set; } = issueNumber;
 
-    public int PeriodicalId { get; set; }
-    public int VolumeNumber { get; set; }
-    public int IssueNumber { get; set; }
-
-    public int ContentId { get; set; }
-    public int? AccountId { get; }
+    public int ContentId { get; set; } = contentId;
+    public int? AccountId { get; } = accountId;
 }
 
-public class GetIssueContentQueryHandler : QueryHandlerAsync<GetIssueContentQuery, IssueContentModel>
+public class GetIssueContentQueryHandler(
+    ILibraryRepository libraryRepository,
+    IIssueRepository issueRepository,
+    IFileRepository fileRepository)
+    : QueryHandlerAsync<GetIssueContentQuery, IssueContentModel>
 {
-    private readonly ILibraryRepository _libraryRepository;
-    private readonly IIssueRepository _issueRepository;
-    private readonly IFileRepository _fileRepository;
-
-    public GetIssueContentQueryHandler(ILibraryRepository libraryRepository, IIssueRepository issueRepository, IFileRepository fileRepository)
-    {
-        _libraryRepository = libraryRepository;
-        _issueRepository = issueRepository;
-        _fileRepository = fileRepository;
-    }
+    private readonly ILibraryRepository _libraryRepository = libraryRepository;
+    private readonly IFileRepository _fileRepository = fileRepository;
 
     public override async Task<IssueContentModel> ExecuteAsync(GetIssueContentQuery command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+        var issue = await issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
         if (issue == null)
         {
             throw new NotFoundException();
@@ -54,7 +45,7 @@ public class GetIssueContentQueryHandler : QueryHandlerAsync<GetIssueContentQuer
             throw new UnauthorizedException();
         }
 
-        var issueContent = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ContentId, cancellationToken);
+        var issueContent = await issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ContentId, cancellationToken);
 
         //if (bookContent != null)
         //{

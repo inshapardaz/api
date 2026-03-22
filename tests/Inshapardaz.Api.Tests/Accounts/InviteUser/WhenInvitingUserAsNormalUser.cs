@@ -3,19 +3,13 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.InviteUser
 {
     [TestFixture]
-    public class WhenInvitingUserAsNormalUser : TestBase
+    public class WhenInvitingUserAsNormalUser() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
-
-        public WhenInvitingUserAsNormalUser() : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,9 +29,6 @@ namespace Inshapardaz.Api.Tests.Accounts.InviteUser
         }
 
         [Test]
-        public void ShouldReturnForbidden()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldReturnForbidden() => _response.ShouldBeForbidden();
     }
 }

@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Bogus;
+﻿using Bogus;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -16,16 +12,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
 {
     [TestFixture]
-    public class WhenUpdatingBookWithAdditionalCategories : TestBase
+    public class WhenUpdatingBookWithAdditionalCategories() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private BookView _expected;
         private BookAssert _bookAssert;
         private List<CategoryDto> _categoriesToUpdate;
-
-        public WhenUpdatingBookWithAdditionalCategories() : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -67,16 +59,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOKResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOKResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveUpdatedTheBook()
@@ -90,15 +76,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         }
 
         [Test]
-        public void ShouldReturnCorrectCategories()
-        {
-            _bookAssert.ShouldBeSameCategories(_categoriesToUpdate);
-        }
+        public void ShouldReturnCorrectCategories() => _bookAssert.ShouldBeSameCategories(_categoriesToUpdate);
 
         [Test]
-        public void ShouldSaveCorrectCategories()
-        {
-            _bookAssert.ShouldHaveCategories(_categoriesToUpdate);
-        }
+        public void ShouldSaveCorrectCategories() => _bookAssert.ShouldHaveCategories(_categoriesToUpdate);
     }
 }

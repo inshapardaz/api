@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
@@ -9,15 +7,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.BookShelf.DeleteBookFromBookShelf
 {
     [TestFixture]
-    public class WhenDeletingBookFromBookShelf : TestBase
+    public class WhenDeletingBookFromBookShelf() : TestBase(Domain.Models.Role.Reader)
     {
         private HttpResponseMessage _response;
         private BookDto _book;
         private BookShelfDto _bookShelf;
-        public WhenDeletingBookFromBookShelf()
-            :base(Domain.Models.Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -29,16 +23,10 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.DeleteBookFromBookShelf
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveNoContentResult()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldHaveNoContentResult() => _response.ShouldBeNoContent();
 
         [Test]
         public void ShouldNotContainBookToBookShelf()

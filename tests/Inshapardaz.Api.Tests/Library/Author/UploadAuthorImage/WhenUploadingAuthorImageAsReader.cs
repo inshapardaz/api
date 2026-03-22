@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,17 +7,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Author.UploadAuthorImage
 {
     [TestFixture]
-    public class WhenUploadingAuthorImageAsReader : TestBase
+    public class WhenUploadingAuthorImageAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private AuthorAssert _assert;
         private int _authorId;
         private byte[] _newImage;
-
-        public WhenUploadingAuthorImageAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,21 +26,12 @@ namespace Inshapardaz.Api.Tests.Library.Author.UploadAuthorImage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbidResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbidResult() => _response.ShouldBeForbidden();
 
         [Test]
-        public void ShouldNotHaveUpdatedAuthorImage()
-        {
-            _assert.ShouldNotHaveUpdatedAuthorImage(_authorId, _newImage);
-        }
+        public void ShouldNotHaveUpdatedAuthorImage() => _assert.ShouldNotHaveUpdatedAuthorImage(_authorId, _newImage);
     }
 }

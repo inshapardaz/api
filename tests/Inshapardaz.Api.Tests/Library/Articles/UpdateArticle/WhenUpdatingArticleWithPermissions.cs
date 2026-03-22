@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Bogus;
+﻿using Bogus;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -19,18 +14,13 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingArticleWithPermissions : TestBase
+    public class WhenUpdatingArticleWithPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private ArticleView _expected;
         private ArticleAssert _assert;
         private IEnumerable<CategoryDto> _otherCategories;
         private TagView[] _newTags;
-
-        public WhenUpdatingArticleWithPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -71,16 +61,10 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOKResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOKResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveUpdatedTheArticle()
@@ -94,15 +78,9 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticle
         }
 
         [Test]
-        public void ShouldReturnCorrectCategories()
-        {
-            _assert.ShouldBeSameCategories(_otherCategories.ToList());
-        }
-        
+        public void ShouldReturnCorrectCategories() => _assert.ShouldBeSameCategories(_otherCategories.ToList());
+
         [Test]
-        public void ShouldReturnCorrectTags()
-        {
-            _assert.ShouldBeSameTags(_newTags.ToList());
-        }
+        public void ShouldReturnCorrectTags() => _assert.ShouldBeSameTags(_newTags.ToList());
     }
 }

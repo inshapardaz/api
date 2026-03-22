@@ -4,26 +4,17 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using PDFiumSharp.Types;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.issue.DeleteIssueContent
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingIssueContentWithPermissions
-        : TestBase
+    public class WhenDeletingIssueContentWithPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IssueContentAssert _assert;
         private IssueContentDto _expected;
-
-        public WhenDeletingIssueContentWithPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,22 +26,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.issue.DeleteIssueContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveNoContentResult()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldHaveNoContentResult() => _response.ShouldBeNoContent();
 
         [Test]
-        public void ShouldHaveDeletedContent()
-        {
-            _assert.ShouldHaveDeletedContent(_expected, _expected.MimeType);
-        }
+        public void ShouldHaveDeletedContent() => _assert.ShouldHaveDeletedContent(_expected, _expected.MimeType);
 
         [Test]
         public void ShouldNotHaveDeletedOtherContents()

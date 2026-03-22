@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -8,17 +6,11 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssueArticleAssignment
 {
-    public class WhenUpdatingIssueArticleReviewerAssignmentWithDifferentSequenceNumber
-        : TestBase
+    public class WhenUpdatingIssueArticleReviewerAssignmentWithDifferentSequenceNumber() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private IssueArticleAssert _articleAssert;
         private IssueArticleView _newArticle;
-
-        public WhenUpdatingIssueArticleReviewerAssignmentWithDifferentSequenceNumber()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -40,15 +32,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveBadRequestResult()
-        {
-            _response.ShouldBeBadRequest();
-        }
+        public void ShouldHaveBadRequestResult() => _response.ShouldBeBadRequest();
     }
 }

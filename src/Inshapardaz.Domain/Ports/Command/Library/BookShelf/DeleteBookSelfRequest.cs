@@ -3,48 +3,33 @@ using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.BookShelf;
 
-public class DeleteBookSelfRequest : LibraryBaseCommand
+public class DeleteBookSelfRequest(int libraryId, int bookShelfId) : LibraryBaseCommand(libraryId)
 {
-    public DeleteBookSelfRequest(int libraryId, int bookShelfId)
-        : base(libraryId)
-    {
-        BookShelfId = bookShelfId;
-    }
-
-    public int BookShelfId { get; }
+    public int BookShelfId { get; } = bookShelfId;
 }
 
-public class DeleteBookSelfRequestHandler : RequestHandlerAsync<DeleteBookSelfRequest>
+public class DeleteBookSelfRequestHandler(
+    IAmACommandProcessor commandProcessor,
+    IBookShelfRepository bookShelfRepository,
+    IUserHelper userHelper)
+    : RequestHandlerAsync<DeleteBookSelfRequest>
 {
-    private readonly IBookShelfRepository _bookShelfRepository;
-    private readonly IUserHelper _userHelper;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public DeleteBookSelfRequestHandler(IAmACommandProcessor commandProcessor, IBookShelfRepository bookShelfRepository, IUserHelper userHelper)
-    {
-        _commandProcessor = commandProcessor;
-        _bookShelfRepository = bookShelfRepository;
-        _userHelper = userHelper;
-    }
-
     [LibraryAuthorize(1)]
     public override async Task<DeleteBookSelfRequest> HandleAsync(DeleteBookSelfRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var bookShelf = await _bookShelfRepository.GetBookShelfById(command.LibraryId, command.BookShelfId, cancellationToken);
+        var bookShelf = await bookShelfRepository.GetBookShelfById(command.LibraryId, command.BookShelfId, cancellationToken);
 
         if (bookShelf != null)
         {
-            if (bookShelf.AccountId != _userHelper.AccountId)
+            if (bookShelf.AccountId != userHelper.AccountId)
             {
                 throw new ForbiddenException();
             }
-            await _commandProcessor.SendAsync(new DeleteFileCommand(bookShelf.ImageId), cancellationToken: cancellationToken);
-            await _bookShelfRepository.DeleteBookShelf(command.LibraryId, command.BookShelfId, cancellationToken);
+            await commandProcessor.SendAsync(new DeleteFileCommand(bookShelf.ImageId), cancellationToken: cancellationToken);
+            await bookShelfRepository.DeleteBookShelf(command.LibraryId, command.BookShelfId, cancellationToken);
         }
 
 

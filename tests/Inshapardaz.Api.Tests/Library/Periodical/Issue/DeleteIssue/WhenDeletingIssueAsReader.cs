@@ -1,21 +1,13 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssue
 {
     [TestFixture]
-    public class WhenDeletingIssueAsReader
-        : TestBase
+    public class WhenDeletingIssueAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
-
-        public WhenDeletingIssueAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -26,15 +18,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssue
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveForbiddenResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbiddenResult() => _response.ShouldBeForbidden();
     }
 }

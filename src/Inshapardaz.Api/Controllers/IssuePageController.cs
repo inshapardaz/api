@@ -14,26 +14,15 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Controllers;
 
-public class IssuePageController : Controller
+public class IssuePageController(
+    IAmACommandProcessor commandProcessor,
+    IQueryProcessor queryProcessor,
+    IRenderIssuePage issuePageRenderer,
+    IRenderFile fileRenderer,
+    IUserHelper userHelper)
+    : Controller
 {
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRenderIssuePage _issuePageRenderer;
-    private readonly IRenderFile _fileRenderer;
-    private readonly IUserHelper _userHelper;
-
-    public IssuePageController(IAmACommandProcessor commandProcessor,
-        IQueryProcessor queryProcessor,
-        IRenderIssuePage issuePageRenderer,
-        IRenderFile fileRenderer,
-        IUserHelper userHelper)
-    {
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-        _issuePageRenderer = issuePageRenderer;
-        _fileRenderer = fileRenderer;
-        _userHelper = userHelper;
-    }
+    private readonly IRenderFile _fileRenderer = fileRenderer;
 
     [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages", Name = nameof(IssuePageController.GetPagesByIssue))]
     [Produces(typeof(PageView<IssuePageView>))]
@@ -54,9 +43,9 @@ public class IssuePageController : Controller
             StatusFilter = status,
             WriterAssignmentFilter = writerAssignmentFilter,
             ReviewerAssignmentFilter = reviewerAssignmentFilter,
-            AccountId = writerAssignmentFilter == AssignmentFilter.AssignedToMe || reviewerAssignmentFilter == AssignmentFilter.AssignedToMe ? _userHelper.AccountId : assignmentTo
+            AccountId = writerAssignmentFilter == AssignmentFilter.AssignedToMe || reviewerAssignmentFilter == AssignmentFilter.AssignedToMe ? userHelper.AccountId : assignmentTo
         };
-        var result = await _queryProcessor.ExecuteAsync(query, token);
+        var result = await queryProcessor.ExecuteAsync(query, token);
 
         var args = new PageRendererArgs<IssuePageModel, PageFilter>
         {
@@ -65,7 +54,7 @@ public class IssuePageController : Controller
             Filters = new PageFilter { Status = status, AssignmentFilter = writerAssignmentFilter, ReviewerAssignmentFilter = reviewerAssignmentFilter, AccountId = assignmentTo }
         };
 
-        return new OkObjectResult(_issuePageRenderer.Render(args, libraryId, periodicalId, volumeNumber, issueNumber));
+        return new OkObjectResult(issuePageRenderer.Render(args, libraryId, periodicalId, volumeNumber, issueNumber));
     }
 
     [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages/{sequenceNumber}", Name = nameof(IssuePageController.GetIssuePageByIndex))]
@@ -79,14 +68,14 @@ public class IssuePageController : Controller
     {
         var request = new GetIssuePageByNumberQuery(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber);
 
-        var result = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
+        var result = await queryProcessor.ExecuteAsync(request, cancellationToken: token);
 
         if (result == null)
         {
             return NotFound();
         }
 
-        var renderResult = _issuePageRenderer.Render(result, libraryId);
+        var renderResult = issuePageRenderer.Render(result, libraryId);
         return Ok(renderResult);
     }
 
@@ -106,11 +95,11 @@ public class IssuePageController : Controller
 
         var model = page.Map();
 
-        var request = new AddIssuePageRequest(libraryId, periodicalId, volumeNumber, issueNumber, _userHelper.AccountId, model);
+        var request = new AddIssuePageRequest(libraryId, periodicalId, volumeNumber, issueNumber, userHelper.AccountId, model);
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _issuePageRenderer.Render(request.Result, libraryId);
+        var renderResult = issuePageRenderer.Render(request.Result, libraryId);
         
         if (request.IsAdded)
         {
@@ -135,7 +124,7 @@ public class IssuePageController : Controller
         }
 
         var request = new UpdateIssuePageSequenceRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, page.SequenceNumber);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         return Ok();
     }
@@ -171,7 +160,7 @@ public class IssuePageController : Controller
             Files = fileModels
         };
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         return new OkResult();
     }
@@ -198,9 +187,9 @@ public class IssuePageController : Controller
         model.SequenceNumber = sequenceNumber;
         var request = new UpdateIssuePageRequest(libraryId, model);
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _issuePageRenderer.Render(request.Result.IssuePage, libraryId);
+        var renderResult = issuePageRenderer.Render(request.Result.IssuePage, libraryId);
 
         if (request.Result.HasAddedNew)
         {
@@ -219,7 +208,7 @@ public class IssuePageController : Controller
         CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteIssuePageRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         return Ok();
     }
@@ -234,7 +223,7 @@ public class IssuePageController : Controller
         CancellationToken token = default(CancellationToken))
     {
         var request = new IssuePageOcrRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, apiKey);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         return Ok();
     }
@@ -265,9 +254,9 @@ public class IssuePageController : Controller
             }
         };
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var imageLink = _issuePageRenderer.RenderImageLink(libraryId, request.Result.File);
+        var imageLink = issuePageRenderer.RenderImageLink(libraryId, request.Result.File);
 
         if (request.Result.HasAddedNew)
         {
@@ -286,7 +275,7 @@ public class IssuePageController : Controller
         CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteIssuePageImageRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         return Ok();
     }
@@ -305,11 +294,11 @@ public class IssuePageController : Controller
             return new BadRequestObjectResult(ModelState);
         }
 
-        var request = new AssignIssuePageToUserRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, _userHelper.AccountId);
+        var request = new AssignIssuePageToUserRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, userHelper.AccountId);
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _issuePageRenderer.Render(request.Result, libraryId);
+        var renderResult = issuePageRenderer.Render(request.Result, libraryId);
 
         return Ok(renderResult);
     }
@@ -331,9 +320,9 @@ public class IssuePageController : Controller
 
         var request = new AssignIssuePageRequest(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, assignment.AccountId);
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _issuePageRenderer.Render(request.Result, libraryId);
+        var renderResult = issuePageRenderer.Render(request.Result, libraryId);
 
         return Ok(renderResult);
     }

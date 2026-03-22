@@ -2,41 +2,25 @@
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Series;
 
-public class DeleteSeriesRequest : LibraryBaseCommand
+public class DeleteSeriesRequest(int libraryId, int seriesId) : LibraryBaseCommand(libraryId)
 {
-    public DeleteSeriesRequest(int libraryId, int seriesId)
-        : base(libraryId)
-    {
-        SeriesId = seriesId;
-    }
-
-    public int SeriesId { get; }
+    public int SeriesId { get; } = seriesId;
 }
 
-public class DeleteSeriesRequestHandler : RequestHandlerAsync<DeleteSeriesRequest>
+public class DeleteSeriesRequestHandler(ISeriesRepository seriesRepository, IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<DeleteSeriesRequest>
 {
-    private readonly ISeriesRepository _seriesRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public DeleteSeriesRequestHandler(ISeriesRepository seriesRepository, IAmACommandProcessor commandProcessor)
-    {
-        _seriesRepository = seriesRepository;
-        _commandProcessor = commandProcessor;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<DeleteSeriesRequest> HandleAsync(DeleteSeriesRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var series = await _seriesRepository.GetSeriesById(command.LibraryId, command.SeriesId, cancellationToken);
+        var series = await seriesRepository.GetSeriesById(command.LibraryId, command.SeriesId, cancellationToken);
         if (series != null)
         {
-            await _commandProcessor.SendAsync(new DeleteFileCommand(series.ImageId), cancellationToken: cancellationToken);
-            await _seriesRepository.DeleteSeries(command.LibraryId, command.SeriesId, cancellationToken);
+            await commandProcessor.SendAsync(new DeleteFileCommand(series.ImageId), cancellationToken: cancellationToken);
+            await seriesRepository.DeleteSeries(command.LibraryId, command.SeriesId, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

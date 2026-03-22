@@ -4,23 +4,16 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.UploadPageImage
 {
     [TestFixture]
-    public class WhenUploadingIssuePageImageWhenNoExistingImage : TestBase
+    public class WhenUploadingIssuePageImageWhenNoExistingImage() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private IssuePageAssert _assert;
         private IssuePageDto _page;
         private int _issueId;
-
-        public WhenUploadingIssuePageImageWhenNoExistingImage()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -40,10 +33,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.UploadPageImage
         }
 
         [Test]
-        public void ShouldHaveCreatedResponse()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResponse() => _response.ShouldBeCreated();
 
         [Test]
         public void ShouldHaveLocationHeader()
@@ -53,9 +43,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.UploadPageImage
         }
 
         [Test]
-        public void ShouldHaveAddedImageToIssue()
-        {
-            _assert.ShouldHaveAddedIssuePageImage(_issueId, _page.SequenceNumber);
-        }
+        public void ShouldHaveAddedImageToIssue() => _assert.ShouldHaveAddedIssuePageImage(_issueId, _page.SequenceNumber);
     }
 }

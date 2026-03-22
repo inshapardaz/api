@@ -1,8 +1,5 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using NUnit.Framework;
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.CheckInvitationCode
 {
@@ -21,15 +18,9 @@ namespace Inshapardaz.Api.Tests.Accounts.CheckInvitationCode
         }
 
         [Test]
-        public void ShouldReturnGone()
-        {
-            _response.ShouldBeGone();
-        }
+        public void ShouldReturnGone() => _response.ShouldBeGone();
 
         [OneTimeTearDown]
-        public void TearDown()
-        {
-            Cleanup();
-        }
+        public void TearDown() => Cleanup();
     }
 }

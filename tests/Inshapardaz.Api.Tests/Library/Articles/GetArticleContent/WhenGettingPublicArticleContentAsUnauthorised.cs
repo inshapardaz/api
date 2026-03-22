@@ -1,9 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
 {
@@ -25,15 +22,9 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticleContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnUnauthorised()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldReturnUnauthorised() => _response.ShouldBeUnauthorized();
     }
 }

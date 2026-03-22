@@ -5,16 +5,13 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingIssueContentWithPermissions
-        : TestBase
+    public class WhenUpdatingIssueContentWithPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
 
@@ -22,11 +19,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         private IssueContentDto _content;
         private byte[] _expected;
         private IssueContentAssert _assert;
-
-        public WhenUpdatingIssueContentWithPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -40,21 +32,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveUpdatedFileContents()
-        {
-            _assert.ShouldHaveIssueContent(_expected);
-        }
+        public void ShouldHaveUpdatedFileContents() => _assert.ShouldHaveIssueContent(_expected);
     }
 }

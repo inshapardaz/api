@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -11,14 +7,19 @@ using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
-    public class BookShelfDataBuilder
+    public class BookShelfDataBuilder(
+        IFileStorage fileStorage,
+        IAuthorTestRepository authorRepository,
+        IFileTestRepository fileRepository,
+        IBookShelfTestRepository bookShelfRepository,
+        IBookTestRepository bookRepository)
     {
         private List<AuthorDto> _authors = new List<AuthorDto>();
         private List<BookDto> _books = new List<BookDto>();
         private List<BookShelfDto> _bookShelf = new List<BookShelfDto>();
         private Dictionary<int, List<BookDto>> _bookShelfBookList = new ();
         private List<FileDto> _files = new List<FileDto>();
-        private readonly FakeFileStorage _fileStorage;
+        private readonly FakeFileStorage _fileStorage = fileStorage as FakeFileStorage;
         private bool _withImage = true;
         private int _accountId;
         private int _bookCount;
@@ -31,23 +32,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public IEnumerable<BookShelfDto> BookShelves => _bookShelf;
         public Dictionary<int, List<BookDto>> BookShelvesBookList => _bookShelfBookList;
 
-        public IAuthorTestRepository _authorRepository;
-        public IFileTestRepository _fileRepository;
-        public IBookTestRepository _bookRepository;
-        public IBookShelfTestRepository _bookShelfRepository;
-
-        public BookShelfDataBuilder(IFileStorage fileStorage,
-            IAuthorTestRepository authorRepository,
-            IFileTestRepository fileRepository,
-            IBookShelfTestRepository bookShelfRepository,
-            IBookTestRepository bookRepository)
-        {
-            _fileStorage = fileStorage as FakeFileStorage;
-            _authorRepository = authorRepository;
-            _fileRepository = fileRepository;
-            _bookShelfRepository = bookShelfRepository;
-            _bookRepository = bookRepository;
-        }
+        public IAuthorTestRepository _authorRepository = authorRepository;
+        public IFileTestRepository _fileRepository = fileRepository;
+        public IBookTestRepository _bookRepository = bookRepository;
+        public IBookShelfTestRepository _bookShelfRepository = bookShelfRepository;
 
         public BookShelfDataBuilder WithBooks(int bookCount)
         {

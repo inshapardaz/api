@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -11,15 +8,10 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelves
 {
     [TestFixture]
-    public class WhenGettingPublicBookShelves : TestBase
+    public class WhenGettingPublicBookShelves() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<BookShelfView> _assert;
-
-        public WhenGettingPublicBookShelves()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,28 +25,16 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.GetBookShelves
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/bookshelves");
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/bookshelves");
 
         [Test]
-        public void ShouldHaveCreateLink()
-        {
-            _assert.ShouldHaveCreateLink($"/libraries/{LibraryId}/bookshelves");
-        }
+        public void ShouldHaveCreateLink() => _assert.ShouldHaveCreateLink($"/libraries/{LibraryId}/bookshelves");
 
         [Test]
         public void ShouldReturnCorrectBookShelves()

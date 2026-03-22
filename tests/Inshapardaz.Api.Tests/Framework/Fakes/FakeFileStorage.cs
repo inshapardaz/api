@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Domain.Adapters.Repositories;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Tests.Framework.Fakes
 {
@@ -57,15 +53,9 @@ namespace Inshapardaz.Api.Tests.Framework.Fakes
 
         public bool DoesFileExists(string filePath) => _contents.ContainsKey(GetUrl(filePath));
 
-        public async Task<string> StoreFile(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(SetupFileContents(name, content));
-        }
+        public async Task<string> StoreFile(string name, byte[] content, string mimeType, CancellationToken cancellationToken) => await Task.FromResult(SetupFileContents(name, content));
 
-        public async Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(SetupFileContents(name, content));
-        }
+        public async Task<string> StoreTextFile(string name, string content, CancellationToken cancellationToken) => await Task.FromResult(SetupFileContents(name, content));
 
         public Task DeleteFile(string filePath, CancellationToken cancellationToken)
         {
@@ -78,23 +68,14 @@ namespace Inshapardaz.Api.Tests.Framework.Fakes
             return Task.CompletedTask;
         }
 
-        public Task TryDeleteFile(string filePath, CancellationToken cancellationToken)
-        {
-            return DeleteFile(filePath, cancellationToken);
-        }
+        public Task TryDeleteFile(string filePath, CancellationToken cancellationToken) => DeleteFile(filePath, cancellationToken);
 
-        public async Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken)
-        {
-            return await Task.FromResult(SetupFileContents(name, content));
-        }
+        public async Task<string> StoreImage(string name, byte[] content, string mimeType, CancellationToken cancellationToken) => await Task.FromResult(SetupFileContents(name, content));
 
         public Task DeleteImage(string filePath, CancellationToken cancellationToken) => DeleteFile(filePath, cancellationToken);
 
         public Task TryDeleteImage(string filePath, CancellationToken cancellationToken) => DeleteFile(filePath, cancellationToken);
 
-        public string GetPublicUrl(string filePath)
-        {
-            return filePath;
-        }
+        public string GetPublicUrl(string filePath) => filePath;
     }
 }

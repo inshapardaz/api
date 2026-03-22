@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -17,7 +13,15 @@ using Inshapardaz.Domain.Adapters.Repositories;
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
 
-    public class ArticlesDataBuilder
+    public class ArticlesDataBuilder(
+        ICategoryTestRepository categoryRepository,
+        IArticleTestRepository articleRepository,
+        TagsDataBuilder tagsBuilder,
+        IFileStorage fileStorage,
+        IFileTestRepository fileRepository,
+        ITagTestRepository tagRepository,
+        AuthorsDataBuilder authorBuilder,
+        CategoriesDataBuilder categoriesBuilder)
     {
         private class AccountItemCountSpec
         {
@@ -25,14 +29,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             public int? Count { get; set; }
         }
 
-        private readonly ICategoryTestRepository _categoryRepository;
-        private readonly IArticleTestRepository _articleRepository;
-        private readonly ITagTestRepository _tagRepository;
-        private readonly IFileTestRepository _fileRepository;
-        private readonly AuthorsDataBuilder _authorBuilder;
-        private readonly CategoriesDataBuilder _categoriesBuilder;
-        private readonly TagsDataBuilder _tagsBuilder;
-        private readonly FakeFileStorage _fileStorage;
+        private readonly FakeFileStorage _fileStorage = fileStorage as FakeFileStorage;
 
         private readonly List<ArticleDto> _articles = new();
         private readonly List<FileDto> _files = new();
@@ -67,26 +64,6 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public IEnumerable<RecentArticleDto> RecentReads => _recentArticles;
         public Dictionary<long, List<int>> ArticleCategories => _articleCategories;
         public Dictionary<long, List<int>> ArticleTags => _articleTags;
-
-        public ArticlesDataBuilder(
-            ICategoryTestRepository categoryRepository,
-            IArticleTestRepository articleRepository,
-            TagsDataBuilder tagsBuilder,
-            IFileStorage fileStorage, 
-            IFileTestRepository fileRepository,
-            ITagTestRepository tagRepository, 
-            AuthorsDataBuilder authorBuilder, 
-            CategoriesDataBuilder categoriesBuilder)
-        {
-            _fileStorage = fileStorage as FakeFileStorage;
-            _categoryRepository = categoryRepository;
-            _tagsBuilder = tagsBuilder;
-            _articleRepository = articleRepository;
-            _fileRepository = fileRepository;
-            _tagRepository = tagRepository;
-            _authorBuilder = authorBuilder;
-            _categoriesBuilder = categoriesBuilder;
-        }
 
         internal ArticlesDataBuilder IsPublic(bool isPublic = true)
         {
@@ -223,7 +200,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
             if (Author == null)
             {
-                Author = _authorBuilder.WithLibrary(_libraryId).Build(1).Single();
+                Author = authorBuilder.WithLibrary(_libraryId).Build(1).Single();
             }
 
             return fixture.Build<ArticleView>()
@@ -233,10 +210,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                           .Create();
         }
 
-        public ArticleDto Build()
-        {
-            return Build(1).Single();
-        }
+        public ArticleDto Build() => Build(1).Single();
 
         public IEnumerable<ArticleDto> Build(int numberOfArticles)
         {
@@ -244,7 +218,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
             if (Author == null && !_authors.Any())
             {
-                _authors = _authorBuilder.WithLibrary(_libraryId)
+                _authors = authorBuilder.WithLibrary(_libraryId)
                     .Build(_numberOfAuthors > 0 ? _numberOfAuthors : numberOfArticles)
                     .ToList();
             }
@@ -269,7 +243,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
             if (_categoriesCount > 0 && !_categories.Any())
             {
-                categories = _categoriesBuilder
+                categories = categoriesBuilder
                     .WithLibrary(_libraryId)
                     .Build(_categoriesCount);
             }
@@ -282,7 +256,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
             if (_tagsCount > 0 && !_tags.Any())
             {
-                tags = _tagsBuilder.WithLibrary(_libraryId).Build(_tagsCount);
+                tags = tagsBuilder.WithLibrary(_libraryId).Build(_tagsCount);
             }
             else
             {
@@ -299,7 +273,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .With(a => a.FilePath, RandomData.FilePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
-                    _fileRepository.AddFile(articleImage);
+                    fileRepository.AddFile(articleImage);
 
                     _files.Add(articleImage);
                     _fileStorage.SetupFileContents(articleImage.FilePath, RandomData.Bytes);
@@ -311,29 +285,29 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                     article.ImageId = null;
                 }
 
-                _articleRepository.AddArticle(article);
+                articleRepository.AddArticle(article);
 
                 if (Author != null)
                 {
-                    _articleRepository.AddArticleAuthor(article.Id, Author.Id);
+                    articleRepository.AddArticleAuthor(article.Id, Author.Id);
                 }
                 else
                 {
                     foreach (var author in _authors)
                     {
-                        _articleRepository.AddArticleAuthor(article.Id, author.Id);
+                        articleRepository.AddArticleAuthor(article.Id, author.Id);
                     }
                 }
 
                 if (categories != null && categories.Any())
                 {
-                    _categoryRepository.AddArticleToCategories(article.Id, categories);
+                    categoryRepository.AddArticleToCategories(article.Id, categories);
                     _articleCategories.Add(article.Id, categories.Select(x => x.Id).ToList());
                 }
 
                 if (tags != null && tags.Any())
                 {
-                    _tagRepository.AddArticleToTags(article.Id, tags);
+                    tagRepository.AddArticleToTags(article.Id, tags);
                     _articleTags.Add(article.Id, tags.Select(x => x.Id).ToList());
                 }
 
@@ -352,14 +326,14 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                     .With(a => a.IsPublic, false)
                                     .With(a => a.MimeType, MimeTypes.Markdown)
                                     .Create();
-                        _fileRepository.AddFile(articleContentFile);
+                        fileRepository.AddFile(articleContentFile);
                         _files.Add(articleContentFile);
 
                         var articleContentData = RandomData.Text;
                         _fileStorage.SetupFileContents(articleContentFile.FilePath, articleContentData);
                         ac.FileId = articleContentFile.Id;
 
-                        ac.Id = _articleRepository.AddArticleContents(ac);
+                        ac.Id = articleRepository.AddArticleContents(ac);
                     });
                     _contents.AddRange(contents);
                 }
@@ -378,7 +352,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         if (f.AccountId != 0)
                         {
                             var favorite = new FavoriteArticleDto { AccountId = f.AccountId, ArticleId = fav.Id, LibraryId = _libraryId, DateAdded = RandomData.Date };
-                            _articleRepository.AddArticleToFavorites(_libraryId, favorite.ArticleId, favorite.AccountId, favorite.DateAdded);
+                            articleRepository.AddArticleToFavorites(_libraryId, favorite.ArticleId, favorite.AccountId, favorite.DateAdded);
 
                             _favoriteArticles.Add(favorite);
                         }
@@ -396,7 +370,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         if (r.AccountId != 0)
                         {
                             RecentArticleDto recent = new RecentArticleDto { LibraryId = _libraryId, ArticleId = recentArticle.Id, AccountId = r.AccountId, DateRead = RandomData.Date };
-                            _articleRepository.AddArticleToRecentReads(recent);
+                            articleRepository.AddArticleToRecentReads(recent);
                             _recentArticles.Add(recent);
                         }
                     }
@@ -409,9 +383,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void CleanUp()
         {
-            _articleRepository.DeleteArticles(_articles);
-            _fileRepository.DeleteFiles(_files);
-            _authorBuilder.CleanUp();
+            articleRepository.DeleteArticles(_articles);
+            fileRepository.DeleteFiles(_files);
+            authorBuilder.CleanUp();
         }
     }
 }

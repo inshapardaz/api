@@ -2,10 +2,6 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Adapters;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -63,18 +59,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
     }
 
-    public class MySqlBookTestRepository : IBookTestRepository
+    public class MySqlBookTestRepository(IProvideConnection connectionProvider) : IBookTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public MySqlBookTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddBook(BookDto book)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO Book (`Title`, `Description`, ImageId, IsPublic, IsPublished, `Language`, `Status`, SeriesId, SeriesIndex, Copyrights, YearPublished, DateAdded, DateUpdated, LibraryId)
                         VALUES (@Title, @Description, @ImageId, @IsPublic, @IsPublished, @Language, @Status, @SeriesId, @SeriesIndex, @Copyrights, @YearPublished, @DateAdded, @DateUpdated, @LibraryId);
@@ -94,7 +83,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBookToFavorites(int libraryId, int bookId, int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO FavoriteBooks (LibraryId, BookId, AccountId, DateAdded)
                         VALUES (@LibraryId, @BookId, @AccountId, UTC_TIMESTAMP())";
@@ -102,19 +91,13 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             }
         }
 
-        public void AddBooksToFavorites(int libraryId, IEnumerable<int> bookIds, int accountId)
-        {
-            bookIds.ForEach(id => AddBookToFavorites(libraryId, id, accountId));
-        }
+        public void AddBooksToFavorites(int libraryId, IEnumerable<int> bookIds, int accountId) => bookIds.ForEach(id => AddBookToFavorites(libraryId, id, accountId));
 
-        public void AddBooksToRecentReads(int libraryId, IEnumerable<int> bookIds, int accountId)
-        {
-            bookIds.ForEach(id => AddBookToRecentReads(libraryId, id, accountId));
-        }
+        public void AddBooksToRecentReads(int libraryId, IEnumerable<int> bookIds, int accountId) => bookIds.ForEach(id => AddBookToRecentReads(libraryId, id, accountId));
 
         public void AddBookToRecentReads(int libraryId, int bookId, int accountId, DateTime? timestamp = null)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO RecentBooks (LibraryId, BookId, AccountId, DateRead)
                         VALUES (@LibraryId, @BookId, @AccountId, @DateRead)";
@@ -124,7 +107,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBookToRecentReads(RecentBookDto dto)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO RecentBooks (LibraryId, BookId, AccountId, DateRead)
                         VALUES (@LibraryId, @BookId, @AccountId, @DateRead)";
@@ -137,7 +120,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBookFile(int bookId, BookContentDto contentDto)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO BookContent (BookId, FileId, Language)
                         VALUES (@BookId, @FileId, @Language);
@@ -149,7 +132,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public int GetBookCountByAuthor(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT COUNT(*)
                         FROM Book b
@@ -161,7 +144,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public BookDto GetBookById(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM Book WHERE Id = @Id";
                 return connection.QuerySingleOrDefault<BookDto>(sql, new { Id = bookId });
@@ -170,7 +153,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<BookDto> GetBooksByAuthor(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT b.*
                         FROM Book b
@@ -183,7 +166,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<BookDto> GetBooksByCategory(int categoryId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT b.* FROM Book b
                         INNER JOIN BookCategory bc ON b.Id = bc.BookId
@@ -194,7 +177,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<BookDto> GetBooksBySeries(int seriesId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT b.* FROM Book b WHERE SeriesId = @SeriesId";
                 return connection.Query<BookDto>(sql, new { SeriesId = seriesId });
@@ -203,7 +186,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetBookImageUrl(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.FilePath FROM `File` f
                         INNER JOIN Book b ON f.Id = b.ImageId
@@ -214,7 +197,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetBookImage(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"Select f.* from `File` f
                         Inner Join Book b ON f.Id = b.ImageId
@@ -227,7 +210,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             if (books != null && books.Any())
             {
-                using (var connection = _connectionProvider.GetConnection())
+                using (var connection = connectionProvider.GetConnection())
                 {
                     var sql = "DELETE FROM Book WHERE Id IN @Ids";
                     connection.Execute(sql, new { Ids = books.Select(f => f.Id) });
@@ -237,7 +220,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public bool DoesBookExistsInFavorites(int bookId, int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingle<bool>(@"SELECT COUNT(1) FROM FavoriteBooks WHERE BookId = @BookId AND AccountId = @AccountId", new
                 {
@@ -250,7 +233,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         //TODO : Add user id.
         public bool DoesBookExistsInRecent(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingle<bool>(@"SELECT COUNT(1) FROM RecentBooks WHERE BookId = @BookId", new
                 {
@@ -261,7 +244,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<BookContentDto> GetBookContents(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"SELECT bc.*, f.MimeType FROM BookContent bc
                            INNER Join Book b ON b.Id = bc.BookId
@@ -277,7 +260,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public BookContentDto GetBookContent(int bookId, string language, string mimetype)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"Select * From BookContent bc
                            INNER Join Book b ON b.Id = bc.BookId
@@ -295,7 +278,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public BookContentDto GetBookContent(int bookId, long contentId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"Select * From BookContent bc
                            INNER Join Book b ON b.Id = bc.BookId
@@ -312,7 +295,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetBookContentPath(int bookId, string language, string mimetype)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"SELECT f.FilePath FROM BookContent bc
                            INNER Join Book b ON b.Id = bc.BookId
@@ -330,7 +313,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBookAuthor(int bookId, int authorId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "INSERT INTO BookAuthor (BookId, AuthorId) VALUES (@BookId, @AuthorId)";
                 connection.Execute(sql, new { BookId = bookId, AuthorId = authorId });
@@ -347,7 +330,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public ReadProgressDto GetBookProgress(int bookId, int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "SELECT * FROM RecentBooks WHERE BookId = @BookId AND AccountId = @AccountId";
                 return connection.QueryFirstOrDefault<ReadProgressDto>(sql, new { BookId = bookId, AccountId = accountId });
@@ -355,18 +338,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         }
     }
 
-    public class SqlServerBookTestRepository : IBookTestRepository
+    public class SqlServerBookTestRepository(IProvideConnection connectionProvider) : IBookTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public SqlServerBookTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddBook(BookDto book)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO Book (Title, Description, ImageId, IsPublic, IsPublished, Language, Status, SeriesId, SeriesIndex, Copyrights, YearPublished, DateAdded, DateUpdated, LibraryId)
                         OUTPUT Inserted.Id
@@ -386,7 +362,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBookToFavorites(int libraryId, int bookId, int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO FavoriteBooks (LibraryId, BookId, AccountId, DateAdded)
                         VALUES (@LibraryId, @BookId, @AccountId, UTC_TIMESTAMP())";
@@ -394,19 +370,13 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             }
         }
 
-        public void AddBooksToFavorites(int libraryId, IEnumerable<int> bookIds, int accountId)
-        {
-            bookIds.ForEach(id => AddBookToFavorites(libraryId, id, accountId));
-        }
+        public void AddBooksToFavorites(int libraryId, IEnumerable<int> bookIds, int accountId) => bookIds.ForEach(id => AddBookToFavorites(libraryId, id, accountId));
 
-        public void AddBooksToRecentReads(int libraryId, IEnumerable<int> bookIds, int accountId)
-        {
-            bookIds.ForEach(id => AddBookToRecentReads(libraryId, id, accountId));
-        }
+        public void AddBooksToRecentReads(int libraryId, IEnumerable<int> bookIds, int accountId) => bookIds.ForEach(id => AddBookToRecentReads(libraryId, id, accountId));
 
         public void AddBookToRecentReads(int libraryId, int bookId, int accountId, DateTime? timestamp = null)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO RecentBooks (LibraryId, BookId, AccountId, DateRead)
                         VALUES (@LibraryId, @BookId, @AccountId, @DateRead)";
@@ -416,7 +386,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBookToRecentReads(RecentBookDto dto)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO RecentBooks (LibraryId, BookId, AccountId, DateRead)
                         VALUES (@LibraryId, @BookId, @AccountId, @DateRead)";
@@ -429,7 +399,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBookFile(int bookId, BookContentDto contentDto)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO BookContent (BookId, FileId, Language)
                         OUTPUT Inserted.Id
@@ -441,7 +411,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public int GetBookCountByAuthor(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT COUNT(*)
                         FROM Book b
@@ -453,7 +423,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public BookDto GetBookById(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM Book WHERE Id = @Id";
                 return connection.QuerySingleOrDefault<BookDto>(sql, new { Id = bookId });
@@ -462,7 +432,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<BookDto> GetBooksByAuthor(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT b.*
                         FROM Book b
@@ -475,7 +445,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<BookDto> GetBooksByCategory(int categoryId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT b.* FROM Book b
                         INNER JOIN BookCategory bc ON b.Id = bc.BookId
@@ -486,7 +456,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<BookDto> GetBooksBySeries(int seriesId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT b.* FROM Book b WHERE SeriesId = @SeriesId";
                 return connection.Query<BookDto>(sql, new { SeriesId = seriesId });
@@ -495,7 +465,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetBookImageUrl(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.FilePath FROM [File] f
                         INNER JOIN Book b ON f.Id = b.ImageId
@@ -506,7 +476,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetBookImage(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"Select f.* from [File] f
                         Inner Join Book b ON f.Id = b.ImageId
@@ -519,7 +489,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             if (books != null && books.Any())
             {
-                using (var connection = _connectionProvider.GetConnection())
+                using (var connection = connectionProvider.GetConnection())
                 {
                     var sql = "DELETE FROM Book WHERE Id IN @Ids";
                     connection.Execute(sql, new { Ids = books.Select(f => f.Id) });
@@ -529,7 +499,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public bool DoesBookExistsInFavorites(int bookId, int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingle<bool>(@"SELECT COUNT(1) FROM FavoriteBooks WHERE BookId = @BookId AND AccountId = @AccountId", new
                 {
@@ -542,7 +512,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         //TODO : Add user id.
         public bool DoesBookExistsInRecent(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingle<bool>(@"SELECT COUNT(1) FROM RecentBooks WHERE BookId = @BookId", new
                 {
@@ -553,7 +523,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<BookContentDto> GetBookContents(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"SELECT bc.*, f.MimeType FROM BookContent bc
                            INNER Join Book b ON b.Id = bc.BookId
@@ -569,7 +539,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public BookContentDto GetBookContent(int bookId, string language, string mimetype)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"Select * From BookContent bc
                            INNER Join Book b ON b.Id = bc.BookId
@@ -587,7 +557,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public BookContentDto GetBookContent(int bookId, long contentId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"Select * From BookContent bc
                            INNER Join Book b ON b.Id = bc.BookId
@@ -604,7 +574,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetBookContentPath(int bookId, string language, string mimetype)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 string sql = @"SELECT f.FilePath FROM BookContent bc
                            INNER Join Book b ON b.Id = bc.BookId
@@ -622,7 +592,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBookAuthor(int bookId, int authorId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "INSERT INTO BookAuthor (BookId, AuthorId) VALUES (@BookId, @AuthorId)";
                 connection.Execute(sql, new { BookId = bookId, AuthorId = authorId });
@@ -637,9 +607,6 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             }
         }
 
-        public ReadProgressDto GetBookProgress(int bookId, int accountId)
-        {
-            throw new NotImplementedException();
-        }
+        public ReadProgressDto GetBookProgress(int bookId, int accountId) => throw new NotImplementedException();
     }
 }

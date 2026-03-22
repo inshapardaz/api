@@ -4,17 +4,13 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingChapterContentsWithPermission
-        : TestBase
+    public class WhenUpdatingChapterContentsWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private ChapterDto _chapter;
@@ -22,11 +18,6 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         private ChapterContentAssert _assert;
 
         private string _newContents;
-
-        public WhenUpdatingChapterContentsWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -41,16 +32,10 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveLinks()
@@ -64,15 +49,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.UpdateChapterContents
         }
 
         [Test]
-        public void ShouldHaveTextReturened()
-        {
-            _assert.ShouldHaveText(_newContents);
-        }
+        public void ShouldHaveTextReturened() => _assert.ShouldHaveText(_newContents);
 
         [Test]
-        public void ShouldHaveUpdatedContents()
-        {
-            _assert.ShouldHaveSavedCorrectText(_newContents);
-        }
+        public void ShouldHaveUpdatedContents() => _assert.ShouldHaveSavedCorrectText(_newContents);
     }
 }

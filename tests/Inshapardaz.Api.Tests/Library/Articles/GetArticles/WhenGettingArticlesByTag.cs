@@ -1,29 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using Paramore.Brighter.Policies.Handlers;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
 {
     [TestFixture]
-    public class WhenGettingArticlesByTag : TestBase
+    public class WhenGettingArticlesByTag() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private PagingAssert<ArticleView> _assert;
         private TagDto _tag1, _tag2;
-
-        public WhenGettingArticlesByTag()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,16 +28,10 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()

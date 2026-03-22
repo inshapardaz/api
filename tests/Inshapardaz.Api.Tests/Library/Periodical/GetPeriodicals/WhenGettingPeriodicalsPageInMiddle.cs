@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,15 +7,10 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicals
 {
     [TestFixture]
-    public class WhenGettingPeriodicalsPageInMiddle : TestBase
+    public class WhenGettingPeriodicalsPageInMiddle() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<PeriodicalView> _assert;
-
-        public WhenGettingPeriodicalsPageInMiddle()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -31,34 +23,19 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicals
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/periodicals", 2, 10);
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/periodicals", 2);
 
         [Test]
-        public void ShouldHaveNextLink()
-        {
-            _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/periodicals", 3, 10);
-        }
+        public void ShouldHaveNextLink() => _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/periodicals", 3);
 
         [Test]
-        public void ShouldHavePreviousLink()
-        {
-            _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/periodicals");
-        }
+        public void ShouldHavePreviousLink() => _assert.ShouldHavePreviousLink($"/libraries/{LibraryId}/periodicals");
 
         public void ShouldReturnExpectedPeriodicals()
         {

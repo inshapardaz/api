@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -7,19 +5,13 @@ using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class AccountAssert
+    public class AccountAssert(IAccountTestRepository accountTestRepository)
     {
-        private readonly IAccountTestRepository _accountTestRepository;
         private AccountDto _account;
-
-        public AccountAssert(IAccountTestRepository accountTestRepository)
-        {
-            _accountTestRepository = accountTestRepository;
-        }
 
         public AccountAssert AssertAccountExistsWithEmail(string adminEmail)
         {
-            _account = _accountTestRepository.GetAccountByEmail(adminEmail);
+            _account = accountTestRepository.GetAccountByEmail(adminEmail);
 
             _account.Should().NotBeNull();
 
@@ -28,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public AccountAssert AssertAccountActive(int id)
         {
-            _account = _accountTestRepository.GetAccountById(id);
+            _account = accountTestRepository.GetAccountById(id);
             _account.IsVerified.Should().BeTrue();
             _account.VerificationToken.Should().NotBeNullOrWhiteSpace();
             _account.Verified.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
@@ -42,13 +34,13 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         public void AccountShouldNotExist(string ownerEmail)
         {
             ownerEmail.Should().NotBeNull();
-            var dbAccount = _accountTestRepository.GetAccountByEmail(ownerEmail);
+            var dbAccount = accountTestRepository.GetAccountByEmail(ownerEmail);
             dbAccount.Should().BeNull();
         }
 
         public AccountAssert AssertAccountHasResetToken(AccountDto account)
         {
-            var dbAccount = _accountTestRepository.GetAccountById(account.Id);
+            var dbAccount = accountTestRepository.GetAccountById(account.Id);
             dbAccount.Should().NotBeNull();
             dbAccount.ResetToken.Should().NotBeNull();
             dbAccount.ResetTokenExpires.Should().BeCloseTo(DateTime.UtcNow.AddDays(1), TimeSpan.FromSeconds(2));
@@ -64,14 +56,14 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public AccountAssert ShouldBeInRole(Role role, int libraryId)
         {
-            var libraries = _accountTestRepository.GetAccountLibraries(_account.Id);
+            var libraries = accountTestRepository.GetAccountLibraries(_account.Id);
             libraries.SingleOrDefault(t => t.LibraryId == libraryId).Role.Should().Be(role);
             return this;
         }
 
         public AccountAssert InNoLibrary()
         {
-            var accounts = _accountTestRepository.GetAccountLibraries(_account.Id);
+            var accounts = accountTestRepository.GetAccountLibraries(_account.Id);
             accounts.Should().BeEmpty();
             return this;
         }
@@ -108,7 +100,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public void UserInLibrary(int accountId, int libraryId, Role? role)
         {
-            var accounts = _accountTestRepository.GetAccountLibraries(accountId);
+            var accounts = accountTestRepository.GetAccountLibraries(accountId);
             accounts.Should().Contain(t => t.LibraryId == libraryId, "user not found in library");
             if (role.HasValue)
             {
@@ -118,7 +110,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public AccountAssert InLibrary(int libraryId)
         {
-            var accounts = _accountTestRepository.GetAccountLibraries(_account.Id);
+            var accounts = accountTestRepository.GetAccountLibraries(_account.Id);
             accounts.Should().Contain(t => t.LibraryId == libraryId, "user not found in library");
             return this;
         }

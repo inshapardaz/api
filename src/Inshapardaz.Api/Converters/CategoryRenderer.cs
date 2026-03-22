@@ -14,22 +14,13 @@ public interface IRenderCategory
     ListView<CategoryView> Render(IEnumerable<CategoryModel> categories, int libraryId);
 }
 
-public class CategoryRenderer : IRenderCategory
+public class CategoryRenderer(IRenderLink linkRenderer, IUserHelper userHelper) : IRenderCategory
 {
-    private readonly IRenderLink _linkRenderer;
-    private readonly IUserHelper _userHelper;
-
-    public CategoryRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
-    {
-        _linkRenderer = linkRenderer;
-        _userHelper = userHelper;
-    }
-
     public ListView<CategoryView> Render(IEnumerable<CategoryModel> categories, int libraryId)
     {
         var items = categories.Select(g => Render(g, libraryId));
         var view = new ListView<CategoryView> { Data = items };
-        view.Links.Add(_linkRenderer.Render(new Link
+        view.Links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(CategoryController.GetCategories),
             Method = HttpMethod.Get,
@@ -37,9 +28,9 @@ public class CategoryRenderer : IRenderCategory
             Parameters = new { libraryId = libraryId },
         }));
 
-        if (_userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
+        if (userHelper.IsAdmin || userHelper.IsLibraryAdmin(libraryId))
         {
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(CategoryController.CreateCategory),
                 Method = HttpMethod.Post,
@@ -55,7 +46,7 @@ public class CategoryRenderer : IRenderCategory
     {
         var view = category.Map();
 
-        view.Links.Add(_linkRenderer.Render(new Link
+        view.Links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(CategoryController.GetCategoryById),
             Method = HttpMethod.Get,
@@ -63,7 +54,7 @@ public class CategoryRenderer : IRenderCategory
             Parameters = new { libraryId = libraryId, categoryId = category.Id }
         }));
 
-        view.Links.Add(_linkRenderer.Render(new Link
+        view.Links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(BookController.GetBooks),
             Method = HttpMethod.Get,
@@ -75,9 +66,9 @@ public class CategoryRenderer : IRenderCategory
             }
         }));
 
-        if (_userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
+        if (userHelper.IsAdmin || userHelper.IsLibraryAdmin(libraryId))
         {
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(CategoryController.UpdateCategory),
                 Method = HttpMethod.Put,
@@ -85,7 +76,7 @@ public class CategoryRenderer : IRenderCategory
                 Parameters = new { libraryId = libraryId, categoryId = category.Id }
             }));
 
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(CategoryController.DeleteCategory),
                 Method = HttpMethod.Delete,

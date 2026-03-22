@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -8,15 +6,10 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
 {
     [TestFixture]
-    public class WhenGettingSeriesPageThatDoesNotExist : TestBase
+    public class WhenGettingSeriesPageThatDoesNotExist() : TestBase(Domain.Models.Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<SeriesView> _assert;
-
-        public WhenGettingSeriesPageThatDoesNotExist()
-            :base(Domain.Models.Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -28,45 +21,24 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeries
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/series");
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/series");
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
 
         [Test]
-        public void ShouldNotHaveNextLink()
-        {
-            _assert.ShouldNotHaveNextLink();
-        }
+        public void ShouldNotHaveNextLink() => _assert.ShouldNotHaveNextLink();
 
         [Test]
-        public void ShouldNotHavePreviousLink()
-        {
-            _assert.ShouldNotHavePreviousLink();
-        }
+        public void ShouldNotHavePreviousLink() => _assert.ShouldNotHavePreviousLink();
 
         [Test]
-        public void ShouldReturnNoData()
-        {
-            _assert.ShouldHaveNoData();
-        }
+        public void ShouldReturnNoData() => _assert.ShouldHaveNoData();
     }
 }

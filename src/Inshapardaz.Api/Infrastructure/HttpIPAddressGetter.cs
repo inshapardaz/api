@@ -2,20 +2,13 @@ using Inshapardaz.Domain.Adapters;
 
 namespace Inshapardaz.Api.Infrastructure;
 
-public class HttpIPAddressGetter : IGetIPAddress
+public class HttpIPAddressGetter(IHttpContextAccessor contextAccessor) : IGetIPAddress
 {
-    private readonly IHttpContextAccessor _contextAccessor;
-
-    public HttpIPAddressGetter(IHttpContextAccessor contextAccessor)
-    {
-        _contextAccessor = contextAccessor;
-    }
-
     public string GetIPAddressFromRequest()
     {
-        if (_contextAccessor.HttpContext.Request.Headers.ContainsKey("X-Forwarded-For"))
-            return _contextAccessor.HttpContext.Request.Headers["X-Forwarded-For"];
+        if (contextAccessor.HttpContext.Request.Headers.ContainsKey("X-Forwarded-For"))
+            return contextAccessor.HttpContext.Request.Headers["X-Forwarded-For"];
         else
-            return _contextAccessor.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
+            return contextAccessor.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
     }
 }

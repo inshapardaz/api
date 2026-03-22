@@ -1,7 +1,3 @@
-using System;
-using System.Data;
-using System.Net.Http;
-using System.Threading.Tasks;
 using AutoFixture;
 using Inshapardaz.Api.Views.Accounts;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -12,7 +8,7 @@ using Inshapardaz.Api.Tests.Framework.DataHelpers;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
-    public class AccountDataBuilder
+    public class AccountDataBuilder(IAccountTestRepository accountTestRepository)
     {
         private Role? _role = null;
         public string _password = RandomData.String;
@@ -22,14 +18,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         private int? _libraryId;
         private string _resetToken = null;
         private DateTime? _resetTokenExpiry = null;
-        private readonly IAccountTestRepository _accountTestRepository;
 
         public AccountDto Account { get; private set; }
-
-        public AccountDataBuilder(IAccountTestRepository accountTestRepository)
-        {
-            _accountTestRepository = accountTestRepository;
-        }
 
         internal AccountDataBuilder WithPassword(string password)
         {
@@ -102,11 +92,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                  .With(a => a.ResetTokenExpires, _resetTokenExpiry)
                                  .Create();
 
-            _accountTestRepository.AddAccount(Account);
+            accountTestRepository.AddAccount(Account);
 
             if (_role.HasValue && _role != Role.Admin && _libraryId.HasValue)
             {
-                _accountTestRepository.AddAccountToLibrary(Account, _libraryId.Value, _role.Value);
+                accountTestRepository.AddAccountToLibrary(Account, _libraryId.Value, _role.Value);
             }
 
             return Account;
@@ -123,9 +113,6 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             throw new Exception("Account not found to authenticate. Please build an account before authenticating.");
         }
 
-        public void CleanUp()
-        {
-            _accountTestRepository.DeleteAccount(Account.Id);
-        }
+        public void CleanUp() => accountTestRepository.DeleteAccount(Account.Id);
     }
 }

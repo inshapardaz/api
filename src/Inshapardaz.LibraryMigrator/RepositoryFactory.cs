@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Math;
-using Inshapardaz.Adapters.Database.MySql;
+﻿using Inshapardaz.Adapters.Database.MySql;
 using Inshapardaz.Adapters.Database.SqlServer;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories;

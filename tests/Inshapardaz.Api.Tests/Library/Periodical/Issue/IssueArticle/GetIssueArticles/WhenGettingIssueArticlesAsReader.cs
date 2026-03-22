@@ -1,6 +1,3 @@
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -14,16 +11,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueArticles
 {
     [TestFixture]
-    public class WhenGettingIssueArticlesAsReader : TestBase
+    public class WhenGettingIssueArticlesAsReader() : TestBase(Role.Reader)
     {
         private IssueDto _issue;
         private HttpResponseMessage _response;
         private ListView<IssueArticleView> _view;
-
-        public WhenGettingIssueArticlesAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -36,16 +28,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -56,16 +42,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _view.CreateLink().Should().BeNull();
-        }
+        public void ShouldNotHaveCreateLink() => _view.CreateLink().Should().BeNull();
 
         [Test]
-        public void ShouldHaveCorrectNumberOfArticles()
-        {
-            Assert.That(_view.Data.Count(), Is.EqualTo(5));
-        }
+        public void ShouldHaveCorrectNumberOfArticles() => Assert.That(_view.Data.Count(), Is.EqualTo(5));
 
         [Test]
         public void ShouldHaveCorrectArticlesData()

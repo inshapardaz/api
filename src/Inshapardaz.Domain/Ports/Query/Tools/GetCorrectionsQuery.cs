@@ -1,8 +1,6 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
 using Paramore.Darker;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Query.Tools;
 
@@ -15,15 +13,9 @@ public class GetCorrectionsQuery : IQuery<Page<CorrectionModel>>
     public string Profile { get; set; }
 }
 
-public class GetCorrectionsQueryHandler : QueryHandlerAsync<GetCorrectionsQuery, Page<CorrectionModel>>
+public class GetCorrectionsQueryHandler(ICorrectionRepository correctionRepository)
+    : QueryHandlerAsync<GetCorrectionsQuery, Page<CorrectionModel>>
 {
-    private readonly ICorrectionRepository _correctionRepository;
-
-    public GetCorrectionsQueryHandler(ICorrectionRepository correctionRepository)
-    {
-        _correctionRepository = correctionRepository;
-    }
-
     public async override Task<Page<CorrectionModel>> ExecuteAsync(GetCorrectionsQuery query, CancellationToken cancellationToken = default)
-    => await _correctionRepository.GetCorrectionList(query.Language, query.Query, query.Profile, query.PageNumber, query.PageSize, cancellationToken);
+    => await correctionRepository.GetCorrectionList(query.Language, query.Query, query.Profile, query.PageNumber, query.PageSize, cancellationToken);
 }

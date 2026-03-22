@@ -1,10 +1,6 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Adapters;
-using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -39,18 +35,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         void AddIssueArticleContents(IssueArticleContentDto content);
     }
 
-    public class MySqlIssueArticleTestRepository : IIssueArticleTestRepository
+    public class MySqlIssueArticleTestRepository(IProvideConnection connectionProvider) : IIssueArticleTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public MySqlIssueArticleTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddIssueArticle(IssueArticleDto issue)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO IssueArticle (Title, IssueId, SequenceNumber, Status, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SeriesName, SeriesIndex)
                     VALUES (@Title, @IssueId, @SequenceNumber, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @SeriesName, @SeriesIndex);
@@ -70,7 +59,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueArticleDto GetIssueArticleById(int articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM IssueArticle WHERE Id = @Id";
                 return connection.QuerySingleOrDefault<IssueArticleDto>(sql, new { Id = articleId });
@@ -79,7 +68,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueArticleDto GetIssueArticleById(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM IssueArticle WHERE Id = @Id";
                 return connection.QuerySingleOrDefault<IssueArticleDto>(sql, new { Id = articleId });
@@ -88,7 +77,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueArticleDto GetIssueArticlesByIssue(int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT a.* FROM IssueArticle a
                         INNER JOIN Issue i on i.Id = a.IssueId
@@ -108,7 +97,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteIssueArticles(IEnumerable<IssueArticleDto> articles)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM IssueArticle WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = articles.Select(f => f.Id) });
@@ -117,7 +106,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueArticleDto> GetIssueArticlesByIssue(int issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT a.* FROM IssueArticle a
                         INNER JOIN Issue i on i.Id = a.IssueId
@@ -128,7 +117,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddIssueArticleAuthor(int issueId, int authorId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "INSERT INTO IssueArticleAuthor VALUES (@IssueId, @AuthorId)";
                 connection.Execute(sql, new { IssueId = issueId, AuthorId = authorId });
@@ -137,7 +126,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueArticleContentDto GetIssueArticleContent(int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<IssueArticleContentDto>(@"SELECT ac.*
                     FROM IssueArticle a
@@ -162,7 +151,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueArticleContentDto> GetIssueArticleContents(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<IssueArticleContentDto>(@"SELECT *
                     FROM IssueArticleContent
@@ -176,7 +165,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueArticleContentDto> GetContentByIssueArticle(int articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<IssueArticleContentDto>("SELECT * FROM IssueArticleContent WHERE ArticleId = @Id", new { Id = articleId });
             }
@@ -184,7 +173,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueArticleContentDto> GetIssueContentByArticle(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<IssueArticleContentDto>("SELECT * FROM IssueArticleContent WHERE ArticleId = @Id", new { Id = articleId });
             }
@@ -192,7 +181,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddIssueArticleContents(IEnumerable<IssueArticleContentDto> contents)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "INSERT INTO IssueArticleContent (ArticleId, Language, FileId) VALUES (@ArticleId, @Language, @FileId)";
                 connection.Execute(sql, contents);
@@ -201,7 +190,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddIssueArticleContents(IssueArticleContentDto content)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "INSERT INTO ArticleContent (ArticleId, Language, FileId) VALUES (@ArticleId, @Language, @FileId)";
                 connection.Execute(sql, content);
@@ -210,18 +199,12 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
     }
 
-    public class SqlServerIssueArticleTestRepository : IIssueArticleTestRepository
+    public class SqlServerIssueArticleTestRepository(IProvideConnection connectionProvider)
+        : IIssueArticleTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public SqlServerIssueArticleTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddIssueArticle(IssueArticleDto issue)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO IssueArticle (Title, IssueId, SequenceNumber, Status, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SeriesName, SeriesIndex)
                     OUTPUT INSERTED.ID
@@ -241,7 +224,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueArticleDto GetIssueArticleById(int articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM IssueArticle WHERE Id = @Id";
                 return connection.QuerySingleOrDefault<IssueArticleDto>(sql, new { Id = articleId });
@@ -250,7 +233,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueArticleDto GetIssueArticleById(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM IssueArticle WHERE Id = @Id";
                 return connection.QuerySingleOrDefault<IssueArticleDto>(sql, new { Id = articleId });
@@ -259,7 +242,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueArticleDto GetIssueArticlesByIssue(int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT a.* FROM IssueArticle a
                         INNER JOIN Issue i on i.Id = a.IssueId
@@ -279,7 +262,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteIssueArticles(IEnumerable<IssueArticleDto> articles)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM IssueArticle WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = articles.Select(f => f.Id) });
@@ -288,7 +271,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueArticleDto> GetIssueArticlesByIssue(int issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT a.* FROM IssueArticle a
                         INNER JOIN Issue i on i.Id = a.IssueId
@@ -299,7 +282,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddIssueArticleAuthor(int issueId, int authorId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "INSERT INTO IssueArticleAuthor VALUES (@IssueId, @AuthorId)";
                 connection.Execute(sql, new { IssueId = issueId, AuthorId = authorId });
@@ -308,7 +291,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssueArticleContentDto GetIssueArticleContent(int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<IssueArticleContentDto>(@"SELECT ac.*
                     FROM IssueArticle a
@@ -333,7 +316,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueArticleContentDto> GetIssueArticleContents(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<IssueArticleContentDto>(@"SELECT *
                     FROM IssueArticleContent
@@ -347,7 +330,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueArticleContentDto> GetContentByIssueArticle(int articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<IssueArticleContentDto>("SELECT * FROM IssueArticleContent WHERE ArticleId = @Id", new { Id = articleId });
             }
@@ -355,7 +338,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueArticleContentDto> GetIssueContentByArticle(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<IssueArticleContentDto>("SELECT * FROM IssueArticleContent WHERE ArticleId = @Id", new { Id = articleId });
             }
@@ -363,7 +346,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddIssueArticleContents(IEnumerable<IssueArticleContentDto> contents)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "INSERT INTO IssueArticleContent (ArticleId, Language, FileId) VALUES (@ArticleId, @Language, @FileId)";
                 connection.Execute(sql, contents);
@@ -372,7 +355,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddIssueArticleContents(IssueArticleContentDto content)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "INSERT INTO ArticleContent (ArticleId, Language, FileId) VALUES (@ArticleId, @Language, @FileId)";
                 connection.Execute(sql, content);

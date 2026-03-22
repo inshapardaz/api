@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
@@ -8,31 +6,17 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Periodical.DeletePeriodical
 {
     [TestFixture]
-    public class WhenDeletingNonExistingPeriodical : TestBase
+    public class WhenDeletingNonExistingPeriodical() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
 
-        public WhenDeletingNonExistingPeriodical() 
-            : base(Role.Writer)
-        {
-        }
-
         [OneTimeSetUp]
-        public async Task Setup()
-        {
-            _response = await Client.DeleteAsync($"/libraries/{LibraryId}/periodicals/{-RandomData.Number}");
-        }
+        public async Task Setup() => _response = await Client.DeleteAsync($"/libraries/{LibraryId}/periodicals/{-RandomData.Number}");
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNoContent()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldReturnNoContent() => _response.ShouldBeNoContent();
     }
 }

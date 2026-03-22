@@ -1,6 +1,4 @@
 ﻿using Inshapardaz.Domain.Models;
-using System;
-using System.Collections.Generic;
 
 namespace Inshapardaz.Api.Tests.Framework.Helpers
 {

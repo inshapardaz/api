@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
@@ -10,16 +8,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Series.GetSeriesById
 {
     [TestFixture]
-    public class WhenGettingSeriesByIdAsReader : TestBase
+    public class WhenGettingSeriesByIdAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private SeriesDto _expected;
         private SeriesAssert _assert;
-
-        public WhenGettingSeriesByIdAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -32,51 +25,27 @@ namespace Inshapardaz.Api.Tests.Library.Series.GetSeriesById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
-        public void ShouldHaveBooksLink()
-        {
-            _assert.ShouldHaveBooksLink();
-        }
+        public void ShouldHaveBooksLink() => _assert.ShouldHaveBooksLink();
 
         [Test]
-        public void ShouldNotHaveUpdateLink()
-        {
-            _assert.ShouldNotHaveUpdateLink();
-        }
+        public void ShouldNotHaveUpdateLink() => _assert.ShouldNotHaveUpdateLink();
 
         [Test]
-        public void ShouldNotHaveDeleteLink()
-        {
-            _assert.ShouldNotHaveDeleteLink();
-        }
+        public void ShouldNotHaveDeleteLink() => _assert.ShouldNotHaveDeleteLink();
 
         [Test]
-        public void ShouldNotHaveImageUploadLink()
-        {
-            _assert.ShouldNotHaveImageUploadLink();
-        }
+        public void ShouldNotHaveImageUploadLink() => _assert.ShouldNotHaveImageUploadLink();
 
         [Test]
-        public void ShouldReturnCorrectSeriesData()
-        {
-            _assert.ShouldHaveCorrectSeriesRetunred(_expected);
-        }
+        public void ShouldReturnCorrectSeriesData() => _assert.ShouldHaveCorrectSeriesRetunred(_expected);
     }
 }

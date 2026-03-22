@@ -2,24 +2,14 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapters.Database.SqlServer.Repositories.Library;
 
-public class LibraryRepository : ILibraryRepository
+public class LibraryRepository(SqlServerConnectionProvider connectionProvider) : ILibraryRepository
 {
-    private readonly SqlServerConnectionProvider _connectionProvider;
-
-    public LibraryRepository(SqlServerConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-
     public async Task<Page<LibraryModel>> GetLibraries(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT  *, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library
@@ -48,7 +38,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task<Page<LibraryModel>> FindLibraries(string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT  *, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library
@@ -78,7 +68,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task<Page<LibraryModel>> GetUserLibraries(int accountId, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT  l.*, al.Role, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library l
@@ -114,7 +104,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task<Page<LibraryModel>> FindUserLibraries(string query, int accountId, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT  l.*, al.Role, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library l
@@ -148,7 +138,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task<Page<LibraryModel>> GetUnassignedLibraries(int accountId, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT  l.*, al.Role, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library l
@@ -184,7 +174,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task<Page<LibraryModel>> FindUnassignedLibraries(string query, int accountId, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT  l.*, al.Role, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library l
@@ -218,7 +208,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task<Page<LibraryModel>> GetPublicLibraries(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT  *, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library
@@ -248,7 +238,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task<Page<LibraryModel>> FindPublicLibraries(string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT  *, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library
@@ -278,7 +268,7 @@ public class LibraryRepository : ILibraryRepository
     public async Task<LibraryModel> AddLibrary(LibraryModel library, CancellationToken cancellationToken)
     {
         int libraryId;
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"INSERT INTO Library(Name, Language, SupportsPeriodicals, PrimaryColor, SecondaryColor, OwnerEmail, [Public], DatabaseConnection, FileStoreType, FileStoreSource) 
                             OUTPUT Inserted.Id 
@@ -305,7 +295,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task<LibraryModel> GetLibraryById(int libraryId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT l.*, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library l
@@ -321,7 +311,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task UpdateLibrary(LibraryModel library, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"Update Library Set Name = @Name,
                             Language = @Language,
@@ -356,7 +346,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task DeleteLibrary(int libraryId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"Delete From Library Where Id = @Id";
             var command = new CommandDefinition(sql, new { Id = libraryId }, cancellationToken: cancellationToken);
@@ -366,7 +356,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task AddAccountToLibrary(int accountId, int libraryId, Role role, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"INSERT INTO AccountLibrary VALUES (@LibraryId, @AccountId, @Role)";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, Role = role }, cancellationToken: cancellationToken);
@@ -376,7 +366,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task UpdateLibraryUser(LibraryUserModel model, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"UPDATE AccountLibrary SET Role = @Role WHERE LibraryId = @LibraryId AND AccountId = @AccountId";
             var command = new CommandDefinition(sql, model, cancellationToken: cancellationToken);
@@ -386,7 +376,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task RemoveLibraryFromAccount(int libraryId, int accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"Delete From AccountLibrary Where LibraryId = @LibraryId AND AccountId = @AccountId";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId }, cancellationToken: cancellationToken);
@@ -396,7 +386,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task<IEnumerable<LibraryModel>> GetLibrariesByAccountId(int accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT  l.*, al.Role, f.Id As ImageId, f.FilePath AS ImageUrl
                             FROM Library l
@@ -414,7 +404,7 @@ public class LibraryRepository : ILibraryRepository
 
     public async Task UpdateLibraryImage(int libraryId, long imageId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update Library Set ImageId = @ImageId Where Id = @Id";
             var command = new CommandDefinition(sql, new { Id = libraryId, ImageId = imageId }, cancellationToken: cancellationToken);

@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
@@ -36,28 +32,16 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/articles");
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/articles");
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
 
         [Test]
         public void ShouldNotHaveNavigationLinks()
@@ -95,8 +79,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
                             .ShouldNotHaveAddFavoriteLink()
                             .ShouldNotHaveRemoveFavoriteLink()
                             .ShouldHaveContents(
-                                ArticleBuilder.Contents.Where(c => c.ArticleId == actual.Id).ToList(),
-                                false)
+                                ArticleBuilder.Contents.Where(c => c.ArticleId == actual.Id).ToList())
                             .ShouldBeSameAs(expected);
             };
         }

@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
@@ -13,17 +10,13 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingBookWithPermission : TestBase
+    public class WhenDeletingBookWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private BookAssert _bookAssert;
         private BookDto _expected;
         private string _imageFilePath;
         private int _authorId;
-
-        public WhenDeletingBookWithPermission(Role role) : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -46,28 +39,16 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNoContent()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldReturnNoContent() => _response.ShouldBeNoContent();
 
         [Test]
-        public void ShouldHaveDeletedBook()
-        {
-            _bookAssert.ShouldHaveDeletedBook(_expected.Id);
-        }
+        public void ShouldHaveDeletedBook() => _bookAssert.ShouldHaveDeletedBook(_expected.Id);
 
         [Test]
-        public void ShouldHaveDeletedTheBookImage()
-        {
-            _bookAssert.ShouldHaveDeletedBookImage(_expected.Id, _expected.ImageId, _imageFilePath);
-        }
+        public void ShouldHaveDeletedTheBookImage() => _bookAssert.ShouldHaveDeletedBookImage(_expected.Id, _expected.ImageId, _imageFilePath);
 
         [Test]
         public void ShouldNotHaveDeletedTheAuthor()
@@ -123,15 +104,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.DeleteBook
         }
 
         [Test]
-        public void ShouldBeDeletedFromTheFavoritesOfAllUsers()
-        {
-            _bookAssert.ShouldNotBeInFavorites(_expected.Id, AccountId);
-        }
+        public void ShouldBeDeletedFromTheFavoritesOfAllUsers() => _bookAssert.ShouldNotBeInFavorites(_expected.Id, AccountId);
 
         [Test]
-        public void ShouldBeDeletedFromTheRecentReadBooks()
-        {
-            _bookAssert.ShouldHaveDeletedBookFromRecentReads(_expected.Id);
-        }
+        public void ShouldBeDeletedFromTheRecentReadBooks() => _bookAssert.ShouldHaveDeletedBookFromRecentReads(_expected.Id);
     }
 }

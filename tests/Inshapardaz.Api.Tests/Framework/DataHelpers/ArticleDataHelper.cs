@@ -2,10 +2,6 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Adapters;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -49,19 +45,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         int GetArticleCountByAuthor(int id);
     }
 
-    public class MySqlArticleTestRepository : IArticleTestRepository
+    public class MySqlArticleTestRepository(IProvideConnection connectionProvider) : IArticleTestRepository
     {
-
-        private IProvideConnection _connectionProvider;
-
-        public MySqlArticleTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddArticle(ArticleDto article)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO Article (LibraryId, `Title`, IsPublic, ImageId, `Type`, `Status`, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SourceId, SourceType, LastModified)
                         Values (@LibraryId, @Title, @IsPublic, @ImageId, @Type, @Status, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @SourceId, @SourceType, @LastModified);
@@ -81,7 +69,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public ArticleDto GetArticleById(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM Article WHERE Id = @Id";
                 return connection.QuerySingleOrDefault<ArticleDto>(sql, new { Id = articleId });
@@ -90,7 +78,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteArticles(IEnumerable<ArticleDto> articles)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROm Article WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = articles.Select(f => f.Id) });
@@ -99,7 +87,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddArticleAuthor(long articleId, int authorId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "INSERT INTO ArticleAuthor VALUES (@ArticleId, @AuthorId)";
                 connection.Execute(sql, new { ArticleId = articleId, AuthorId = authorId });
@@ -108,7 +96,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public ArticleContentDto GetArticleContent(long articleId, string language)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<ArticleContentDto>(@"SELECT ac.*
                     FROM Article a
@@ -125,7 +113,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<ArticleContentDto> GetArticleContents(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<ArticleContentDto>(@"SELECT *
                     FROM ArticleContent
@@ -139,7 +127,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueArticleContentDto> GetContentByArticle(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<IssueArticleContentDto>("SELECT * FROM ArticleContent WHERE ArticleId = @Id", new { Id = articleId });
             }
@@ -147,7 +135,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public int AddArticleContents(ArticleContentDto content)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO ArticleContent (ArticleId, `Language`, FileId, `Layout`)
                 VALUES (@ArticleId, @Language, @FileId, @Layout);
@@ -157,7 +145,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         }
         public void AddArticlesToFavorites(int libraryId, IEnumerable<long> articleIds, int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 articleIds.ForEach(id => AddArticleToFavorites(libraryId, id, accountId));
             }
@@ -165,7 +153,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddArticleToFavorites(int libraryId, long articleId, int accountId, DateTime? timestamp = null)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO ArticleFavorite (LibraryId, ArticleId, AccountId)
                         VALUES (@LibraryId, @ArticleId, @AccountId)";
@@ -175,7 +163,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public bool DoesArticleExistsInFavorites(long articleId, int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingle<bool>(@"SELECT COUNT(1) FROM ArticleFavorite WHERE ArticleId = @ArticleId AND AccountId = @AccountId", new
                 {
@@ -187,7 +175,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddArticlesToRecentReads(int libraryId, IEnumerable<long> articleIds, int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 articleIds.ForEach(id => AddArticleToRecentReads(new RecentArticleDto { LibraryId = libraryId, ArticleId = id, AccountId = accountId, DateRead = DateTime.UtcNow }));
             }
@@ -195,7 +183,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddArticleToRecentReads(RecentArticleDto dto)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO ArticleRead (LibraryId, ArticleId, AccountId, DateRead)
                                 VALUES (@LibraryId, @ArticleId, @AccountId, @DateRead)";
@@ -206,7 +194,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public bool DoesArticleExistsInRecent(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingle<bool>(@"SELECT COUNT(1) FROM ArticleRead WHERE ArticleId = @ArticleId", new
                 {
@@ -217,7 +205,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetArticleImageUrl(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
 
                 var sql = @"SELECT f.FilePath FROM `File` f
@@ -229,7 +217,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetArticleImage(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.* FROM `File` f
                                 INNER JOIN Article a ON f.Id = a.ImageId
@@ -240,7 +228,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public int GetArticleCountByAuthor(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT Count(*) FROM ArticleAuthor WHERE AuthorId = @Id";
                 return connection.ExecuteScalar<int>(sql, new { Id = id });
@@ -249,19 +237,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
     }
 
-    public class SqlServerArticleTestRepository : IArticleTestRepository
+    public class SqlServerArticleTestRepository(IProvideConnection connectionProvider) : IArticleTestRepository
     {
-
-        private IProvideConnection _connectionProvider;
-
-        public SqlServerArticleTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddArticle(ArticleDto article)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO Article (LibraryId, Title, IsPublic, ImageId, Type, Status, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, SourceId, SourceType, LastModified)
                         OUTPUT INSERTED.ID
@@ -281,7 +261,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public ArticleDto GetArticleById(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM Article WHERE Id = @Id";
                 return connection.QuerySingleOrDefault<ArticleDto>(sql, new { Id = articleId });
@@ -290,7 +270,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteArticles(IEnumerable<ArticleDto> articles)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROm Article WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = articles.Select(f => f.Id) });
@@ -299,7 +279,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddArticleAuthor(long articleId, int authorId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "INSERT INTO ArticleAuthor VALUES (@ArticleId, @AuthorId)";
                 connection.Execute(sql, new { ArticleId = articleId, AuthorId = authorId });
@@ -308,7 +288,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public ArticleContentDto GetArticleContent(long articleId, string language)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<ArticleContentDto>(@"SELECT ac.*
                     FROM Article a
@@ -325,7 +305,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<ArticleContentDto> GetArticleContents(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<ArticleContentDto>(@"SELECT *
                     FROM ArticleContent
@@ -339,7 +319,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssueArticleContentDto> GetContentByArticle(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.Query<IssueArticleContentDto>("SELECT * FROM ArticleContent WHERE ArticleId = @Id", new { Id = articleId });
             }
@@ -347,7 +327,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public int AddArticleContents(ArticleContentDto content)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO ArticleContent (ArticleId, Language, FileId, Layout)
                 OUTPUT Inserted.ID
@@ -357,7 +337,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         }
         public void AddArticlesToFavorites(int libraryId, IEnumerable<long> articleIds, int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 articleIds.ForEach(id => AddArticleToFavorites(libraryId, id, accountId));
             }
@@ -365,7 +345,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddArticleToFavorites(int libraryId, long articleId, int accountId, DateTime? timestamp = null)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO ArticleFavorite (LibraryId, ArticleId, AccountId)
                         VALUES (@LibraryId, @ArticleId, @AccountId)";
@@ -376,7 +356,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public bool DoesArticleExistsInFavorites(long articleId, int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingle<bool>(@"SELECT COUNT(1) FROM ArticleFavorite WHERE ArticleId = @ArticleId AND AccountId = @AccountId", new
                 {
@@ -388,7 +368,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddArticlesToRecentReads(int libraryId, IEnumerable<long> articleIds, int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 articleIds.ForEach(id => AddArticleToRecentReads(new RecentArticleDto { LibraryId = libraryId, ArticleId = id, AccountId = accountId, DateRead = DateTime.UtcNow }));
             }
@@ -396,7 +376,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddArticleToRecentReads(RecentArticleDto dto)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO ArticleRead (LibraryId, ArticleId, AccountId, DateRead)
                                 VALUES (@LibraryId, @ArticleId, @AccountId, @DateRead)";
@@ -406,7 +386,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public bool DoesArticleExistsInRecent(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingle<bool>(@"SELECT COUNT(1) FROM ArticleRead WHERE ArticleId = @ArticleId", new
                 {
@@ -416,7 +396,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         }
         public string GetArticleImageUrl(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.FilePath FROM [File] f
                                 INNER JOIN Article a ON f.Id = a.ImageId
@@ -427,7 +407,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetArticleImage(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.* FROM [File] f
                                 INNER JOIN Article a ON f.Id = a.ImageId
@@ -438,7 +418,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public int GetArticleCountByAuthor(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT Count(*) FROM ArticleAuthor WHERE AuthorId = @Id";
                 return connection.ExecuteScalar<int>(sql, new { Id = id });

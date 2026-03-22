@@ -4,14 +4,8 @@ using Microsoft.Extensions.Options;
 
 namespace Inshapardaz.Api.Infrastructure.Services;
 
-public class MigrationService : IHostedService
+public class MigrationService(IServiceProvider services) : IHostedService
 {
-    private IServiceProvider services;
-    public MigrationService(IServiceProvider services)
-    {
-        this.services = services;
-    }
-
     public Task StartAsync(CancellationToken cancellationToken)
     {
         using var scope = services.CreateScope();
@@ -23,8 +17,5 @@ public class MigrationService : IHostedService
         return Task.CompletedTask;
     }
 
-    public Task StopAsync(CancellationToken cancellationToken)
-    {
-        return Task.CompletedTask;
-    }
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }

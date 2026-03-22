@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Inshapardaz.Domain.Models.Library;
+﻿namespace Inshapardaz.Domain.Models.Library;
 
 public class PeriodicalModel
 {

@@ -3,22 +3,14 @@ using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class TagAssert
+    public class TagAssert(ITagTestRepository tagRepository)
     {
         private HttpResponseMessage _response;
         private TagView _tag;
         private int _libraryId;
-
-        private readonly ITagTestRepository _tagRepository;
-
-        public TagAssert(ITagTestRepository tagRepository)
-        {
-            _tagRepository = tagRepository;
-        }
 
         public TagAssert ForView(TagView view)
         {
@@ -41,21 +33,21 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public TagAssert ShouldNotHaveDeletedTag(int tagId)
         {
-            var tag = _tagRepository.GetTagById(_libraryId, tagId);
+            var tag = tagRepository.GetTagById(_libraryId, tagId);
             tag.Should().NotBeNull();
             return this;
         }
 
         public TagAssert ShouldHaveDeletedTag(int tagId)
         {
-            var tag = _tagRepository.GetTagById(_libraryId, tagId);
+            var tag = tagRepository.GetTagById(_libraryId, tagId);
             tag.Should().BeNull();
             return this;
         }
 
         public TagAssert ShouldHaveCreatedTag()
         {
-            var tag = _tagRepository.GetTagById(_libraryId, _tag.Id);
+            var tag = tagRepository.GetTagById(_libraryId, _tag.Id);
             tag.Should().NotBeNull();
             return this;
         }

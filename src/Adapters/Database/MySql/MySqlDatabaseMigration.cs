@@ -2,7 +2,6 @@
 using Inshapardaz.Database.Migrations;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using FluentMigrator.Runner.Initialization;
 
 namespace Inshapardaz.Adapters.Database.MySql;

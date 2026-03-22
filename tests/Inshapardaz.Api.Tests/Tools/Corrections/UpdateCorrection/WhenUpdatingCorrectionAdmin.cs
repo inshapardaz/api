@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
@@ -11,18 +9,12 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Tools.Corrections.UpdateCorrection
 {
     [TestFixture]
-    public class WhenUpdatingCorrectionAdmin : TestBase
+    public class WhenUpdatingCorrectionAdmin() : TestBase(Role.Admin)
     {
         private HttpResponseMessage _response;
         private CorrectionAssert _assert;
         private CorrectionDto _correction;
         private CorrectionView _update;
-
-        public WhenUpdatingCorrectionAdmin()
-            :base(Role.Admin)
-        {
-
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -40,16 +32,10 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.UpdateCorrection
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveUpdatedCorrection()

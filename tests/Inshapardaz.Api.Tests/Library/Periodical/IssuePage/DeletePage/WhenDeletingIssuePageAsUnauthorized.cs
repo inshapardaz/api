@@ -3,8 +3,6 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.DeletePage
 {
@@ -27,21 +25,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.DeletePage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveUnauthorisedResult()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldHaveUnauthorisedResult() => _response.ShouldBeUnauthorized();
 
         [Test]
-        public void ShouldNotDeletePage()
-        {
-            _assert.IssuePageShouldExist(_issueId, _page.SequenceNumber);
-        }
+        public void ShouldNotDeletePage() => _assert.IssuePageShouldExist(_issueId, _page.SequenceNumber);
     }
 }

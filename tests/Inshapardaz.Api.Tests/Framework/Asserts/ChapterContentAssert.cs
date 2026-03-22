@@ -5,30 +5,18 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
-using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class ChapterContentAssert
+    public class ChapterContentAssert(
+        IFileTestRepository fileRepository,
+        FakeFileStorage fileStorage,
+        IChapterTestRepository chapterRepository)
     {
         private HttpResponseMessage _response;
         private int _libraryId;
         private ChapterContentView _chapterContent;
         private LibraryDto _library;
-
-        private readonly IChapterTestRepository _chapterRepository;
-        private readonly IFileTestRepository _fileRepository;
-        private readonly FakeFileStorage _fileStorage;
-
-        public ChapterContentAssert(IFileTestRepository fileRepository,
-            FakeFileStorage fileStorage,
-            IChapterTestRepository chapterRepository)
-        {
-            _fileRepository = fileRepository;
-            _fileStorage = fileStorage;
-            _chapterRepository = chapterRepository;
-        }
 
         public ChapterContentAssert ForResponse(HttpResponseMessage response)
         {
@@ -112,21 +100,21 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ChapterContentAssert ShouldHaveSavedCorrectText(string expected)
         {
-            var content = _chapterRepository.GetChapterContentById(_chapterContent.Id);
+            var content = chapterRepository.GetChapterContentById(_chapterContent.Id);
 
-            var file = _fileRepository.GetFileById(content.FileId);
-            var fileContents = _fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            var file = fileRepository.GetFileById(content.FileId);
+            var fileContents = fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
             fileContents.Should().NotBeNull().And.Be(expected);
             return this;
         }
 
         public ChapterContentAssert ShouldHaveMatechingTextForLanguage(string expected, string language)
         {
-            var content = _chapterRepository.GetChapterContentById(_chapterContent.Id);
+            var content = chapterRepository.GetChapterContentById(_chapterContent.Id);
             content.Language.Should().Be(language);
 
-            var file = _fileRepository.GetFileById(content.FileId);
-            var fileContents = _fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            var file = fileRepository.GetFileById(content.FileId);
+            var fileContents = fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
             fileContents.Should().NotBeNull().And.Be(expected);
             return this;
         }
@@ -141,7 +129,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ChapterContentAssert ShouldHaveSavedChapterContent()
         {
-            var dbContent = _chapterRepository.GetChapterContentById(_chapterContent.Id);
+            var dbContent = chapterRepository.GetChapterContentById(_chapterContent.Id);
             dbContent.Should().NotBeNull();
             _chapterContent.ChapterId.Should().Be(dbContent.ChapterId);
             _chapterContent.Language.Should().Be(dbContent.Language);
@@ -193,7 +181,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ChapterContentAssert ShouldHaveDeletedContent(ChapterContentDto content)
         {
-            var dbContent = _chapterRepository.GetChapterContentById(content.Id);
+            var dbContent = chapterRepository.GetChapterContentById(content.Id);
             dbContent.Should().BeNull("Chapter contnet should be deleted");
             return this;
         }

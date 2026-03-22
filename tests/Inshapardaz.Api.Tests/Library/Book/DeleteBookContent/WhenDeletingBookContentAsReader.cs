@@ -4,23 +4,15 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.Contents.DeleteBookContent
 {
     [TestFixture]
-    public class WhenDeletingBookContentAsReader
-        : TestBase
+    public class WhenDeletingBookContentAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private BookContentAssert _assert;
         private BookContentDto _expected;
-
-        public WhenDeletingBookContentAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,21 +25,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.DeleteBookContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnForbidden()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldReturnForbidden() => _response.ShouldBeForbidden();
 
         [Test]
-        public void ShouldNotDeletedBookFile()
-        {
-            _assert.ShouldHaveBookContent(_expected.BookId, _expected.Language, _expected.MimeType);
-        }
+        public void ShouldNotDeletedBookFile() => _assert.ShouldHaveBookContent(_expected.BookId, _expected.Language, _expected.MimeType);
     }
 }

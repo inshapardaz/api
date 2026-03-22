@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,16 +7,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.BookShelf.UploadBookShelfImage
 {
     [TestFixture]
-    public class WhenUploadingBookShelfImageWhenNoExistingImage : TestBase
+    public class WhenUploadingBookShelfImageWhenNoExistingImage() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private BookShelfAssert _assert;
         private int _bookShelfId;
-
-        public WhenUploadingBookShelfImageWhenNoExistingImage()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -31,33 +24,18 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UploadBookShelfImage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectImageLocationHeader(_bookShelfId);
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectImageLocationHeader(_bookShelfId);
 
         [Test]
-        public void ShouldHaveAddedImageToBookShelf()
-        {
-            _assert.ShouldHaveAddedBookShelfImage(_bookShelfId);
-        }
+        public void ShouldHaveAddedImageToBookShelf() => _assert.ShouldHaveAddedBookShelfImage(_bookShelfId);
 
         [Test]
-        public void ShouldSavePublicImage()
-        {
-            _assert.ShouldHavePublicImage(_bookShelfId);
-        }
+        public void ShouldSavePublicImage() => _assert.ShouldHavePublicImage(_bookShelfId);
     }
 }

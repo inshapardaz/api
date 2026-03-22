@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -8,7 +5,11 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
-    public class CategoriesDataBuilder
+    public class CategoriesDataBuilder(
+        ICategoryTestRepository categoryRepository,
+        IAuthorTestRepository authorRepository,
+        IBookTestRepository bookRepository,
+        IPeriodicalTestRepository periodicalRepository)
     {
         private int _bookCount, _periodicalCount;
         private List<AuthorDto> _authors = new List<AuthorDto>();
@@ -16,21 +17,6 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         private int _libraryId;
         private IEnumerable<BookDto> _books;
         private IEnumerable<PeriodicalDto> _periodicals;
-
-        private ICategoryTestRepository _categoryRepository;
-        private IAuthorTestRepository _authorRepository;
-        private IBookTestRepository _bookRepository;
-        private IPeriodicalTestRepository _periodicalRepository;
-        public CategoriesDataBuilder(ICategoryTestRepository categoryRepository,
-            IAuthorTestRepository authorRepository,
-            IBookTestRepository bookRepository,
-            IPeriodicalTestRepository periodicalRepository)
-        {
-            _categoryRepository = categoryRepository;
-            _authorRepository = authorRepository;
-            _bookRepository = bookRepository;
-            _periodicalRepository = periodicalRepository;
-        }
 
         public CategoriesDataBuilder WithBooks(int bookCount)
         {
@@ -60,7 +46,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                               .With(c => c.LibraryId, _libraryId)
                                .CreateMany(count);
 
-            _categoryRepository.AddCategories(cats);
+            categoryRepository.AddCategories(cats);
             _categories.AddRange(cats);
 
             foreach (var cat in cats)
@@ -70,7 +56,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                      .Without(a => a.ImageId)
                                      .Create();
 
-                _authorRepository.AddAuthor(author);
+                authorRepository.AddAuthor(author);
                 _authors.Add(author);
 
                 _books = fixture.Build<BookDto>()
@@ -79,19 +65,19 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                    .Without(b => b.ImageId)
                                    .Without(b => b.SeriesId)
                                    .CreateMany(_bookCount);
-                _bookRepository.AddBooks(_books);
+                bookRepository.AddBooks(_books);
 
                 _periodicals = fixture.Build<PeriodicalDto>()
                                    .With(b => b.LibraryId, _libraryId)
                                    .With(b => b.Language, RandomData.Locale)
                                    .CreateMany(_periodicalCount);
-                _periodicalRepository.AddPeriodicals(_periodicals);
+                periodicalRepository.AddPeriodicals(_periodicals);
 
-                _bookRepository.AddBooksAuthor(_books.Select(b => b.Id), author.Id);
+                bookRepository.AddBooksAuthor(_books.Select(b => b.Id), author.Id);
 
-                _categoryRepository.AddBooksToCategory(_books, cat);
+                categoryRepository.AddBooksToCategory(_books, cat);
 
-                _categoryRepository.AddPeriodicalToCategory(_periodicals, cat);
+                categoryRepository.AddPeriodicalToCategory(_periodicals, cat);
             }
 
             return cats;
@@ -99,10 +85,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void CleanUp()
         {
-            _periodicalRepository.DeletePeriodicals(_periodicals);
-            _bookRepository.DeleteBooks(_books);
-            _authorRepository.DeleteAuthors(_authors);
-            _categoryRepository.DeleteCategories(_categories);
+            periodicalRepository.DeletePeriodicals(_periodicals);
+            bookRepository.DeleteBooks(_books);
+            authorRepository.DeleteAuthors(_authors);
+            categoryRepository.DeleteCategories(_categories);
         }
     }
 }

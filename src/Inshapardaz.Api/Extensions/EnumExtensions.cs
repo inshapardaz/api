@@ -53,10 +53,7 @@ public static class EnumExtensions
         return retval.Trim(',', ' ');
     }
 
-    public static string ToDescription<T>(this T value)
-    {
-        return GetEnumDescription<T>(value);
-    }
+    public static string ToDescription<T>(this T value) => GetEnumDescription<T>(value);
 
     public static T ToEnum<T>(this string value, T defaultValue) where T : struct
     {

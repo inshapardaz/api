@@ -6,26 +6,17 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Book.Chapter;
 
-public class UpdateChapterContentRequest : BookRequest
+public class UpdateChapterContentRequest(int libraryId, int bookId, int chapterNumber, string contents, string language)
+    : BookRequest(libraryId, bookId)
 {
-    public UpdateChapterContentRequest(int libraryId, int bookId, int chapterNumber, string contents, string language)
-        : base(libraryId, bookId)
-    {
-        ChapterNumber = chapterNumber;
-        Contents = contents;
-        Language = language;
-    }
+    public string Language { get; set; } = language;
 
-    public string Language { get; set; }
+    public string Contents { get; set; } = contents;
 
-    public string Contents { get; set; }
-
-    public int ChapterNumber { get; set; }
+    public int ChapterNumber { get; set; } = chapterNumber;
 
     public RequestResult Result { get; set; } = new RequestResult();
 

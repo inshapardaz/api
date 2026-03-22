@@ -5,22 +5,14 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
 {
     [TestFixture]
-    public class WhenAddingChapterForBookInOtherLibrary
-        : TestBase
+    public class WhenAddingChapterForBookInOtherLibrary() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private LibraryDataBuilder _libBuilder;
-
-        public WhenAddingChapterForBookInOtherLibrary()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -43,9 +35,6 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
         }
 
         [Test]
-        public void ShouldHaveBadRequestResult()
-        {
-            _response.ShouldBeBadRequest();
-        }
+        public void ShouldHaveBadRequestResult() => _response.ShouldBeBadRequest();
     }
 }

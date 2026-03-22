@@ -5,36 +5,20 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class IssueArticleContentAssert
+    public class IssueArticleContentAssert(
+        IIssueArticleTestRepository issueArticleRepository,
+        IIssueTestRepository issueRepository,
+        IFileTestRepository fileRepository,
+        FakeFileStorage fileStorage)
     {
         private HttpResponseMessage _response;
         private int _libraryId;
         private IssueDto _issue;
         private LibraryDto _library;
         private IssueArticleContentView _articleContent;
-
-        private readonly IIssueTestRepository _issueRepository;
-        private readonly IIssueArticleTestRepository _issueArticleRepository;
-        private readonly IFileTestRepository _fileRepository;
-        private readonly FakeFileStorage _fileStorage;
-
-        public IssueArticleContentAssert(IIssueArticleTestRepository issueArticleRepository, 
-            IIssueTestRepository issueRepository, 
-            IFileTestRepository fileRepository, 
-            FakeFileStorage fileStorage)
-        {
-            _issueArticleRepository = issueArticleRepository;
-            _issueRepository = issueRepository;
-            _fileRepository = fileRepository;
-            _fileStorage = fileStorage;
-        }
 
         public IssueArticleContentAssert ForResponse(HttpResponseMessage response)
         {
@@ -118,24 +102,24 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueArticleContentAssert ShouldHaveSavedCorrectText(string expected)
         {
-            var issueArticle = _issueArticleRepository.GetIssueArticleContent(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
+            var issueArticle = issueArticleRepository.GetIssueArticleContent(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
             issueArticle.Should().NotBeNull();
-            var file = _fileRepository.GetFileById(issueArticle.FileId.Value);
+            var file = fileRepository.GetFileById(issueArticle.FileId.Value);
             file.Should().NotBeNull();
             file.FilePath.Should().Be($"periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{issueArticle.ArticleId}/article-{issueArticle.Language}.md");
-            var text = _fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            var text = fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
             text.Should().Be(text);
             return this;
         }
 
         public IssueArticleContentAssert ShouldHaveMatechingTextForLanguage(string expected, string language)
         {
-            var issueArticle = _issueArticleRepository.GetIssueArticleContent(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
+            var issueArticle = issueArticleRepository.GetIssueArticleContent(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
             issueArticle.Should().NotBeNull();
-            var file = _fileRepository.GetFileById(issueArticle.FileId.Value);
+            var file = fileRepository.GetFileById(issueArticle.FileId.Value);
             file.Should().NotBeNull();
             file.FilePath.Should().Be($"periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles/{issueArticle.ArticleId}/article-{issueArticle.Language}.md");
-            var text = _fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            var text = fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
             text.Should().Be(text);
             return this;
         }
@@ -150,11 +134,11 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueArticleContentAssert ShouldHaveSavedArticleContent()
         {
-            var dbContent = _issueArticleRepository.GetIssueArticleContent(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
+            var dbContent = issueArticleRepository.GetIssueArticleContent(_issue.PeriodicalId, _issue.VolumeNumber, _issue.IssueNumber, _articleContent.SequenceNumber, _articleContent.Language);
             dbContent.Should().NotBeNull();
-            var dbArticle = _issueArticleRepository.GetIssueArticleById(dbContent.ArticleId);
+            var dbArticle = issueArticleRepository.GetIssueArticleById(dbContent.ArticleId);
             dbArticle.Should().NotBeNull();
-            var dbIssue = _issueRepository.GetIssueById(dbArticle.IssueId);
+            var dbIssue = issueRepository.GetIssueById(dbArticle.IssueId);
             _articleContent.PeriodicalId.Should().Be(dbIssue.PeriodicalId);
             _articleContent.VolumeNumber.Should().Be(dbIssue.VolumeNumber);
             _articleContent.IssueNumber.Should().Be(dbIssue.IssueNumber);
@@ -219,7 +203,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueArticleContentAssert ShouldHaveDeletedContent(IssueDto issue, IssueArticleDto article, string language)
         {
-            var dbContent = _issueArticleRepository.GetIssueArticleContent(issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, article.SequenceNumber, language);
+            var dbContent = issueArticleRepository.GetIssueArticleContent(issue.PeriodicalId, issue.VolumeNumber, issue.IssueNumber, article.SequenceNumber, language);
             dbContent.Should().BeNull("Article content should be deleted");
             return this;
         }
@@ -228,10 +212,10 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         {
             foreach (var content in contents)
             {
-                var file = _fileRepository.GetFileById(content.FileId.Value);
+                var file = fileRepository.GetFileById(content.FileId.Value);
                 file.Should().BeNull("File should be deleted");
                 file = files.Where(x => x.Id == content.FileId).FirstOrDefault();
-                _fileStorage.DoesFileExists(file.FilePath).Should().BeFalse("File should be deleted");
+                fileStorage.DoesFileExists(file.FilePath).Should().BeFalse("File should be deleted");
             }
             return this;
         }

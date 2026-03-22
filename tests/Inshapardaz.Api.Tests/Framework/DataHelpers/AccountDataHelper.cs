@@ -2,7 +2,6 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
-using System.Collections.Generic;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -20,18 +19,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         IEnumerable<AccountLibraryDto> GetAccountLibraries(int accountId);
     }
 
-    public class MySqlAccountTestRepository : IAccountTestRepository
+    public class MySqlAccountTestRepository(IProvideConnection connectionProvider) : IAccountTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public MySqlAccountTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public AccountDto GetAccountByEmail(string email)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM Accounts WHERE Email = @Email";
                 return connection.QuerySingleOrDefault<AccountDto>(sql, new { Email = email });
@@ -40,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public AccountDto GetAccountById(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM Accounts WHERE Id = @Id";
                 return connection.QuerySingleOrDefault<AccountDto>(sql, new { Id = id });
@@ -49,7 +41,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddAccount(AccountDto account)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"Insert Into Accounts (Name, Email, Passwordhash, AcceptTerms, IsSuperAdmin, Verified, InvitationCode, InvitationCodeExpiry, ResetToken, ResetTokenExpires, Created)
                 VALUES (@Name, @Email, @Passwordhash, @AcceptTerms, @IsSuperAdmin, @Verified, @InvitationCode, @InvitationCodeExpiry, @ResetToken, @ResetTokenExpires, @Created);
@@ -61,7 +53,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void RevokeRefreshToken(string refreshToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"UPDATE RefreshToken SET REVOKED = SYSDATE() WHERE Token = @Token";
                 connection.Execute(sql, new { Token = refreshToken });
@@ -70,7 +62,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetRefreshToken(string email)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT TOP 1 r.Token
                         FROM RefreshToken r
@@ -83,13 +75,13 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteAccount(int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             { connection.Execute("Delete FROM Accounts Where Id = @AccountId", new { AccountId = accountId }); }
         }
 
         public void DeleteAccountByEmail(string email)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 connection.Execute("Delete FROM Accounts WHERE Email = @Email", new { Email = email });
             }
@@ -97,7 +89,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddAccountToLibrary(AccountDto account, int libraryId, Role role = Role.Reader)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO AccountLibrary VALUES (@AccountId, @LibraryId, @Role)";
                 connection.Execute(sql, new { AccountId = account.Id, LibraryId = libraryId, Role = role });
@@ -106,7 +98,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<AccountLibraryDto> GetAccountLibraries(int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM AccountLibrary WHERE AccountId = @AccountId";
                 return connection.Query<AccountLibraryDto>(sql, new { AccountId = accountId });
@@ -114,18 +106,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         }
     }
 
-    public class SqlServerAccountTestRepository : IAccountTestRepository
+    public class SqlServerAccountTestRepository(IProvideConnection connectionProvider) : IAccountTestRepository
     {
-        private IProvideConnection _connectionProvider;
-        public SqlServerAccountTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
-
         public AccountDto GetAccountByEmail(string email)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM Accounts WHERE Email = @Email";
                 return connection.QuerySingleOrDefault<AccountDto>(sql, new { Email = email });
@@ -134,7 +119,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public AccountDto GetAccountById(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM Accounts WHERE Id = @Id";
                 return connection.QuerySingleOrDefault<AccountDto>(sql, new { Id = id });
@@ -143,7 +128,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddAccount(AccountDto account)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"Insert Into Accounts (Name, Email, Passwordhash, AcceptTerms, IsSuperAdmin, Verified, InvitationCode, InvitationCodeExpiry, ResetToken, ResetTokenExpires, Created)
                         OUTPUT Inserted.Id VALUES (@Name, @Email, @Passwordhash, @AcceptTerms, @IsSuperAdmin, @Verified, @InvitationCode, @InvitationCodeExpiry, @ResetToken, @ResetTokenExpires, @Created);";
@@ -155,7 +140,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void RevokeRefreshToken(string refreshToken)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"UPDATE RefreshToken SET REVOKED = GETDATE() WHERE Token = @Token";
                 connection.Execute(sql, new { Token = refreshToken });
@@ -164,7 +149,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetRefreshToken(string email)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT TOP 1 r.Token
                         FROM RefreshToken r
@@ -177,13 +162,13 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteAccount(int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             { connection.Execute("Delete FROM Accounts Where Id = @AccountId", new { AccountId = accountId }); }
         }
 
         public void DeleteAccountByEmail(string email)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 connection.Execute("Delete FROM Accounts WHERE Email = @Email", new { Email = email });
             }
@@ -191,7 +176,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddAccountToLibrary(AccountDto account, int libraryId, Role role = Role.Reader)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO AccountLibrary VALUES (@AccountId, @LibraryId, @Role)";
                 connection.Execute(sql, new { AccountId = account.Id, LibraryId = libraryId, Role = role });
@@ -200,7 +185,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<AccountLibraryDto> GetAccountLibraries(int accountId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT * FROM AccountLibrary WHERE AccountId = @AccountId";
                 return connection.Query<AccountLibraryDto>(sql, new { AccountId = accountId });

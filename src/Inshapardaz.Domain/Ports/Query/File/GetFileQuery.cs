@@ -2,46 +2,30 @@
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Paramore.Darker;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Query.File;
 
-public class GetFileQuery : IQuery<FileModel>
+public class GetFileQuery(long fileId) : IQuery<FileModel>
 {
-    public GetFileQuery(long fileId)
-    {
-        FileId = fileId;
-    }
-
-    public long FileId { get; private set; }
+    public long FileId { get; private set; } = fileId;
     public int Height { get; set; }
     public int Width { get; set; }
     public bool IsPublic { get; set; }
 }
 
-public class GetFileRequestHandler : QueryHandlerAsync<GetFileQuery, FileModel>
+public class GetFileRequestHandler(IFileRepository fileRepository, IFileStorage fileStorage)
+    : QueryHandlerAsync<GetFileQuery, FileModel>
 {
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
-
-    public GetFileRequestHandler(IFileRepository fileRepository, IFileStorage fileStorage)
-    {
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
-    }
-
     public override async Task<FileModel> ExecuteAsync(GetFileQuery query, CancellationToken cancellationToken = new CancellationToken())
     {
-        var file = await _fileRepository.GetFileById(query.FileId, cancellationToken);
+        var file = await fileRepository.GetFileById(query.FileId, cancellationToken);
 
         if (string.IsNullOrWhiteSpace(file?.FilePath))
         {
             throw new NotFoundException();
         }
 
-        var contents = await _fileStorage.GetFile(file.FilePath, cancellationToken);
+        var contents = await fileStorage.GetFile(file.FilePath, cancellationToken);
         if (contents == null)
         {
             throw new NotFoundException();

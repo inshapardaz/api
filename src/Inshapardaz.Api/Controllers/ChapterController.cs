@@ -11,31 +11,22 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Controllers;
 
-public class ChapterController : Controller
+public class ChapterController(
+    IAmACommandProcessor commandProcessor,
+    IQueryProcessor queryProcessor,
+    IRenderChapter chapterRenderer)
+    : Controller
 {
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRenderChapter _chapterRenderer;
-
-    public ChapterController(IAmACommandProcessor commandProcessor,
-        IQueryProcessor queryProcessor,
-        IRenderChapter chapterRenderer)
-    {
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-        _chapterRenderer = chapterRenderer;
-    }
-
     [HttpGet("libraries/{libraryId}/books/{bookId}/chapters", Name = nameof(ChapterController.GetChaptersByBook))]
     [Produces(typeof(ListView<ChapterView>))]
     public async Task<IActionResult> GetChaptersByBook(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
     {
         var query = new GetChaptersByBookQuery(libraryId, bookId);
-        var chapters = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
+        var chapters = await queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
         if (chapters != null)
         {
-            return new OkObjectResult(_chapterRenderer.Render(chapters, libraryId, bookId));
+            return new OkObjectResult(chapterRenderer.Render(chapters, libraryId, bookId));
         }
 
         return new NotFoundResult();
@@ -46,11 +37,11 @@ public class ChapterController : Controller
     public async Task<IActionResult> GetChapterById(int libraryId, int bookId, int chapterNumber, CancellationToken token = default(CancellationToken))
     {
         var query = new GetChapterByIdQuery(libraryId, bookId, chapterNumber);
-        var chapter = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
+        var chapter = await queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
         if (chapter != null)
         {
-            return new OkObjectResult(_chapterRenderer.Render(chapter, libraryId, bookId));
+            return new OkObjectResult(chapterRenderer.Render(chapter, libraryId, bookId));
         }
 
         return new NotFoundResult();
@@ -65,11 +56,11 @@ public class ChapterController : Controller
         }
 
         var request = new AddChapterRequest(libraryId, bookId, chapter.Map());
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         if (request.Result != null)
         {
-            var renderResult = _chapterRenderer.Render(request.Result, libraryId, bookId);
+            var renderResult = chapterRenderer.Render(request.Result, libraryId, bookId);
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 
@@ -85,9 +76,9 @@ public class ChapterController : Controller
         }
 
         var request = new UpdateChapterRequest(libraryId, bookId, chapterNumber, chapter.Map());
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _chapterRenderer.Render(request.Result.Chapter, libraryId, bookId);
+        var renderResult = chapterRenderer.Render(request.Result.Chapter, libraryId, bookId);
 
         if (request.Result.HasAddedNew)
         {
@@ -101,7 +92,7 @@ public class ChapterController : Controller
     public async Task<IActionResult> DeleteChapter(int libraryId, int bookId, int chapterNumber, CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteChapterRequest(libraryId, bookId, chapterNumber);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
 
@@ -114,9 +105,9 @@ public class ChapterController : Controller
         }
 
         var request = new UpdateChapterSequenceRequest(libraryId, bookId, chapters.Select(c => c.Map()));
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        return new OkObjectResult(_chapterRenderer.Render(request.Result, libraryId, bookId));
+        return new OkObjectResult(chapterRenderer.Render(request.Result, libraryId, bookId));
     }
 
     [HttpPost("libraries/{libraryId}/books/{bookId}/chapters/{chapterNumber}/assign", Name = nameof(ChapterController.AssignChapterToUser))]
@@ -130,9 +121,9 @@ public class ChapterController : Controller
 
         var request = new AssignChapterToUserRequest(libraryId, bookId, chapterNumber, assignment.Unassign ? null : assignment.AccountId);
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _chapterRenderer.Render(request.Result, libraryId, bookId);
+        var renderResult = chapterRenderer.Render(request.Result, libraryId, bookId);
 
         return Ok(renderResult);
     }
@@ -144,11 +135,11 @@ public class ChapterController : Controller
     {
         var query = new GetChapterContentQuery(libraryId, bookId, chapterNumber, language);
 
-        var chapterContents = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
+        var chapterContents = await queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
         if (chapterContents != null)
         {
-            return new OkObjectResult(_chapterRenderer.Render(chapterContents, libraryId));
+            return new OkObjectResult(chapterRenderer.Render(chapterContents, libraryId));
         }
 
         return new NotFoundResult();
@@ -158,11 +149,11 @@ public class ChapterController : Controller
     public async Task<IActionResult> CreateChapterContent(int libraryId, int bookId, int chapterNumber, [FromQuery] string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
     {
         var request = new AddChapterContentRequest(libraryId, bookId, chapterNumber, content, language);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         if (request.Result != null)
         {
-            var renderResult = _chapterRenderer.Render(request.Result, libraryId);
+            var renderResult = chapterRenderer.Render(request.Result, libraryId);
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 
@@ -173,9 +164,9 @@ public class ChapterController : Controller
     public async Task<IActionResult> UpdateChapterContent(int libraryId, int bookId, int chapterNumber, [FromQuery] string language, [FromBody] string content, CancellationToken token = default(CancellationToken))
     {
         var request = new UpdateChapterContentRequest(libraryId, bookId, chapterNumber, content, language);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _chapterRenderer.Render(request.Result.ChapterContent, libraryId);
+        var renderResult = chapterRenderer.Render(request.Result.ChapterContent, libraryId);
 
         if (request.Result != null && request.Result.HasAddedNew)
         {
@@ -189,7 +180,7 @@ public class ChapterController : Controller
     public async Task<IActionResult> DeleteChapterContent(int libraryId, int bookId, int chapterNumber, [FromQuery] string language, CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteChapterContentRequest(libraryId, bookId, chapterNumber, language);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
 }

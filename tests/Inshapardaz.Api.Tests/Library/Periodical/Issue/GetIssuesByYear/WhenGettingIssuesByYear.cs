@@ -5,10 +5,6 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByYear
 {
@@ -28,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByYear
             var periodical = PeriodicalBuilder.WithLibrary(LibraryId).Build();
             _periodicalId = periodical.Id;
             _expected = IssueBuilder.WithLibrary(LibraryId)
-                                    .WithPages(10)
+                                    .WithPages()
                                     .WithPeriodical(_periodicalId)
                                     .Build(40);
 
@@ -38,16 +34,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByYear
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveCorrectObjectReturned()
@@ -73,9 +63,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByYear
         }
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _view.Links.Self().Should().Be($"http://localhost/libraries/{LibraryId}/periodicals/{_periodicalId}/issues/years");
-        }
+        public void ShouldHaveSelfLink() => _view.Links.Self().Should().Be($"http://localhost/libraries/{LibraryId}/periodicals/{_periodicalId}/issues/years");
     }
 }

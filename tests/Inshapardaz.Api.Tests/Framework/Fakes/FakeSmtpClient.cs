@@ -5,43 +5,26 @@ using MailKit.Net.Proxy;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Framework.Fakes
 {
     public class FakeSmtpClient : ISmtpClient
     {
-        public class EmailMessage
+        public class EmailMessage(MimeMessage message)
         {
-            public EmailMessage(MimeMessage message)
-            {
-                From = message.From.ToString();
-                To = message.To.First().ToString();
-                Subject = message.Subject;
-                Body = message.BodyParts.OfType<TextPart>().FirstOrDefault().ToString();
-            }
-
-            public string From { get; private set; }
-            public string To { get; private set; }
-            public string Subject { get; private set; }
-            public string Body { get; private set; }
+            public string From { get; private set; } = message.From.ToString();
+            public string To { get; private set; } = message.To.First().ToString();
+            public string Subject { get; private set; } = message.Subject;
+            public string Body { get; private set; } = message.BodyParts.OfType<TextPart>().FirstOrDefault().ToString();
         }
 
-        internal void AssertNoEmailSent()
-        {
-            EmailsSent.Should().BeEmpty();
-        }
+        internal void AssertNoEmailSent() => EmailsSent.Should().BeEmpty();
 
         public List<EmailMessage> EmailsSent = new List<EmailMessage>();
 
@@ -109,30 +92,15 @@ namespace Inshapardaz.Api.Tests.Framework.Fakes
         public event EventHandler<DisconnectedEventArgs> Disconnected;
         public event EventHandler<AuthenticatedEventArgs> Authenticated;
 
-        public void Authenticate(ICredentials credentials, CancellationToken cancellationToken = default)
-        {
-            IsAuthenticated = true;
-        }
+        public void Authenticate(ICredentials credentials, CancellationToken cancellationToken = default) => IsAuthenticated = true;
 
-        public void Authenticate(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken = default)
-        {
-            IsAuthenticated = true;
-        }
+        public void Authenticate(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken = default) => IsAuthenticated = true;
 
-        public void Authenticate(Encoding encoding, string userName, string password, CancellationToken cancellationToken = default)
-        {
-            IsAuthenticated = true;
-        }
+        public void Authenticate(Encoding encoding, string userName, string password, CancellationToken cancellationToken = default) => IsAuthenticated = true;
 
-        public void Authenticate(string userName, string password, CancellationToken cancellationToken = default)
-        {
-            IsAuthenticated = true;
-        }
+        public void Authenticate(string userName, string password, CancellationToken cancellationToken = default) => IsAuthenticated = true;
 
-        public void Authenticate(SaslMechanism mechanism, CancellationToken cancellationToken = default)
-        {
-            IsAuthenticated = true;
-        }
+        public void Authenticate(SaslMechanism mechanism, CancellationToken cancellationToken = default) => IsAuthenticated = true;
 
         public Task AuthenticateAsync(ICredentials credentials, CancellationToken cancellationToken = default)
         {
@@ -164,25 +132,13 @@ namespace Inshapardaz.Api.Tests.Framework.Fakes
             return Task.CompletedTask;
         }
 
-        public void Connect(string host, int port, bool useSsl, CancellationToken cancellationToken = default)
-        {
-            IsConnected = true;
-        }
+        public void Connect(string host, int port, bool useSsl, CancellationToken cancellationToken = default) => IsConnected = true;
 
-        public void Connect(string host, int port = 0, SecureSocketOptions options = SecureSocketOptions.Auto, CancellationToken cancellationToken = default)
-        {
-            IsConnected = true;
-        }
+        public void Connect(string host, int port = 0, SecureSocketOptions options = SecureSocketOptions.Auto, CancellationToken cancellationToken = default) => IsConnected = true;
 
-        public void Connect(Socket socket, string host, int port = 0, SecureSocketOptions options = SecureSocketOptions.Auto, CancellationToken cancellationToken = default)
-        {
-            IsConnected = true;
-        }
+        public void Connect(Socket socket, string host, int port = 0, SecureSocketOptions options = SecureSocketOptions.Auto, CancellationToken cancellationToken = default) => IsConnected = true;
 
-        public void Connect(Stream stream, string host, int port = 0, SecureSocketOptions options = SecureSocketOptions.Auto, CancellationToken cancellationToken = default)
-        {
-            IsConnected = true;
-        }
+        public void Connect(Stream stream, string host, int port = 0, SecureSocketOptions options = SecureSocketOptions.Auto, CancellationToken cancellationToken = default) => IsConnected = true;
 
         public Task ConnectAsync(string host, int port, bool useSsl, CancellationToken cancellationToken = default)
         {
@@ -208,10 +164,7 @@ namespace Inshapardaz.Api.Tests.Framework.Fakes
             return Task.CompletedTask;
         }
 
-        public void Disconnect(bool quit, CancellationToken cancellationToken = default)
-        {
-            IsConnected = false;
-        }
+        public void Disconnect(bool quit, CancellationToken cancellationToken = default) => IsConnected = false;
 
         public Task DisconnectAsync(bool quit, CancellationToken cancellationToken = default)
         {
@@ -223,45 +176,21 @@ namespace Inshapardaz.Api.Tests.Framework.Fakes
         {
         }
 
-        public InternetAddressList Expand(string alias, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+        public InternetAddressList Expand(string alias, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
-        public Task<InternetAddressList> ExpandAsync(string alias, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<InternetAddressList> ExpandAsync(string alias, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
-        public void NoOp(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+        public void NoOp(CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
-        public Task NoOpAsync(CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+        public Task NoOpAsync(CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
-        public void Send(MimeMessage message, CancellationToken cancellationToken = default, ITransferProgress progress = null)
-        {
-            EmailsSent.Add(new EmailMessage(message));
-        }
+        public void Send(MimeMessage message, CancellationToken cancellationToken = default, ITransferProgress progress = null) => EmailsSent.Add(new EmailMessage(message));
 
-        public void Send(MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken = default, ITransferProgress progress = null)
-        {
-            EmailsSent.Add(new EmailMessage(message));
-        }
+        public void Send(MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken = default, ITransferProgress progress = null) => EmailsSent.Add(new EmailMessage(message));
 
-        public void Send(FormatOptions options, MimeMessage message, CancellationToken cancellationToken = default, ITransferProgress progress = null)
-        {
-            EmailsSent.Add(new EmailMessage(message));
-        }
+        public void Send(FormatOptions options, MimeMessage message, CancellationToken cancellationToken = default, ITransferProgress progress = null) => EmailsSent.Add(new EmailMessage(message));
 
-        public void Send(FormatOptions options, MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken = default, ITransferProgress progress = null)
-        {
-            EmailsSent.Add(new EmailMessage(message));
-        }
+        public void Send(FormatOptions options, MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken = default, ITransferProgress progress = null) => EmailsSent.Add(new EmailMessage(message));
 
         public Task SendAsync(MimeMessage message, CancellationToken cancellationToken = default, ITransferProgress progress = null)
         {
@@ -287,20 +216,11 @@ namespace Inshapardaz.Api.Tests.Framework.Fakes
             return Task.CompletedTask;
         }
 
-        public MailboxAddress Verify(string address, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+        public MailboxAddress Verify(string address, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
-        public Task<MailboxAddress> VerifyAsync(string address, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<MailboxAddress> VerifyAsync(string address, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
-        string IMailTransport.Send(MimeMessage message, CancellationToken cancellationToken, ITransferProgress progress)
-        {
-            throw new NotImplementedException();
-        }
+        string IMailTransport.Send(MimeMessage message, CancellationToken cancellationToken, ITransferProgress progress) => throw new NotImplementedException();
 
         Task<string> IMailTransport.SendAsync(MimeMessage message, CancellationToken cancellationToken, ITransferProgress progress)
         {
@@ -308,34 +228,16 @@ namespace Inshapardaz.Api.Tests.Framework.Fakes
             return Task.FromResult(string.Empty);
         }
 
-        string IMailTransport.Send(MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken, ITransferProgress progress)
-        {
-            throw new NotImplementedException();
-        }
+        string IMailTransport.Send(MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken, ITransferProgress progress) => throw new NotImplementedException();
 
-        Task<string> IMailTransport.SendAsync(MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken, ITransferProgress progress)
-        {
-            throw new NotImplementedException();
-        }
+        Task<string> IMailTransport.SendAsync(MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken, ITransferProgress progress) => throw new NotImplementedException();
 
-        string IMailTransport.Send(FormatOptions options, MimeMessage message, CancellationToken cancellationToken, ITransferProgress progress)
-        {
-            throw new NotImplementedException();
-        }
+        string IMailTransport.Send(FormatOptions options, MimeMessage message, CancellationToken cancellationToken, ITransferProgress progress) => throw new NotImplementedException();
 
-        Task<string> IMailTransport.SendAsync(FormatOptions options, MimeMessage message, CancellationToken cancellationToken, ITransferProgress progress)
-        {
-            throw new NotImplementedException();
-        }
+        Task<string> IMailTransport.SendAsync(FormatOptions options, MimeMessage message, CancellationToken cancellationToken, ITransferProgress progress) => throw new NotImplementedException();
 
-        string IMailTransport.Send(FormatOptions options, MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken, ITransferProgress progress)
-        {
-            throw new NotImplementedException();
-        }
+        string IMailTransport.Send(FormatOptions options, MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken, ITransferProgress progress) => throw new NotImplementedException();
 
-        Task<string> IMailTransport.SendAsync(FormatOptions options, MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken, ITransferProgress progress)
-        {
-            throw new NotImplementedException();
-        }
+        Task<string> IMailTransport.SendAsync(FormatOptions options, MimeMessage message, MailboxAddress sender, IEnumerable<MailboxAddress> recipients, CancellationToken cancellationToken, ITransferProgress progress) => throw new NotImplementedException();
     }
 }

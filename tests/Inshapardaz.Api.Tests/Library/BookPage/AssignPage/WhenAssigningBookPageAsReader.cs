@@ -3,21 +3,14 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
 {
     [TestFixture]
-    public class WhenAssigningBookPageAsReader : TestBase
+    public class WhenAssigningBookPageAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private BookPageDto _page;
-
-        public WhenAssigningBookPageAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -41,9 +34,6 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
         }
 
         [Test]
-        public void ShouldHaveForbidResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbidResult() => _response.ShouldBeForbidden();
     }
 }

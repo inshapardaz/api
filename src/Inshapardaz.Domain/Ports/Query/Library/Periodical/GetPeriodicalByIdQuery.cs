@@ -1,33 +1,16 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Darker;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Periodical;
 
-public class GetPeriodicalByIdQuery : LibraryBaseQuery<PeriodicalModel>
+public class GetPeriodicalByIdQuery(int libraryId, int periodicalId) : LibraryBaseQuery<PeriodicalModel>(libraryId)
 {
-    public GetPeriodicalByIdQuery(int libraryId, int periodicalId)
-        : base(libraryId)
-    {
-        PeriodicalId = periodicalId;
-    }
-
-    public int PeriodicalId { get; }
+    public int PeriodicalId { get; } = periodicalId;
 }
 
-public class GetPeriodicalByIdQueryHandler : QueryHandlerAsync<GetPeriodicalByIdQuery, PeriodicalModel>
+public class GetPeriodicalByIdQueryHandler(IPeriodicalRepository periodicalRepository)
+    : QueryHandlerAsync<GetPeriodicalByIdQuery, PeriodicalModel>
 {
-    private readonly IPeriodicalRepository _periodicalRepository;
-
-    public GetPeriodicalByIdQueryHandler(IPeriodicalRepository periodicalRepository)
-    {
-        _periodicalRepository = periodicalRepository;
-    }
-
-    public override async Task<PeriodicalModel> ExecuteAsync(GetPeriodicalByIdQuery command, CancellationToken cancellationToken = new CancellationToken())
-    {
-        return await _periodicalRepository.GetPeriodicalById(command.LibraryId, command.PeriodicalId, cancellationToken);
-    }
+    public override async Task<PeriodicalModel> ExecuteAsync(GetPeriodicalByIdQuery command, CancellationToken cancellationToken = new CancellationToken()) => await periodicalRepository.GetPeriodicalById(command.LibraryId, command.PeriodicalId, cancellationToken);
 }

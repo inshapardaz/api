@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -17,11 +13,17 @@ using Inshapardaz.Domain.Models;
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
 
-    public class PeriodicalsDataBuilder
+    public class PeriodicalsDataBuilder(
+        IFileStorage fileStorage,
+        CategoriesDataBuilder categoriesBuilder,
+        TagsDataBuilder tagsBuilder,
+        IFileTestRepository fileRepository,
+        IPeriodicalTestRepository periodicalRepository,
+        IIssueTestRepository issueRepository,
+        ICategoryTestRepository categoryRepository,
+        ITagTestRepository tagRepository)
     {
-        private readonly CategoriesDataBuilder _categoriesBuilder;
-        private readonly TagsDataBuilder _tagsBuilder;
-        private readonly FakeFileStorage _fileStorage;
+        private readonly FakeFileStorage _fileStorage = fileStorage as FakeFileStorage;
 
         private List<PeriodicalDto> _periodicals;
         private readonly List<FileDto> _files = new List<FileDto>();
@@ -39,30 +41,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public IEnumerable<PeriodicalDto> Periodicals => _periodicals;
 
-        private IFileTestRepository _fileRepository;
-        private IPeriodicalTestRepository _periodicalRepository;
-        private IIssueTestRepository _issueRepository;
-        private ICategoryTestRepository _categoryRepository;
-        public ITagTestRepository _tagRepository;
-
-        public PeriodicalsDataBuilder(IFileStorage fileStorage,
-                                CategoriesDataBuilder categoriesBuilder,
-                                TagsDataBuilder tagsBuilder,
-                                IFileTestRepository fileRepository,
-                                IPeriodicalTestRepository periodicalRepository,
-                                IIssueTestRepository issueRepository,
-                                ICategoryTestRepository categoryRepository,
-                                ITagTestRepository tagRepository)
-        {
-            _fileStorage = fileStorage as FakeFileStorage;
-            _categoriesBuilder = categoriesBuilder;
-            _tagsBuilder = tagsBuilder;
-            _fileRepository = fileRepository;
-            _periodicalRepository = periodicalRepository;
-            _issueRepository = issueRepository;
-            _categoryRepository = categoryRepository;
-            _tagRepository = tagRepository;
-        }
+        public ITagTestRepository _tagRepository = tagRepository;
 
         public PeriodicalsDataBuilder WithCategories(int categoriesCount = 1)
         {
@@ -134,10 +113,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                           .Create();
         }
 
-        public PeriodicalDto Build()
-        {
-            return Build(1).Single();
-        }
+        public PeriodicalDto Build() => Build(1).Single();
 
         public IEnumerable<PeriodicalDto> Build(int numberOfBooks)
         {
@@ -155,7 +131,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
             if (_categoriesCount > 0 && !_categories.Any())
             {
-                categories = _categoriesBuilder.WithLibrary(_libraryId).Build(_categoriesCount);
+                categories = categoriesBuilder.WithLibrary(_libraryId).Build(_categoriesCount);
             }
             else
             {
@@ -166,7 +142,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
             if (_tagsCount > 0 && !_tags.Any())
             {
-                tags = _tagsBuilder.WithLibrary(_libraryId).Build(_tagsCount);
+                tags = tagsBuilder.WithLibrary(_libraryId).Build(_tagsCount);
             }
             else
             {
@@ -175,7 +151,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             
             foreach (var periodical in _periodicals)
             {
-                _periodicalRepository.AddPeriodical(periodical);
+                periodicalRepository.AddPeriodical(periodical);
                 if (_hasImage)
                 {
 
@@ -185,7 +161,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         .With(a => a.FilePath, filePath)
                         .With(a => a.IsPublic, true)
                         .Create();
-                    _fileRepository.AddFile(periodicalImage);
+                    fileRepository.AddFile(periodicalImage);
 
                     _files.Add(periodicalImage);
                     _fileStorage.SetupFileContents(periodicalImage.FilePath, RandomData.Bytes);
@@ -197,17 +173,17 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                     periodical.ImageId = null;
                 }
 
-                _periodicalRepository.UpdatePeriodical(periodical);
+                periodicalRepository.UpdatePeriodical(periodical);
 
 
                 var issues = fixture.Build<IssueDto>()
                     .With(x => x.PeriodicalId, periodical.Id)
                     .CreateMany(_issueCount);
-                _issueRepository.AddIssues(issues);
+                issueRepository.AddIssues(issues);
                 _issues.AddRange(issues);
 
                 if (categories != null && categories.Any())
-                    _categoryRepository.AddPeriodicalToCategories(periodical.Id, categories);
+                    categoryRepository.AddPeriodicalToCategories(periodical.Id, categories);
                 
                 
                 if (tags != null && tags.Any())
@@ -219,10 +195,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void CleanUp()
         {
-            _issueRepository.DeleteIssues(_issues);
-            _fileRepository.DeleteFiles(_files);
-            _periodicalRepository.DeletePeriodicals(_periodicals);
-            _categoriesBuilder.CleanUp();
+            issueRepository.DeleteIssues(_issues);
+            fileRepository.DeleteFiles(_files);
+            periodicalRepository.DeletePeriodicals(_periodicals);
+            categoriesBuilder.CleanUp();
         }
     }
 }

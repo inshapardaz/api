@@ -4,52 +4,33 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Book;
 
-public class AddBookContentRequest : LibraryBaseCommand
+public class AddBookContentRequest(int libraryId, int bookId, string language, string mimeType, int? accountId)
+    : LibraryBaseCommand(libraryId)
 {
-    public AddBookContentRequest(int libraryId, int bookId, string language, string mimeType, int? accountId)
-        : base(libraryId)
-    {
-        BookId = bookId;
-        Language = language;
-        MimeType = mimeType;
-        AccountId = accountId;
-    }
+    public int BookId { get; } = bookId;
 
-    public int BookId { get; }
-
-    public string Language { get; }
-    public string MimeType { get; }
-    public int? AccountId { get; }
+    public string Language { get; } = language;
+    public string MimeType { get; } = mimeType;
+    public int? AccountId { get; } = accountId;
     public FileModel Content { get; set; }
 
     public BookContentModel Result { get; set; }
 }
 
-public class AddBookFileRequestHandler : RequestHandlerAsync<AddBookContentRequest>
+public class AddBookFileRequestHandler(IBookRepository bookRepository, IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<AddBookContentRequest>
 {
-    private readonly IBookRepository _bookRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public AddBookFileRequestHandler(IBookRepository bookRepository,  IAmACommandProcessor commandProcessor)
-    {
-        _bookRepository = bookRepository;
-        _commandProcessor = commandProcessor;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<AddBookContentRequest> HandleAsync(AddBookContentRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var book = await _bookRepository.GetBookById(command.LibraryId, command.BookId, command.AccountId, cancellationToken);
+        var book = await bookRepository.GetBookById(command.LibraryId, command.BookId, command.AccountId, cancellationToken);
 
         if (book != null)
         {
-            var status = (await _bookRepository.GetBookPageSummary(command.LibraryId, new[] { book.Id }, cancellationToken)).FirstOrDefault();
+            var status = (await bookRepository.GetBookPageSummary(command.LibraryId, new[] { book.Id }, cancellationToken)).FirstOrDefault();
 
             if (status != null)
             {
@@ -74,11 +55,11 @@ public class AddBookFileRequestHandler : RequestHandlerAsync<AddBookContentReque
                 IsPublic = command.Content.IsPublic
             };
 
-            await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
+            await commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
 
-            var contentId = await _bookRepository.AddBookContent(book.Id, saveFileCommand.Result.Id, command.Language, cancellationToken);
+            var contentId = await bookRepository.AddBookContent(book.Id, saveFileCommand.Result.Id, command.Language, cancellationToken);
 
-            command.Result = await _bookRepository.GetBookContent(command.LibraryId, command.BookId, contentId, cancellationToken);
+            command.Result = await bookRepository.GetBookContent(command.LibraryId, command.BookId, contentId, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

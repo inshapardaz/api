@@ -1,7 +1,5 @@
 ﻿using Google.Cloud.Vision.V1;
 using Inshapardaz.Domain.Adapters;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapter.Ocr.Google;
 

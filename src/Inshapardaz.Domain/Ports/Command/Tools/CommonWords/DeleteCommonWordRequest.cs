@@ -1,35 +1,21 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Tools;
 
-public class DeleteCommonWordRequest : RequestBase
+public class DeleteCommonWordRequest(long wordId, string language) : RequestBase
 {
-    public DeleteCommonWordRequest(long wordId, string language)
-    {
-        WordId = wordId;
-        Language = language;
-    }
-
-    public long WordId { get; }
-    public string Language { get; }
+    public long WordId { get; } = wordId;
+    public string Language { get; } = language;
 }
 
-public class DeleteCommonWordRequestHandler : RequestHandlerAsync<DeleteCommonWordRequest>
+public class DeleteCommonWordRequestHandler(ICommonWordsRepository commonWordsRepository)
+    : RequestHandlerAsync<DeleteCommonWordRequest>
 {
-    private readonly ICommonWordsRepository _commonWordsRepository;
-
-    public DeleteCommonWordRequestHandler(ICommonWordsRepository commonWordsRepository)
-    {
-        _commonWordsRepository = commonWordsRepository;
-    }
-
     [AuthorizeAdmin(1)]
     public override async Task<DeleteCommonWordRequest> HandleAsync(DeleteCommonWordRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        await _commonWordsRepository.DeleteWord(command.Language, command.WordId, cancellationToken);
+        await commonWordsRepository.DeleteWord(command.Language, command.WordId, cancellationToken);
 
         return await base.HandleAsync(command, cancellationToken);
     }

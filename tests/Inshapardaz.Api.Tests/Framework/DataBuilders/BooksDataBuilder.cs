@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -16,7 +12,19 @@ using Inshapardaz.Domain.Helpers;
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
 
-    public class BooksDataBuilder
+    public class BooksDataBuilder(
+        IFileStorage fileStorage,
+        AuthorsDataBuilder authorBuilder,
+        SeriesDataBuilder seriesDataBuilder,
+        CategoriesDataBuilder categoriesBuilder,
+        TagsDataBuilder tagsBuilder,
+        IBookTestRepository bookRepository,
+        IFileTestRepository fileRepository,
+        IChapterTestRepository chapterRepository,
+        IBookPageTestRepository bookPageRepository,
+        ICategoryTestRepository categoryRepository,
+        ITagTestRepository tagRepository,
+        IBookShelfTestRepository bookShelfTestRepository)
     {
         private class AccountItemCountSpec
         {
@@ -24,12 +32,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             public int? Count { get; set; }
         }
 
-        private readonly AuthorsDataBuilder _authorBuilder;
-        private readonly SeriesDataBuilder _seriesBuilder;
-        private readonly CategoriesDataBuilder _categoriesBuilder;
-        private readonly TagsDataBuilder _tagsBuilder;
-
-        private readonly FakeFileStorage _fileStorage;
+        private readonly FakeFileStorage _fileStorage = fileStorage as FakeFileStorage;
 
         private List<BookDto> _books;
         private readonly List<FileDto> _files = new List<FileDto>();
@@ -68,41 +71,14 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public IEnumerable<BookContentDto> Contents => _contents;
         public IEnumerable<RecentBookDto> RecentReads => _recentBooks;
 
-        public IBookTestRepository _bookRepository;
-        public IBookPageTestRepository _bookPageRepository;
-        public IFileTestRepository _fileRepository;
-        public IChapterTestRepository _chapterRepository;
-        public ICategoryTestRepository _categoryRepository;
-        public ITagTestRepository _tagRepository;
-        public IBookShelfTestRepository _bookShelfTestRepository;
+        public IBookTestRepository _bookRepository = bookRepository;
+        public IBookPageTestRepository _bookPageRepository = bookPageRepository;
+        public IFileTestRepository _fileRepository = fileRepository;
+        public IChapterTestRepository _chapterRepository = chapterRepository;
+        public ICategoryTestRepository _categoryRepository = categoryRepository;
+        public ITagTestRepository _tagRepository = tagRepository;
+        public IBookShelfTestRepository _bookShelfTestRepository = bookShelfTestRepository;
         private int? _bookshelfId;
-
-        public BooksDataBuilder(IFileStorage fileStorage,
-                                AuthorsDataBuilder authorBuilder,
-                                SeriesDataBuilder seriesDataBuilder,
-                                CategoriesDataBuilder categoriesBuilder,
-                                TagsDataBuilder tagsBuilder,
-                                IBookTestRepository bookRepository,
-                                IFileTestRepository fileRepository,
-                                IChapterTestRepository chapterRepository,
-                                IBookPageTestRepository bookPageRepository,
-                                ICategoryTestRepository categoryRepository, 
-                                ITagTestRepository tagRepository, 
-                                IBookShelfTestRepository bookShelfTestRepository)
-        {
-            _fileStorage = fileStorage as FakeFileStorage;
-            _authorBuilder = authorBuilder;
-            _seriesBuilder = seriesDataBuilder;
-            _categoriesBuilder = categoriesBuilder;
-            _tagsBuilder = tagsBuilder;
-            _bookRepository = bookRepository;
-            _fileRepository = fileRepository;
-            _chapterRepository = chapterRepository;
-            _bookPageRepository = bookPageRepository;
-            _categoryRepository = categoryRepository;
-            _tagRepository = tagRepository;
-            _bookShelfTestRepository = bookShelfTestRepository;
-        }
 
         public BooksDataBuilder HavingSeries()
         {
@@ -262,13 +238,13 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
             if (Author == null)
             {
-                Author = _authorBuilder.WithLibrary(_libraryId).Build(1).Single();
+                Author = authorBuilder.WithLibrary(_libraryId).Build(1).Single();
             }
 
             SeriesDto series = _series;
             if (_hasSeries && _series == null)
             {
-                series = _seriesBuilder.WithLibrary(_libraryId).Build();
+                series = seriesDataBuilder.WithLibrary(_libraryId).Build();
             }
 
             return fixture.Build<BookView>()
@@ -281,10 +257,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                           .Create();
         }
 
-        public BookDto Build()
-        {
-            return Build(1).Single();
-        }
+        public BookDto Build() => Build(1).Single();
 
         public IEnumerable<BookDto> Build(int numberOfBooks)
         {
@@ -292,7 +265,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
             if (Author == null && !_authors.Any())
             {
-                _authors = _authorBuilder.WithLibrary(_libraryId).Build(_numberOfAuthors > 0 ? _numberOfAuthors : numberOfBooks).ToList();
+                _authors = authorBuilder.WithLibrary(_libraryId).Build(_numberOfAuthors > 0 ? _numberOfAuthors : numberOfBooks).ToList();
             }
 
             Func<bool> isPublic = () => _isPublic ?? RandomData.Bool;
@@ -313,7 +286,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
             if (_categoriesCount > 0 && !_categories.Any())
             {
-                categories = _categoriesBuilder.WithLibrary(_libraryId).Build(_categoriesCount);
+                categories = categoriesBuilder.WithLibrary(_libraryId).Build(_categoriesCount);
             }
             else
             {
@@ -324,7 +297,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
             if (_tagsCount > 0 && !_tags.Any())
             {
-                tags = _tagsBuilder.WithLibrary(_libraryId).Build(_tagsCount);
+                tags = tagsBuilder.WithLibrary(_libraryId).Build(_tagsCount);
             }
             else
             {
@@ -335,7 +308,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             {
                 if (_hasSeries && _series == null)
                 {
-                    var series = _seriesBuilder.WithLibrary(_libraryId).Build();
+                    var series = seriesDataBuilder.WithLibrary(_libraryId).Build();
                     book.SeriesId = series.Id;
                 }
                 else
@@ -555,8 +528,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             _fileRepository.DeleteFiles(_files);
             _bookPageRepository.DeleteBookPages(_pages);
             _chapterRepository.DeleteChapters(_chapters);
-            _seriesBuilder.CleanUp();
-            _authorBuilder.CleanUp();
+            seriesDataBuilder.CleanUp();
+            authorBuilder.CleanUp();
         }
     }
 }

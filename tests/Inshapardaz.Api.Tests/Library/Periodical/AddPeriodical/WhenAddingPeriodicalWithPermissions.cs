@@ -7,24 +7,16 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenAddingPeriodicalWithPermissions
-        : TestBase
+    public class WhenAddingPeriodicalWithPermissions(Role role) : TestBase(role, true)
     {
         private PeriodicalAssert _assert;
         private HttpResponseMessage _response;
-
-        public WhenAddingPeriodicalWithPermissions(Role role)
-            : base(role, true)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -47,28 +39,16 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldSaveThePeriodical()
-        {
-            _assert.ShouldHaveSavedPeriodical();
-        }
+        public void ShouldSaveThePeriodical() => _assert.ShouldHaveSavedPeriodical();
 
         [Test]
         public void ShouldHaveLinks()

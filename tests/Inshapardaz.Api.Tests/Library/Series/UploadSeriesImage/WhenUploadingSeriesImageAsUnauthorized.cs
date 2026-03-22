@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -27,21 +25,12 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveUnauthorizedResult()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldHaveUnauthorizedResult() => _response.ShouldBeUnauthorized();
 
         [Test]
-        public void ShouldNotHaveUpdatedSeriesImage()
-        {
-            _assert.ShouldNotHaveUpdatedSeriesImage(_seriesId, _newImage);
-        }
+        public void ShouldNotHaveUpdatedSeriesImage() => _assert.ShouldNotHaveUpdatedSeriesImage(_seriesId, _newImage);
     }
 }

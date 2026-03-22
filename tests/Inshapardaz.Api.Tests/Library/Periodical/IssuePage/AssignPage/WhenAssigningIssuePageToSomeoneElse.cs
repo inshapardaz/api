@@ -5,8 +5,6 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AssignPage
 {
@@ -16,26 +14,19 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AssignPage
     [TestFixture(Role.Writer, EditingStatus.Typing)]
     [TestFixture(Role.Writer, EditingStatus.Typed)]
     [TestFixture(Role.Writer, EditingStatus.InReview)]
-    public class WhenAssigningIssuePageToSomeoneElse : TestBase
+    public class WhenAssigningIssuePageToSomeoneElse(Role role, EditingStatus status) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IssuePageAssert _assert;
         private IssueDto _issue;
         private IssuePageDto _page;
         private AccountDto _secondAccount;
-        private readonly EditingStatus _status;
-
-        public WhenAssigningIssuePageToSomeoneElse(Role role, EditingStatus status)
-            : base(role)
-        {
-            _status = status;
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
         {
             _secondAccount = AccountBuilder.Build();
-            _issue = IssueBuilder.WithLibrary(LibraryId).WithPages(3, true).WithStatus(_status, 3).Build();
+            _issue = IssueBuilder.WithLibrary(LibraryId).WithPages(3, true).WithStatus(status, 3).Build();
             _page = IssueBuilder.GetPages(_issue.Id).PickRandom();
 
             var assignment = new
@@ -48,23 +39,17 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AssignPage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            BookBuilder.CleanUp();
-        }
+        public void Teardown() => BookBuilder.CleanUp();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveCorrectPageAssignment()
         {
             bool ShouldAssignReview()
             {
-                return _status == EditingStatus.Typed || _status == EditingStatus.InReview;
+                return status == EditingStatus.Typed || status == EditingStatus.InReview;
             }
 
             _assert.ShouldMatch(new IssuePageView
@@ -74,7 +59,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AssignPage
                 IssueNumber = _issue.IssueNumber,
                 SequenceNumber = _page.SequenceNumber,
                 Text = null,
-                Status = _status.ToString(),
+                Status = status.ToString(),
                 ReviewerAccountId = ShouldAssignReview() ? _secondAccount.Id : _page.ReviewerAccountId,
                 ReviewerAccountName = ShouldAssignReview() ? _secondAccount.Name : null,
                 ReviewerAssignTimeStamp = ShouldAssignReview() ? System.DateTime.UtcNow : _page.ReviewerAssignTimeStamp,
@@ -85,9 +70,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AssignPage
         }
 
         [Test]
-        public void ShouldHaveCorrectAssignmentTimeStamp()
-        {
-            _assert.ShouldHaveAssignedRecently();
-        }
+        public void ShouldHaveCorrectAssignmentTimeStamp() => _assert.ShouldHaveAssignedRecently();
     }
 }

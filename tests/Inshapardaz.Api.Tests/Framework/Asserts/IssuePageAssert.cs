@@ -4,29 +4,17 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using System;
-using System.Net.Http;
-using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class IssuePageAssert
+    public class IssuePageAssert(
+        IIssuePageTestRepository issuePageRepository,
+        IFileTestRepository fileRepository,
+        FakeFileStorage fileStorage)
     {
         public HttpResponseMessage _response;
         private IssuePageView _issuePage;
         private int _libraryId;
-        private readonly IIssuePageTestRepository _issuePageRepository;
-        private readonly IFileTestRepository _fileRepository;
-        private readonly FakeFileStorage _fileStorage;
-
-        public IssuePageAssert(IIssuePageTestRepository issuePageRepository,
-            IFileTestRepository fileRepository,
-            FakeFileStorage fileStorage)
-        {
-            _issuePageRepository = issuePageRepository;
-            _fileRepository = fileRepository;
-            _fileStorage = fileStorage;
-        }
 
         public IssuePageAssert ForResponse(HttpResponseMessage response)
         {
@@ -57,12 +45,12 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssuePageAssert ShouldHaveNoIssuePage(int issueId, long pageId, long? imageId)
         {
-            var page = _issuePageRepository.GetIssuePageByIssueId(issueId, pageId);
+            var page = issuePageRepository.GetIssuePageByIssueId(issueId, pageId);
             page.Should().BeNull();
 
             if (imageId != null)
             {
-                var image = _fileRepository.GetFileById(imageId.Value);
+                var image = fileRepository.GetFileById(imageId.Value);
                 image.Should().BeNull();
             }
 
@@ -78,12 +66,12 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssuePageAssert IssuePageShouldExist(int issueId, int pageNumber)
         {
-            var page = _issuePageRepository.GetIssuePageByNumber(issueId, pageNumber);
+            var page = issuePageRepository.GetIssuePageByNumber(issueId, pageNumber);
             page.Should().NotBeNull();
 
             if (page.ImageId != null)
             {
-                var image = _fileRepository.GetFileById(page.ImageId.Value);
+                var image = fileRepository.GetFileById(page.ImageId.Value);
                 image.Should().NotBeNull();
             }
 
@@ -92,10 +80,10 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssuePageAssert ShouldHaveNoIssuePageImage(int issueId, int pageNumber, long imageId)
         {
-            var page = _issuePageRepository.GetIssuePageByNumber(issueId, pageNumber);
+            var page = issuePageRepository.GetIssuePageByNumber(issueId, pageNumber);
             page.ImageId.Should().BeNull();
 
-            var image = _fileRepository.GetFileById(imageId);
+            var image = fileRepository.GetFileById(imageId);
             image.Should().BeNull();
 
             return this;
@@ -109,19 +97,19 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssuePageAssert ShouldHaveSavedPage()
         {
-            _issuePageRepository.GetIssuePageByNumber(_issuePage.PeriodicalId, _issuePage.VolumeNumber, _issuePage.IssueNumber, _issuePage.SequenceNumber);
+            issuePageRepository.GetIssuePageByNumber(_issuePage.PeriodicalId, _issuePage.VolumeNumber, _issuePage.IssueNumber, _issuePage.SequenceNumber);
             return this;
         }
 
         public IssuePageAssert ShouldHaveUpdatedIssuePageImage(int issueId, int pageNumber, byte[] newImage)
         {
-            var page = _issuePageRepository.GetIssuePageByNumber(issueId, pageNumber);
+            var page = issuePageRepository.GetIssuePageByNumber(issueId, pageNumber);
             page.ImageId.Should().BeGreaterThan(0);
 
-            var image = _fileRepository.GetFileById(page.ImageId.Value);
+            var image = fileRepository.GetFileById(page.ImageId.Value);
             image.Should().NotBeNull();
 
-            var content = _fileStorage.GetFile(image.FilePath, CancellationToken.None).Result;
+            var content = fileStorage.GetFile(image.FilePath, CancellationToken.None).Result;
             content.Should().BeEquivalentTo(newImage);
 
             return this;
@@ -137,10 +125,10 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssuePageAssert ShouldHaveAddedIssuePageImage(int issueId, int pageNumber)
         {
-            var page = _issuePageRepository.GetIssuePageByNumber(issueId, pageNumber);
+            var page = issuePageRepository.GetIssuePageByNumber(issueId, pageNumber);
             page.ImageId.Should().BeGreaterThan(0);
 
-            var image = _fileRepository.GetFileById(page.ImageId.Value);
+            var image = fileRepository.GetFileById(page.ImageId.Value);
             image.Should().NotBeNull();
 
             return this;
@@ -306,8 +294,8 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         public IssuePageAssert ShouldMatchWithoutText(IssuePageDto dto)
         {
             ShouldMatch(dto);
-            var filePath = _fileRepository.GetFileById(dto.FileId.Value).FilePath;
-            var content = _fileStorage.GetTextFile(filePath, CancellationToken.None).Result;
+            var filePath = fileRepository.GetFileById(dto.FileId.Value).FilePath;
+            var content = fileStorage.GetTextFile(filePath, CancellationToken.None).Result;
             _issuePage.Text.Should().Be(content);
             return this;
         }

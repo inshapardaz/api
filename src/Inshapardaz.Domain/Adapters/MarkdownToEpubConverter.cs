@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Text;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
@@ -56,10 +52,7 @@ public class MarkdownToEpubConverter
         return epubBytes;
     }
 
-    private static void WriteMimeType(string epubFolder)
-    {
-      File.WriteAllText(Path.Combine(epubFolder, "mimetype"), "application/epub+zip", new UTF8Encoding(false));
-    }
+    private static void WriteMimeType(string epubFolder) => File.WriteAllText(Path.Combine(epubFolder, "mimetype"), "application/epub+zip", new UTF8Encoding(false));
 
     private static void WriteContainerXml(string metaInfDir)
     {

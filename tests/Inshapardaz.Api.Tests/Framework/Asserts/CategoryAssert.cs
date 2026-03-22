@@ -3,25 +3,18 @@ using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class CategoryAssert
+    public class CategoryAssert(
+        IFileTestRepository fileRepository,
+        ICategoryTestRepository categoryRepository)
     {
         private HttpResponseMessage _response;
         private CategoryView _category;
         private int _libraryId;
 
-        private readonly ICategoryTestRepository _categoryRepository;
-        private readonly IFileTestRepository _fileRepository;
-
-        public CategoryAssert(IFileTestRepository fileRepository,
-            ICategoryTestRepository categoryRepository)
-        {
-            _fileRepository = fileRepository;
-            _categoryRepository = categoryRepository;
-        }
+        private readonly IFileTestRepository _fileRepository = fileRepository;
 
         public CategoryAssert ForView(CategoryView view)
         {
@@ -44,14 +37,14 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public CategoryAssert ShouldNotHaveDeletedCategory(int categoryId)
         {
-            var author = _categoryRepository.GetCategoryById(_libraryId, categoryId);
+            var author = categoryRepository.GetCategoryById(_libraryId, categoryId);
             author.Should().NotBeNull();
             return this;
         }
 
         public CategoryAssert ShouldHaveDeletedCategory(int categoryId)
         {
-            var author = _categoryRepository.GetCategoryById(_libraryId, categoryId);
+            var author = categoryRepository.GetCategoryById(_libraryId, categoryId);
             author.Should().BeNull();
             return this;
         }
@@ -103,7 +96,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public CategoryAssert ShouldHaveUpdatedCategory()
         {
-            var dbCat = _categoryRepository.GetCategoryById(_libraryId, _category.Id);
+            var dbCat = categoryRepository.GetCategoryById(_libraryId, _category.Id);
             dbCat.Should().NotBeNull();
             dbCat.Id.Should().Be(_category.Id);
             dbCat.Name.Should().Be(_category.Name);
@@ -145,7 +138,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public CategoryAssert ShouldHaveCreatedCategory()
         {
-            var cat = _categoryRepository.GetCategoryById(_libraryId, _category.Id);
+            var cat = categoryRepository.GetCategoryById(_libraryId, _category.Id);
             cat.Should().NotBeNull();
             return this;
         }

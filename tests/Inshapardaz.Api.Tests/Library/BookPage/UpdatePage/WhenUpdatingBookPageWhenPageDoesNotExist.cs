@@ -4,23 +4,16 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
 {
     [TestFixture]
-    public class WhenUpdatingBookPageWhenPageDoesNotExist : TestBase
+    public class WhenUpdatingBookPageWhenPageDoesNotExist() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private BookPageAssert _assert;
         private BookPageView _page;
         private int _bookId;
-
-        public WhenUpdatingBookPageWhenPageDoesNotExist()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -46,27 +39,15 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.UpdatePage
         }
 
         [Test]
-        public void ShouldHaveCreatedResponse()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResponse() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldHaveReturnCorrectObject()
-        {
-            _assert.ShouldMatch(_page, 1);
-        }
+        public void ShouldHaveReturnCorrectObject() => _assert.ShouldMatch(_page, 1);
 
         [Test]
-        public void ShouldHaveSavedBookPage()
-        {
-            _assert.ShouldHaveSavedPage();
-        }
+        public void ShouldHaveSavedBookPage() => _assert.ShouldHaveSavedPage();
     }
 }

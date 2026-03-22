@@ -6,24 +6,17 @@ using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
-    public class WhenUpdatingLibraryWithPermission : TestBase
+    public class WhenUpdatingLibraryWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
 
         private LibraryView _expectedLibrary;
         private LibraryAssert _assert;
-
-        public WhenUpdatingLibraryWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -43,16 +36,10 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveReturnedUpdatedTheLibrary()

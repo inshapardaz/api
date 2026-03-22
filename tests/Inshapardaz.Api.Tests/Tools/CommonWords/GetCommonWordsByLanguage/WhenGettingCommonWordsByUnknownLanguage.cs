@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Bogus;
-using FluentAssertions;
+﻿using Bogus;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -11,16 +6,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Tools.CommonWords.GetCommonWordsByLanguage
 {
     [TestFixture]
-    public class WhenGettingCommonWordsByUnknownLanguage : TestBase
+    public class WhenGettingCommonWordsByUnknownLanguage() : TestBase(Domain.Models.Role.Reader)
     {
         private HttpResponseMessage _response;
         private IEnumerable<string> _responsePayload; 
         private readonly string _language = new Faker().Random.String2(4);
-
-        public WhenGettingCommonWordsByUnknownLanguage()
-            :base(Domain.Models.Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,15 +23,9 @@ namespace Inshapardaz.Api.Tests.Tools.CommonWords.GetCommonWordsByLanguage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNotFound()
-        {
-            _response.ShouldBeNotFound();
-        }
+        public void ShouldReturnNotFound() => _response.ShouldBeNotFound();
     }
 }

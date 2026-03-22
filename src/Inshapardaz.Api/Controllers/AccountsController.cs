@@ -6,34 +6,22 @@ using Inshapardaz.Api.Views.Accounts;
 using Paramore.Brighter;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Adapters.Configuration;
-using Inshapardaz.Domain.Ports.Command;
 using Inshapardaz.Domain.Ports.Command.Account;
 using Inshapardaz.Domain.Ports.Query.Account;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 
 namespace Inshapardaz.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class AccountsController : Controller
+public class AccountsController(
+    IAmACommandProcessor commandProcessor,
+    IQueryProcessor queryProcessor,
+    IRenderAccount accountRenderer,
+    IOptions<Settings> settings)
+    : Controller
 {
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRenderAccount _accountRenderer;
-    private readonly Settings _settings;
-
-    public AccountsController(
-        IAmACommandProcessor commandProcessor,
-        IQueryProcessor queryProcessor,
-        IRenderAccount accountRenderer,
-        IOptions<Settings> settings)
-    {
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-        _accountRenderer = accountRenderer;
-        _settings = settings.Value;
-    }
+    private readonly Settings _settings = settings.Value;
 
 
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthenticateResponse))]
@@ -43,11 +31,11 @@ public class AccountsController : Controller
     public async Task<ActionResult<AuthenticateResponse>> Authenticate(AuthenticateRequest model, CancellationToken cancellationToken)
     {
         var command = new AuthenticateCommand(model.Email, model.Password);
-        await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
         SetRefreshTokenCookie(command.Response.RefreshToken);
         SetAccessTokenCookie(command.Response.AccessToken);
 
-        return Ok(_accountRenderer.Render(command.Response));
+        return Ok(accountRenderer.Render(command.Response));
     }
 
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthenticateResponse))]
@@ -58,10 +46,10 @@ public class AccountsController : Controller
     {
         var refreshToken = model.RefreshToken ?? Request.Cookies["refreshToken"];
         var command = new RefreshTokenCommand(refreshToken);
-        await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
         SetRefreshTokenCookie(command.Response.RefreshToken);
         SetAccessTokenCookie(command.Response.AccessToken);
-        return Ok(_accountRenderer.Render(command.Response));
+        return Ok(accountRenderer.Render(command.Response));
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -75,7 +63,7 @@ public class AccountsController : Controller
         if (token is not null)
         {
             var command = new RevokeTokenCommand(token);
-            await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+            await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
         }
         
         SetRefreshTokenCookie(token, true);
@@ -89,7 +77,7 @@ public class AccountsController : Controller
     [HttpGet("invitation/{id}", Name = nameof(CheckInvitationCode))]
     public async Task<IActionResult> CheckInvitationCode(string id, CancellationToken cancellationToken)
     {
-        var validityStatus = await _queryProcessor.ExecuteAsync(new GetInvitationStatusQuery(id), cancellationToken: cancellationToken);
+        var validityStatus = await queryProcessor.ExecuteAsync(new GetInvitationStatusQuery(id), cancellationToken: cancellationToken);
 
         if (validityStatus == InvitationStatuses.NotFound)
         {
@@ -109,7 +97,7 @@ public class AccountsController : Controller
     [HttpPost("invitations", Name = nameof(ResendInvitationCode))]
     public async Task<IActionResult> ResendInvitationCode([FromBody] ResendInvitationCodeRequest request, CancellationToken cancellationToken)
     {
-        await _commandProcessor.SendAsync(new ResendInvitationCodeCommand(request.Email), cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(new ResendInvitationCodeCommand(request.Email), cancellationToken: cancellationToken);
 
         return Ok();
     }
@@ -130,7 +118,7 @@ public class AccountsController : Controller
             Name = model.Name,
             Role = model.Role
         };
-        await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
 
         return Ok();
     }
@@ -148,7 +136,7 @@ public class AccountsController : Controller
             InvitationCode = invitationCode
         };
 
-        await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
         return Ok();
     }
 
@@ -159,7 +147,7 @@ public class AccountsController : Controller
     {
         var command = new PasswordResetCommand(model.Email);
 
-        await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
         return Ok();
     }
 
@@ -174,7 +162,7 @@ public class AccountsController : Controller
             Password = model.Password
         };
 
-        await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
         return Ok();
     }
 
@@ -190,7 +178,7 @@ public class AccountsController : Controller
             OldPassword = model.OldPassword
         };
 
-        await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
         return Ok();
     }
 
@@ -204,8 +192,8 @@ public class AccountsController : Controller
         
         if (int.TryParse(HttpContext.Items["AccountId"].ToString(), out var accountId))
         {
-            var account = await _queryProcessor.ExecuteAsync(new GetAccountByIdQuery(accountId), cancellationToken);
-            return Ok(_accountRenderer.Render(account));
+            var account = await queryProcessor.ExecuteAsync(new GetAccountByIdQuery(accountId), cancellationToken);
+            return Ok(accountRenderer.Render(account));
         }
 
         return BadRequest();
@@ -215,7 +203,7 @@ public class AccountsController : Controller
     public async Task<IActionResult> GetAll(string query, int pageNumber = 1, int pageSize = 10, CancellationToken token = default(CancellationToken))
     {
         var accountsQuery = new GetAccountsQuery(pageNumber, pageSize) { Query = query };
-        var accounts = await _queryProcessor.ExecuteAsync(accountsQuery, cancellationToken: token);
+        var accounts = await queryProcessor.ExecuteAsync(accountsQuery, cancellationToken: token);
 
         var args = new PageRendererArgs<AccountModel>
         {
@@ -223,7 +211,7 @@ public class AccountsController : Controller
             RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize, Query = query },
         };
 
-        return new OkObjectResult(_accountRenderer.Render(args));
+        return new OkObjectResult(accountRenderer.Render(args));
     }
 
     [HttpGet("/libraries/{libraryId}/users", Name = nameof(AccountsController.GetLibraryUsers))]
@@ -231,7 +219,7 @@ public class AccountsController : Controller
     public async Task<IActionResult> GetLibraryUsers(int libraryId, string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))
     {
         var accountsQuery = new GetAccountsByLibraryQuery(libraryId, pageNumber, pageSize) { Query = query };
-        var accounts = await _queryProcessor.ExecuteAsync(accountsQuery, cancellationToken: cancellationToken);
+        var accounts = await queryProcessor.ExecuteAsync(accountsQuery, cancellationToken: cancellationToken);
 
         var args = new PageRendererArgs<AccountModel>
         {
@@ -239,31 +227,31 @@ public class AccountsController : Controller
             RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize, Query = query },
         };
 
-        return new OkObjectResult(_accountRenderer.Render(args, libraryId));
+        return new OkObjectResult(accountRenderer.Render(args, libraryId));
     }
 
     [HttpGet("/libraries/{libraryId}/writers", Name = nameof(AccountsController.GetWriters))]
     public async Task<IActionResult> GetWriters(int libraryId, [FromQuery] string query, CancellationToken token = default(CancellationToken))
     {
         var writersQuery = new GetWritersQuery(libraryId, query);
-        var writers = await _queryProcessor.ExecuteAsync(writersQuery, cancellationToken: token);
+        var writers = await queryProcessor.ExecuteAsync(writersQuery, cancellationToken: token);
 
-        return new OkObjectResult(_accountRenderer.RenderLookup(writers));
+        return new OkObjectResult(accountRenderer.RenderLookup(writers));
     }
 
     [HttpGet("{id:int}", Name = nameof(AccountsController.GetById))]
     public async Task<ActionResult<AccountView>> GetById(int id, CancellationToken cancellationToken)
     {
-        var account = await _queryProcessor.ExecuteAsync(new GetAccountByIdQuery(id), cancellationToken);
-        return Ok(_accountRenderer.Render(account));
+        var account = await queryProcessor.ExecuteAsync(new GetAccountByIdQuery(id), cancellationToken);
+        return Ok(accountRenderer.Render(account));
     }
 
     [HttpGet("/libraries/{libraryId}/users/{id:int}", Name = nameof(AccountsController.GetLibraryUserById))]
     public async Task<ActionResult<AccountView>> GetLibraryUserById(int libraryId, int id, CancellationToken cancellationToken)
     {
         var query = new GetAccountByIdQuery(id) { LibraryId = libraryId };
-        var account = await _queryProcessor.ExecuteAsync(query, cancellationToken);
-        return Ok(_accountRenderer.Render(account, libraryId));
+        var account = await queryProcessor.ExecuteAsync(query, cancellationToken);
+        return Ok(accountRenderer.Render(account, libraryId));
     }
 
     [HttpPut("{id:int}", Name = nameof(AccountsController.Update))]
@@ -276,7 +264,7 @@ public class AccountsController : Controller
             Name = model.Name,
             Role = model.Role,
         };
-        await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
         return Ok(model);
     }
 
@@ -291,7 +279,7 @@ public class AccountsController : Controller
             Role = model.Role,
         };
 
-        await _commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
         return Ok(model);
     }
 

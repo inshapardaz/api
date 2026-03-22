@@ -2,9 +2,6 @@
 using Inshapardaz.Domain.Common;
 using Inshapardaz.Domain.Exception;
 using Paramore.Brighter;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Account;
 
@@ -18,16 +15,10 @@ public class ForgetPasswordCommand : RequestBase
     public bool AcceptTerms { get; set; }
 }
 
-public class ForgetPasswordCommandHandler : RequestHandlerAsync<ForgetPasswordCommand>
+public class ForgetPasswordCommandHandler(IAccountRepository accountRepository)
+    : RequestHandlerAsync<ForgetPasswordCommand>
 
 {
-    private readonly IAccountRepository _accountRepository;
-
-    public ForgetPasswordCommandHandler(IAccountRepository accountRepository)
-    {
-        _accountRepository = accountRepository;
-    }
-
     public override async Task<ForgetPasswordCommand> HandleAsync(ForgetPasswordCommand command, CancellationToken cancellationToken = default)
     {
         if (!command.AcceptTerms)
@@ -40,7 +31,7 @@ public class ForgetPasswordCommandHandler : RequestHandlerAsync<ForgetPasswordCo
             throw new BadRequestException("Password and confirm password not matching");
         }
 
-        var account = await _accountRepository.GetAccountByInvitationCode(command.InvitationCode, cancellationToken);
+        var account = await accountRepository.GetAccountByInvitationCode(command.InvitationCode, cancellationToken);
 
         if (account == null || account.InvitationCodeExpiry < DateTime.UtcNow)
         {
@@ -55,7 +46,7 @@ public class ForgetPasswordCommandHandler : RequestHandlerAsync<ForgetPasswordCo
         account.InvitationCodeExpiry = null;
         account.AcceptTerms = true;
 
-        await _accountRepository.UpdateAccount(account, cancellationToken);
+        await accountRepository.UpdateAccount(account, cancellationToken);
 
         return await base.HandleAsync(command, cancellationToken);
     }

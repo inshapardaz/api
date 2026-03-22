@@ -1,30 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssueArticleSequence
 {
     [TestFixture]
-    public class WhenUpdatingIssueArticleSequenceThatDoesNotExist
-        : TestBase
+    public class WhenUpdatingIssueArticleSequenceThatDoesNotExist() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private IEnumerable<IssueArticleDto> _articles;
         private IssueDto _issue;
-
-        public WhenUpdatingIssueArticleSequenceThatDoesNotExist()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -46,16 +35,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveBadRequestResult()
-        {
-            _response.ShouldBeBadRequest();
-        }
+        public void ShouldHaveBadRequestResult() => _response.ShouldBeBadRequest();
 
         [Test]
         public void ShouldNotHaveUpdatedTheSequence()

@@ -13,33 +13,20 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Controllers;
 
-public class LibraryController : Controller
+public class LibraryController(
+    IAmACommandProcessor commandProcessor,
+    IQueryProcessor queryProcessor,
+    IRenderLibrary libraryRenderer,
+    IUserHelper userHelper,
+    IRenderFile fileRenderer)
+    : Controller
 {
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRenderLibrary _libraryRenderer;
-    private readonly IUserHelper _userHelper;
-    private readonly IRenderFile _fileRenderer;
-
-    public LibraryController(IAmACommandProcessor commandProcessor,
-        IQueryProcessor queryProcessor,
-        IRenderLibrary libraryRenderer,
-        IUserHelper userHelper,
-        IRenderFile fileRenderer)
-    {
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-        _libraryRenderer = libraryRenderer;
-        _userHelper = userHelper;
-        _fileRenderer = fileRenderer;
-    }
-
     [HttpGet("libraries", Name = nameof(LibraryController.GetLibraries))]
     [Produces(typeof(PageView<LibraryView>))]
     public async Task<IActionResult> GetLibraries(string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var libQuery = new GetLibrariesQuery(pageNumber, pageSize, _userHelper.AccountId, _userHelper.Account?.IsSuperAdmin ?? false);
-        var libraries = await _queryProcessor.ExecuteAsync(libQuery, cancellationToken: cancellationToken);
+        var libQuery = new GetLibrariesQuery(pageNumber, pageSize, userHelper.AccountId, userHelper.Account?.IsSuperAdmin ?? false);
+        var libraries = await queryProcessor.ExecuteAsync(libQuery, cancellationToken: cancellationToken);
 
         var args = new PageRendererArgs<LibraryModel>
         {
@@ -47,7 +34,7 @@ public class LibraryController : Controller
             RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize, Query = query },
         };
 
-        return new OkObjectResult(_libraryRenderer.Render(args));
+        return new OkObjectResult(libraryRenderer.Render(args));
     }
 
     [HttpGet("libraries/{libraryId}", Name = nameof(LibraryController.GetLibraryById))]
@@ -55,11 +42,11 @@ public class LibraryController : Controller
     public async Task<IActionResult> GetLibraryById(int libraryId, CancellationToken cancellationToken)
     {
         var query = new GetLibraryQuery(libraryId);
-        var library = await _queryProcessor.ExecuteAsync(query, cancellationToken);
+        var library = await queryProcessor.ExecuteAsync(query, cancellationToken);
 
         if (library != null)
         {
-            return new OkObjectResult(_libraryRenderer.Render(library));
+            return new OkObjectResult(libraryRenderer.Render(library));
         }
 
         return NotFound();
@@ -74,9 +61,9 @@ public class LibraryController : Controller
         }
 
         var request = new AddLibraryRequest(library.Map());
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _libraryRenderer.Render(request.Result);
+        var renderResult = libraryRenderer.Render(request.Result);
         return new CreatedResult(renderResult.Links.Self(), renderResult);
     }
 
@@ -90,9 +77,9 @@ public class LibraryController : Controller
         }
 
         var request = new UpdateLibraryRequest(libraryId, library.Map());
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _libraryRenderer.Render(request.Result.Library);
+        var renderResult = libraryRenderer.Render(request.Result.Library);
         if (request.Result.HasAddedNew)
         {
             return new CreatedResult(renderResult.Links.Self(), renderResult);
@@ -108,7 +95,7 @@ public class LibraryController : Controller
     public async Task<IActionResult> DeleteLibrary(int libraryId, CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteLibraryRequest(libraryId);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
 
@@ -116,8 +103,8 @@ public class LibraryController : Controller
     //[Authorize(Role.Admin)]
     public async Task<IActionResult> GetLibrariesByAccount(int accountId, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
     {
-        var libQuery = new GetLibrariesQuery(pageNumber, pageSize, accountId, _userHelper.Account.IsSuperAdmin);
-        var libraries = await _queryProcessor.ExecuteAsync(libQuery, cancellationToken: cancellationToken);
+        var libQuery = new GetLibrariesQuery(pageNumber, pageSize, accountId, userHelper.Account.IsSuperAdmin);
+        var libraries = await queryProcessor.ExecuteAsync(libQuery, cancellationToken: cancellationToken);
 
         var args = new PageRendererArgs<LibraryModel>
         {
@@ -125,7 +112,7 @@ public class LibraryController : Controller
             RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize, AccountId = accountId },
         };
 
-        return new OkObjectResult(_libraryRenderer.Render(args));
+        return new OkObjectResult(libraryRenderer.Render(args));
     }
 
     [HttpPost("/accounts/{accountId}/libraries", Name = nameof(LibraryController.AddLibraryToAccount))]
@@ -135,7 +122,7 @@ public class LibraryController : Controller
     public async Task<IActionResult> AddLibraryToAccount(int accountId, [FromBody] int libraryId, CancellationToken token = default)
     {
         var request = new AddLibraryToAccountRequest(libraryId, accountId, Role.Reader);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
 
@@ -144,7 +131,7 @@ public class LibraryController : Controller
     public async Task<IActionResult> RemoveLibraryFromAccount(int accountId, int libraryId, CancellationToken token = default)
     {
         var request = new RemoveLibraryFromAccountRequest(libraryId, accountId);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
 
@@ -168,11 +155,11 @@ public class LibraryController : Controller
             }
         };
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         if (request.Result.HasAddedNew)
         {
-            var response = _fileRenderer.Render(libraryId, request.Result.File);
+            var response = fileRenderer.Render(libraryId, request.Result.File);
             return new CreatedResult(response.Links.Self(), response);
         }
 

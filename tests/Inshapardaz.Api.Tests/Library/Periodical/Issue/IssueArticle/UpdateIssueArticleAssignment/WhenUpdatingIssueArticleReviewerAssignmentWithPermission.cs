@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
@@ -14,18 +11,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingIssueArticleReviewerAssignmentWithPermission
-        : TestBase
+    public class WhenUpdatingIssueArticleReviewerAssignmentWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IssueArticleAssert _articleAssert;
         private IssueArticleDto _article;
         private AssignmentView _assignmentView;
-
-        public WhenUpdatingIssueArticleReviewerAssignmentWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -50,16 +41,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOKResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOKResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveReturnedUpdatedArticle()
@@ -80,9 +65,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.UpdateIssu
         }
 
         [Test]
-        public void ShouldHaveUpdatedArticle()
-        {
-            _articleAssert.ShouldHaveSavedArticle();
-        }
+        public void ShouldHaveUpdatedArticle() => _articleAssert.ShouldHaveSavedArticle();
     }
 }

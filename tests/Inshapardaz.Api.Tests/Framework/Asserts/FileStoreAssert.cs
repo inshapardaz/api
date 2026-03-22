@@ -5,29 +5,20 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class FileStoreAssert
+    public class FileStoreAssert(IFileTestRepository fileRepository, FakeFileStorage fileStorage)
     {
-        private readonly IFileTestRepository _fileRepository;
-        private readonly FakeFileStorage _fileStore;
-
-        public FileStoreAssert(IFileTestRepository fileRepository, FakeFileStorage fileStorage)
-        {
-            _fileRepository = fileRepository;
-            _fileStore = fileStorage;
-        }
-
         public void FileDoesnotExist(FileDto imageFile)
         {
-            var file = _fileRepository.GetFileById(imageFile.Id);
+            var file = fileRepository.GetFileById(imageFile.Id);
             file.Should().BeNull();
-            _fileStore.DoesFileExists(imageFile.FilePath);
+            fileStorage.DoesFileExists(imageFile.FilePath);
         }
 
         public void FileDoesnotExist(long fileId, string filePath)
         {
-            var file = _fileRepository.GetFileById(fileId);
+            var file = fileRepository.GetFileById(fileId);
             file.Should().BeNull();
-            _fileStore.DoesFileExists(filePath);
+            fileStorage.DoesFileExists(filePath);
         }
     }
 }

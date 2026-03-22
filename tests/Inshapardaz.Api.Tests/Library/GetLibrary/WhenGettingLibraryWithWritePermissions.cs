@@ -2,8 +2,6 @@
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.GetLibrary
 {
@@ -13,15 +11,11 @@ namespace Inshapardaz.Api.Tests.Library.GetLibrary
     [TestFixture(Role.LibraryAdmin, false)]
     [TestFixture(Role.Writer, true)]
     [TestFixture(Role.Writer, false)]
-    public class WhenGettingLibraryWithWritePermissions : TestBase
+    public class WhenGettingLibraryWithWritePermissions(Role authLevel, bool periodicalsEnabled)
+        : TestBase(authLevel, periodicalsEnabled)
     {
         private HttpResponseMessage _response;
         private LibraryAssert _assert;
-
-        public WhenGettingLibraryWithWritePermissions(Role authLevel, bool periodicalsEnabled)
-            : base(authLevel, periodicalsEnabled)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -32,40 +26,22 @@ namespace Inshapardaz.Api.Tests.Library.GetLibrary
         }
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
-        public void ShouldHaveBooksLink()
-        {
-            _assert.ShouldHaveBooksLink();
-        }
+        public void ShouldHaveBooksLink() => _assert.ShouldHaveBooksLink();
 
         [Test]
-        public void ShouldHaveAuthorsLink()
-        {
-            _assert.ShouldHaveAuthorsLink();
-        }
+        public void ShouldHaveAuthorsLink() => _assert.ShouldHaveAuthorsLink();
 
         [Test]
-        public void ShouldHaveCategoriesLink()
-        {
-            _assert.ShouldHaveCategoriesLink();
-        }
+        public void ShouldHaveCategoriesLink() => _assert.ShouldHaveCategoriesLink();
 
         [Test]
-        public void ShouldHaveSeriesLink()
-        {
-            _assert.ShouldHaveSeriesLink();
-        }
+        public void ShouldHaveSeriesLink() => _assert.ShouldHaveSeriesLink();
 
         [Test]
         public void ShouldHaveCorrectPeriodicalLink()
@@ -81,10 +57,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibrary
         }
 
         [Test]
-        public void ShouldHaveRecentLinks()
-        {
-            _assert.ShouldHaveRecentLinks();
-        }
+        public void ShouldHaveRecentLinks() => _assert.ShouldHaveRecentLinks();
 
         [Test]
         public void ShouldHaveWritableLinks()

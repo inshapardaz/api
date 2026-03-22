@@ -5,30 +5,18 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
-using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class IssueContentAssert
+    public class IssueContentAssert(
+        IIssueTestRepository issueRepository,
+        IFileTestRepository fileRepository,
+        FakeFileStorage fileStorage)
     {
         private HttpResponseMessage _response;
         private int _libraryId;
         private IssueContentView _issueContent;
         private LibraryDto _library;
-
-        private readonly IIssueTestRepository _issueRepository;
-        private readonly IFileTestRepository _fileRepository;
-        private readonly FakeFileStorage _fileStorage;
-
-        public IssueContentAssert(IIssueTestRepository issueRepository,
-            IFileTestRepository fileRepository,
-            FakeFileStorage fileStorage)
-        {
-            _issueRepository = issueRepository;
-            _fileRepository = fileRepository;
-            _fileStorage = fileStorage;
-        }
 
         public IssueContentAssert ForResponse(HttpResponseMessage response)
         {
@@ -69,14 +57,14 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueContentAssert ShouldNotHaveIssueContent(int id)
         {
-            var content = _issueRepository.GetIssueContent(id);
+            var content = issueRepository.GetIssueContent(id);
             content.Should().BeNull();
             return this;
         }
 
         public IssueContentAssert ShouldHaveIssueContent(int id)
         {
-            var content = _issueRepository.GetIssueContent(id);
+            var content = issueRepository.GetIssueContent(id);
             content.Should().NotBeNull();
             content.Language.Should().Be(_issueContent.Language);
             content.MimeType.Should().Be(_issueContent.MimeType);
@@ -86,7 +74,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueContentAssert ShouldHaveIssueContent(int id, string language, string mimeType)
         {
-            var content = _issueRepository.GetIssueContent(id);
+            var content = issueRepository.GetIssueContent(id);
             content.Should().NotBeNull();
             content.Language.Should().Be(language);
             content.MimeType.Should().Be(mimeType);
@@ -95,7 +83,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueContentAssert ShouldHaveIssueContent(byte[] expected)
         {
-            var content = _issueRepository.GetIssueContent(_issueContent.Id);
+            var content = issueRepository.GetIssueContent(_issueContent.Id);
             content.Should().NotBeNull();
 
             content.Language.Should().Be(_issueContent.Language);
@@ -150,24 +138,24 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueContentAssert ShouldHaveCorrectContents(byte[] expected, string newLanguage = null, string newMimeType = null)
         {
-            var filePath = _issueRepository.GetIssueContentPath(_issueContent.Id, newLanguage ?? _issueContent.Language, newMimeType ?? _issueContent.MimeType);
-            var content = _fileStorage.GetFile(filePath, CancellationToken.None).Result;
+            var filePath = issueRepository.GetIssueContentPath(_issueContent.Id, newLanguage ?? _issueContent.Language, newMimeType ?? _issueContent.MimeType);
+            var content = fileStorage.GetFile(filePath, CancellationToken.None).Result;
             content.Should().NotBeNull().And.Equal(expected);
             return this;
         }
 
         public IssueContentAssert ShouldHaveCorrectContentsForMimeType(byte[] expected, string mimeType)
         {
-            var filePath = _issueRepository.GetIssueContentPath(_issueContent.Id, _issueContent.Language, mimeType);
-            var content = _fileStorage.GetFile(filePath, CancellationToken.None).Result;
+            var filePath = issueRepository.GetIssueContentPath(_issueContent.Id, _issueContent.Language, mimeType);
+            var content = fileStorage.GetFile(filePath, CancellationToken.None).Result;
             content.Should().NotBeNull().And.Equal(expected);
             return this;
         }
 
         public IssueContentAssert ShouldHaveCorrectContentsForLanguage(byte[] expected, string language)
         {
-            var filePath = _issueRepository.GetIssueContentPath(_issueContent.Id, language, _issueContent.MimeType);
-            var content = _fileStorage.GetFile(filePath, CancellationToken.None).Result;
+            var filePath = issueRepository.GetIssueContentPath(_issueContent.Id, language, _issueContent.MimeType);
+            var content = fileStorage.GetFile(filePath, CancellationToken.None).Result;
             content.Should().NotBeNull().And.Equal(expected);
             return this;
         }
@@ -190,9 +178,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueContentAssert ShouldHaveSavedIssueContent()
         {
-            var dbContent = _issueRepository.GetIssueContent(_issueContent.Id);
+            var dbContent = issueRepository.GetIssueContent(_issueContent.Id);
             dbContent.Should().NotBeNull();
-            var dbFile = _fileRepository.GetFileById(dbContent.FileId);
+            var dbFile = fileRepository.GetFileById(dbContent.FileId);
             _issueContent.Id.Should().Be(dbContent.Id);
             _issueContent.Language.Should().Be(dbContent.Language);
             _issueContent.MimeType.Should().Be(dbFile.MimeType);
@@ -235,10 +223,10 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueContentAssert ShouldHaveDeletedContent(IssueContentDto content, string mimeType)
         {
-            var dbContent = _issueRepository.GetIssueContent(content.Id);
+            var dbContent = issueRepository.GetIssueContent(content.Id);
             dbContent.Should().BeNull("Issue content should be deleted");
 
-            var dbFile = _fileRepository.GetFileById(content.FileId);
+            var dbFile = fileRepository.GetFileById(content.FileId);
             dbFile.Should().BeNull("Files for content should be deleted");
 
             return this;
@@ -246,13 +234,13 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueContentAssert ShouldHaveDeletedContent(IssueContentDto content, FileDto file)
         {
-            var dbContent = _issueRepository.GetIssueContent(content.Id);
+            var dbContent = issueRepository.GetIssueContent(content.Id);
             dbContent.Should().BeNull("Issue content should be deleted");
 
-            var dbFile = _fileRepository.GetFileById(content.FileId);
+            var dbFile = fileRepository.GetFileById(content.FileId);
             dbFile.Should().BeNull("Files for content should be deleted");
 
-            _fileStorage.DoesFileExists(file.FilePath).Should().BeFalse();
+            fileStorage.DoesFileExists(file.FilePath).Should().BeFalse();
             return this;
         }
 
@@ -269,7 +257,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _issueContent.Id.Should().Be(contentId);
             _issueContent.Language.Should().Be(content.Language);
 
-            var dbFile = _fileRepository.GetFileById(content.FileId);
+            var dbFile = fileRepository.GetFileById(content.FileId);
             _issueContent.MimeType.Should().Be(dbFile.MimeType);
 
             return this;

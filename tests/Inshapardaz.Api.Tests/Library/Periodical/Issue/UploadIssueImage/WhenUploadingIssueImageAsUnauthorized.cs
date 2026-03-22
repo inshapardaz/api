@@ -2,9 +2,6 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
 {
@@ -29,21 +26,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveUnauthorisedResult()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldHaveUnauthorisedResult() => _response.ShouldBeUnauthorized();
 
         [Test]
-        public void ShouldNotHaveUpdatedIssueImage()
-        {
-            _assert.ShouldNotHaveUpdatedIssueImage(_issueId, _oldImage);
-        }
+        public void ShouldNotHaveUpdatedIssueImage() => _assert.ShouldNotHaveUpdatedIssueImage(_issueId, _oldImage);
     }
 }

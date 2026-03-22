@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -24,21 +22,12 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.DeleteCorrection
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnUnauthorised()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldReturnUnauthorised() => _response.ShouldBeUnauthorized();
 
         [Test]
-        public void ShouldHaveDeletedAuthor()
-        {
-            _assert.ShouldNotHaveDeletedCorrection(_correction.Id);
-        }
+        public void ShouldHaveDeletedAuthor() => _assert.ShouldNotHaveDeletedCorrection(_correction.Id);
     }
 }

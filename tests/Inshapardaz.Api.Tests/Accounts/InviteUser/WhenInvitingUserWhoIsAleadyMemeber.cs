@@ -3,19 +3,13 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.InviteUser
 {
     [TestFixture]
-    public class WhenInvitingUserWhoIsAleadyMemeber : TestBase
+    public class WhenInvitingUserWhoIsAleadyMemeber() : TestBase(Role.Admin)
     {
         private HttpResponseMessage _response;
-
-        public WhenInvitingUserWhoIsAleadyMemeber() : base(Role.Admin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,9 +29,6 @@ namespace Inshapardaz.Api.Tests.Accounts.InviteUser
         }
 
         [Test]
-        public void ShouldReturnCoflict()
-        {
-            _response.ShouldBeConflict();
-        }
+        public void ShouldReturnCoflict() => _response.ShouldBeConflict();
     }
 }

@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Spreadsheet;
-using Inshapardaz.Api.Converters;
+﻿using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
@@ -17,39 +16,24 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Controllers;
 
-public class UserController : Controller
+public class UserController(
+    IAmACommandProcessor commandProcessor,
+    IQueryProcessor queryProcessor,
+    IRenderBook bookRenderer,
+    IRenderBookPage bookPageRenderer,
+    IRenderIssuePage issuePageRenderer,
+    IRenderFile fileRenderer,
+    IUserHelper userHelper)
+    : Controller
 {
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRenderBook _bookRenderer;
-    private readonly IRenderBookPage _bookPageRenderer;
-    private readonly IRenderIssuePage _issuePageRenderer;
-    private readonly IRenderFile _fileRenderer;
-    private readonly IUserHelper _userHelper;
-
-    public UserController(IAmACommandProcessor commandProcessor,
-        IQueryProcessor queryProcessor,
-        IRenderBook bookRenderer,
-        IRenderBookPage bookPageRenderer,
-        IRenderIssuePage issuePageRenderer,
-        IRenderFile fileRenderer,
-        IUserHelper userHelper)
-    {
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-        _bookRenderer = bookRenderer;
-        _bookPageRenderer = bookPageRenderer;
-        _issuePageRenderer = issuePageRenderer;
-        _fileRenderer = fileRenderer;
-        _userHelper = userHelper;
-    }
+    private readonly IRenderFile _fileRenderer = fileRenderer;
 
     [HttpGet("libraries/{libraryId}/my/summary", Name = nameof(UserController.GetUserPublicationSummary))]
     [Produces(typeof(IEnumerable<UserPageSummaryView>))]
     public async Task<IActionResult> GetUserPublicationSummary(int libraryId, CancellationToken token = default(CancellationToken))
     {
-        var getBookPagesQuery = new GetUserPublicationSummary(libraryId, _userHelper.AccountId.Value);
-        var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);
+        var getBookPagesQuery = new GetUserPublicationSummary(libraryId, userHelper.AccountId.Value);
+        var result = await queryProcessor.ExecuteAsync(getBookPagesQuery, token);
 
         return new OkObjectResult(result.Select(x => x.Map()));
     }
@@ -63,11 +47,11 @@ public class UserController : Controller
         [FromQuery] AssignmentFilter assignmentFilter = AssignmentFilter.All,
         CancellationToken token = default(CancellationToken))
     {
-        var getBookPagesQuery = new GetBookPagesForUserQuery(libraryId, _userHelper.AccountId.Value, pageNumber, pageSize)
+        var getBookPagesQuery = new GetBookPagesForUserQuery(libraryId, userHelper.AccountId.Value, pageNumber, pageSize)
         {
             StatusFilter = status,
         };
-        var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);
+        var result = await queryProcessor.ExecuteAsync(getBookPagesQuery, token);
 
         var args = new PageRendererArgs<BookPageModel, PageFilter>
         {
@@ -76,7 +60,7 @@ public class UserController : Controller
             Filters = new PageFilter { Status = status }
         };
 
-        return new OkObjectResult(_bookPageRenderer.RenderUserPages(args, libraryId));
+        return new OkObjectResult(bookPageRenderer.RenderUserPages(args, libraryId));
     }
 
 
@@ -89,11 +73,11 @@ public class UserController : Controller
        [FromQuery] AssignmentFilter assignmentFilter = AssignmentFilter.All,
        CancellationToken token = default(CancellationToken))
     {
-        var getBookPagesQuery = new GetIssuePagesForUserQuery(libraryId, _userHelper.AccountId.Value, pageNumber, pageSize)
+        var getBookPagesQuery = new GetIssuePagesForUserQuery(libraryId, userHelper.AccountId.Value, pageNumber, pageSize)
         {
             StatusFilter = status,
         };
-        var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);
+        var result = await queryProcessor.ExecuteAsync(getBookPagesQuery, token);
 
         var args = new PageRendererArgs<IssuePageModel, PageFilter>
         {
@@ -102,7 +86,7 @@ public class UserController : Controller
             Filters = new PageFilter { Status = status }
         };
 
-        return new OkObjectResult(_issuePageRenderer.RenderUserPages(args, libraryId));
+        return new OkObjectResult(issuePageRenderer.RenderUserPages(args, libraryId));
     }
 
     [HttpGet("libraries/{libraryId}/my/books", Name = nameof(UserController.GetBooksByUser))]
@@ -113,11 +97,11 @@ public class UserController : Controller
         [FromQuery] StatusType status = StatusType.BeingTyped,
         CancellationToken token = default(CancellationToken))
     {
-        var getBookPagesQuery = new GetUserBooksQuery(libraryId, _userHelper.AccountId.Value, pageNumber, pageSize)
+        var getBookPagesQuery = new GetUserBooksQuery(libraryId, userHelper.AccountId.Value, pageNumber, pageSize)
         {
             StatusFilter = status,
         };
-        var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);
+        var result = await queryProcessor.ExecuteAsync(getBookPagesQuery, token);
 
         var args = new PageRendererArgs<BookModel, BookFilter>
         {
@@ -126,7 +110,7 @@ public class UserController : Controller
             Filters = new BookFilter { Status = status }
         };
 
-        return new OkObjectResult(_bookRenderer.Render(args, libraryId));
+        return new OkObjectResult(bookRenderer.Render(args, libraryId));
     }
     
     [HttpPost("libraries/{libraryId}/my/books/{bookId}", Name = nameof(UpdateUserBookProgress))]
@@ -142,8 +126,8 @@ public class UserController : Controller
             return BadRequest();
         }
 
-        var updateBookProgressCommand = new UpdateBookProgressRequest(libraryId, _userHelper.AccountId ?? 0, bookId, readStatus.Map());
-        await _commandProcessor.SendAsync(updateBookProgressCommand, cancellationToken: token);
+        var updateBookProgressCommand = new UpdateBookProgressRequest(libraryId, userHelper.AccountId ?? 0, bookId, readStatus.Map());
+        await commandProcessor.SendAsync(updateBookProgressCommand, cancellationToken: token);
     
         if (updateBookProgressCommand.Result?.Progress == null)
         {

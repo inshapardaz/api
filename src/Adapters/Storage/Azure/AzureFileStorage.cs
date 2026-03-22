@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -10,15 +6,8 @@ using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Storage.Azure;
 
-public class AzureFileStorage : IFileStorage
+public class AzureFileStorage(string storageConnectionString) : IFileStorage
 {
-    private readonly string _storageConnectionString;
-
-    public AzureFileStorage(string storageConnectionString)
-    {
-        _storageConnectionString = storageConnectionString;
-    }
-
     public bool SupportsPublicLink => true;
 
     public async Task DeleteFile(string filePath, CancellationToken cancellationToken)
@@ -96,14 +85,11 @@ public class AzureFileStorage : IFileStorage
 
     private BlobContainerClient GetContainer(string container = "library")
     {
-        var serviceClient = new BlobServiceClient(_storageConnectionString);
+        var serviceClient = new BlobServiceClient(storageConnectionString);
         return serviceClient.GetBlobContainerClient(container);
     }
 
-    private string GetContainerName(string url)
-    {
-        return new Uri(url).Segments[1].Trim('/');
-    }
+    private string GetContainerName(string url) => new Uri(url).Segments[1].Trim('/');
 
     private string GetBlobName(string filePath)
     {
@@ -152,8 +138,5 @@ public class AzureFileStorage : IFileStorage
         }
     }
 
-    public string GetPublicUrl(string filePath)
-    {
-        return filePath;
-    }
+    public string GetPublicUrl(string filePath) => filePath;
 }

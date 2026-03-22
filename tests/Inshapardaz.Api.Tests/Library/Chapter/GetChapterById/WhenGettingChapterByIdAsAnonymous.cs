@@ -2,9 +2,6 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
 {
@@ -28,22 +25,13 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveCorrectObjectReturned()
-        {
-            _assert.ShouldMatch(_expected);
-        }
+        public void ShouldHaveCorrectObjectReturned() => _assert.ShouldMatch(_expected);
 
         [Test]
         public void ShouldHaveLinks()
@@ -62,9 +50,6 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
         }
 
         [Test]
-        public void ShouldHaveNoContentsLink()
-        {
-            _assert.ShouldNotHaveContentsLink();
-        }
+        public void ShouldHaveNoContentsLink() => _assert.ShouldNotHaveContentsLink();
     }
 }

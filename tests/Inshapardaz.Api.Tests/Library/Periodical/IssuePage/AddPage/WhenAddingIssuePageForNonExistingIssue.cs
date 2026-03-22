@@ -4,21 +4,13 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AddPage
 {
     [TestFixture]
-    public class WhenAddingIssuePageForNonExistingIssue
-        : TestBase
+    public class WhenAddingIssuePageForNonExistingIssue() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
-
-        public WhenAddingIssuePageForNonExistingIssue()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -30,15 +22,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.AddPage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveBadRequestResult()
-        {
-            _response.ShouldBeBadRequest();
-        }
+        public void ShouldHaveBadRequestResult() => _response.ShouldBeBadRequest();
     }
 }

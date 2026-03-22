@@ -1,10 +1,4 @@
-﻿using DocumentFormat.OpenXml.Drawing.Charts;
-using Microsoft.Extensions.DependencyModel;
-using System;
-using System.IO;
-using System.Net;
-
-namespace Inshapardaz.Domain.Helpers;
+﻿namespace Inshapardaz.Domain.Helpers;
 
 public static class FilePathHelper
 {

@@ -1,7 +1,4 @@
 ﻿using Inshapardaz.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
 
 namespace Inshapardaz.Domain.Adapters;

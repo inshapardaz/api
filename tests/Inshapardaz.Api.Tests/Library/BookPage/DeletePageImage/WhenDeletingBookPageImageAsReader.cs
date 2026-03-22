@@ -4,23 +4,16 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePageImage
 {
     [TestFixture]
-    public class WhenDeletingBookPageImageAsReader : TestBase
+    public class WhenDeletingBookPageImageAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private BookPageAssert _assert;
         private BookPageDto _page;
         private int _bookId;
-
-        public WhenDeletingBookPageImageAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -40,15 +33,9 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.DeletePageImage
         }
 
         [Test]
-        public void ShouldHaveForbidResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbidResult() => _response.ShouldBeForbidden();
 
         [Test]
-        public void ShouldNotDeletePageImage()
-        {
-            _assert.ShouldHaveAddedBookPageImage(_bookId, _page.SequenceNumber);
-        }
+        public void ShouldNotDeletePageImage() => _assert.ShouldHaveAddedBookPageImage(_bookId, _page.SequenceNumber);
     }
 }

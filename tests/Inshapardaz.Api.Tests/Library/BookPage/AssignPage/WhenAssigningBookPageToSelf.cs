@@ -4,25 +4,18 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenAssigningBookPageToSelf : TestBase
+    public class WhenAssigningBookPageToSelf(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private BookPageAssert _assert;
         private BookPageDto _page;
         private BookPageDto _exptectedPage;
-
-        public WhenAssigningBookPageToSelf(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -47,27 +40,15 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            BookBuilder.CleanUp();
-        }
+        public void Teardown() => BookBuilder.CleanUp();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveCorrectPageAssignment()
-        {
-            _assert.ShouldMatch(_exptectedPage);
-        }
+        public void ShouldHaveCorrectPageAssignment() => _assert.ShouldMatch(_exptectedPage);
 
         [Test]
-        public void ShouldHaveCorrectAssignmentTimeStamp()
-        {
-            _assert.ShouldHaveAssignedRecently();
-        }
+        public void ShouldHaveCorrectAssignmentTimeStamp() => _assert.ShouldHaveAssignedRecently();
     }
 }

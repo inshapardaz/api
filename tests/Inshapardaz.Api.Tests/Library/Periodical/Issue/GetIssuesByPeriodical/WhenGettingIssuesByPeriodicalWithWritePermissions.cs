@@ -7,28 +7,18 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenGettingIssuesByPeriodicalWithWritePermissions
-        : TestBase
+    public class WhenGettingIssuesByPeriodicalWithWritePermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private PageView<IssueView> _view;
         private IEnumerable<IssueDto> _issues;
         private PeriodicalDto _periodical;
-
-        public WhenGettingIssuesByPeriodicalWithWritePermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -41,16 +31,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -69,10 +53,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssuesByPeriodical
         }
 
         [Test]
-        public void ShouldHaveCorrectNumberOfIssues()
-        {
-            Assert.That(_view.Data.Count(), Is.EqualTo(_issues.Count()));
-        }
+        public void ShouldHaveCorrectNumberOfIssues() => Assert.That(_view.Data.Count(), Is.EqualTo(_issues.Count()));
 
         [Test]
         public void ShouldHaveCorrectIssuesData()

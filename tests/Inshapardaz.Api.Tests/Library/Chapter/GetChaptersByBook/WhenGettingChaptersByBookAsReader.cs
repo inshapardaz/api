@@ -7,23 +7,15 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
 {
     [TestFixture]
-    public class WhenGettingChaptersByBookAsReader : TestBase
+    public class WhenGettingChaptersByBookAsReader() : TestBase(Role.Reader)
     {
         private BookDto _book;
         private HttpResponseMessage _response;
         private ListView<ChapterView> _view;
-
-        public WhenGettingChaptersByBookAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -36,16 +28,10 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -56,16 +42,10 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _view.CreateLink().Should().BeNull();
-        }
+        public void ShouldNotHaveCreateLink() => _view.CreateLink().Should().BeNull();
 
         [Test]
-        public void ShouldHaveCorrectNumberOfChapters()
-        {
-            Assert.That(_view.Data.Count(), Is.EqualTo(4));
-        }
+        public void ShouldHaveCorrectNumberOfChapters() => Assert.That(_view.Data.Count(), Is.EqualTo(4));
 
         [Test]
         public void ShouldHaveCorrectChaptersData()

@@ -3,8 +3,6 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.RefreshToken
 {
@@ -28,10 +26,7 @@ namespace Inshapardaz.Api.Tests.Accounts.RefreshToken
         }
 
         [Test]
-        public void ShouldReturnOK()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOK() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldReturnNewRefreshToken()

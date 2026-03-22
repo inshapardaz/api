@@ -1,49 +1,32 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Article;
 
-public class AddArticleContentRequest : LibraryBaseCommand
+public class AddArticleContentRequest(int libraryId) : LibraryBaseCommand(libraryId)
 {
-    public AddArticleContentRequest(int libraryId)
-        : base(libraryId)
-    {
-    }
-
     public ArticleContentModel Content { get; set; }
 
     public ArticleContentModel Result { get; set; }
 }
 
-public class AddArticleContentRequestHandler : RequestHandlerAsync<AddArticleContentRequest>
+public class AddArticleContentRequestHandler(
+    IArticleRepository articleRepository,
+    ILibraryRepository libraryRepository,
+    IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<AddArticleContentRequest>
 {
-    private readonly IArticleRepository _articleRepository;
-    private readonly ILibraryRepository _libraryRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public AddArticleContentRequestHandler(IArticleRepository articleRepository,
-        ILibraryRepository libraryRepository,
-        IAmACommandProcessor commandProcessor)
-    {
-        _articleRepository = articleRepository;
-        _libraryRepository = libraryRepository;
-        _commandProcessor = commandProcessor;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<AddArticleContentRequest> HandleAsync(AddArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         if (string.IsNullOrWhiteSpace(command.Content.Language))
         {
-            var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
+            var library = await libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
             if (library == null)
             {
                 throw new BadRequestException();
@@ -52,7 +35,7 @@ public class AddArticleContentRequestHandler : RequestHandlerAsync<AddArticleCon
             command.Content.Language = library.Language;
         }
 
-        var article = await _articleRepository.GetArticle(command.LibraryId, command.Content.ArticleId, cancellationToken);
+        var article = await articleRepository.GetArticle(command.LibraryId, command.Content.ArticleId, cancellationToken);
 
         if (article == null)
         {
@@ -68,10 +51,10 @@ public class AddArticleContentRequestHandler : RequestHandlerAsync<AddArticleCon
             MimeType = MimeTypes.Markdown
         };
 
-        await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
         command.Content.FileId = saveFileCommand.Result.Id;
 
-        command.Result = await _articleRepository.AddArticleContent(
+        command.Result = await articleRepository.AddArticleContent(
             command.LibraryId,
             command.Content,
             cancellationToken);

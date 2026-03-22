@@ -2,21 +2,13 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
 {
     [TestFixture]
-    public class WhenGettingIssueContentOfDifferentLanguage
-        : TestBase
+    public class WhenGettingIssueContentOfDifferentLanguage() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
-
-        public WhenGettingIssueContentOfDifferentLanguage()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,15 +19,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNotFound()
-        {
-            _response.ShouldBeNotFound();
-        }
+        public void ShouldReturnNotFound() => _response.ShouldBeNotFound();
     }
 }

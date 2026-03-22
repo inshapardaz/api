@@ -3,24 +3,16 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
 {
     [TestFixture]
-    public class WhenUploadingIssueImageAsReader : TestBase
+    public class WhenUploadingIssueImageAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private IssueAssert _assert;
         private int _issueId;
         private byte[] _oldImage;
-
-        public WhenUploadingIssueImageAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -42,15 +34,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UploadIssueImage
         }
 
         [Test]
-        public void ShouldHaveForbidResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldHaveForbidResult() => _response.ShouldBeForbidden();
 
         [Test]
-        public void ShouldNotHaveUpdatedIssueImage()
-        {
-            _assert.ShouldNotHaveUpdatedIssueImage(_issueId, _oldImage);
-        }
+        public void ShouldNotHaveUpdatedIssueImage() => _assert.ShouldNotHaveUpdatedIssueImage(_issueId, _oldImage);
     }
 }

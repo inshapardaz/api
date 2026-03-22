@@ -2,9 +2,6 @@
 using Inshapardaz.Api.Views.Library;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
 {
@@ -28,10 +25,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         }
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -41,16 +35,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         }
 
         [Test]
-        public void ShouldNotHaveNextLink()
-        {
-            _assert.ShouldNotHaveNextLink();
-        }
+        public void ShouldNotHaveNextLink() => _assert.ShouldNotHaveNextLink();
 
         [Test]
-        public void ShouldNotHavePreviousLink()
-        {
-            _assert.ShouldNotHavePreviousLink();
-        }
+        public void ShouldNotHavePreviousLink() => _assert.ShouldNotHavePreviousLink();
 
         [Test]
         public void ShouldReturnCorrectPage()
@@ -62,9 +50,6 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetRecentReadBooks
         }
 
         [Test]
-        public void ShouldReturnExpectedBooks()
-        {
-            _assert.ShouldHaveNoData();
-        }
+        public void ShouldReturnExpectedBooks() => _assert.ShouldHaveNoData();
     }
 }

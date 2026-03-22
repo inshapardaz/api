@@ -4,14 +4,11 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
 {
     [TestFixture]
-    public class WhenUpdatingIssueContentWithNoExistingContent
-        : TestBase
+    public class WhenUpdatingIssueContentWithNoExistingContent() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private IssueContentAssert _assert;
@@ -19,11 +16,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         private string _mimeType;
         private string _locale;
         private byte[] _contents;
-
-        public WhenUpdatingIssueContentWithNoExistingContent()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -39,16 +31,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
         public void ShouldHaveCorrectLink()
@@ -61,21 +47,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssueContent
         }
 
         [Test]
-        public void ShouldHaveCorrectLanguage()
-        {
-            _assert.ShouldHaveCorrectLanguage(_locale);
-        }
+        public void ShouldHaveCorrectLanguage() => _assert.ShouldHaveCorrectLanguage(_locale);
 
         [Test]
-        public void ShouldHaveCorrectMimeType()
-        {
-            _assert.ShouldHaveCorrectMimeType(_mimeType);
-        }
+        public void ShouldHaveCorrectMimeType() => _assert.ShouldHaveCorrectMimeType(_mimeType);
 
         [Test]
-        public void ShouldHaveCorrectContentSaved()
-        {
-            _assert.ShouldHaveCorrectContents(_contents, _locale, _mimeType);
-        }
+        public void ShouldHaveCorrectContentSaved() => _assert.ShouldHaveCorrectContents(_contents, _locale, _mimeType);
     }
 }

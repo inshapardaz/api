@@ -1,5 +1,4 @@
-﻿using DocumentFormat.OpenXml.Office2019.Word.Cid;
-using Inshapardaz.Api.Controllers;
+﻿using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
@@ -22,20 +21,14 @@ public interface IRenderIssue
     IssueYearlyView Render(IEnumerable<(int Year, int Count)> source, int libraryId, int periodicalId, SortDirection sortDirection);
 }
 
-public class IssueRenderer : IRenderIssue
+public class IssueRenderer(
+    IRenderLink linkRenderer,
+    IUserHelper userHelper,
+    IFileStorage fileStorage,
+    IRenderAuthor authorRenderer)
+    : IRenderIssue
 {
-    private readonly IRenderLink _linkRenderer;
-    private readonly IUserHelper _userHelper;
-    private readonly IFileStorage _fileStorage;
-    private readonly IRenderAuthor _authorRenderer;
-
-    public IssueRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IFileStorage fileStorage, IRenderAuthor authorRenderer)
-    {
-        _linkRenderer = linkRenderer;
-        _userHelper = userHelper;
-        _fileStorage = fileStorage;
-        _authorRenderer = authorRenderer;
-    }
+    private readonly IRenderAuthor _authorRenderer = authorRenderer;
 
     public PageView<IssueView> Render(PageRendererArgs<IssueModel, IssueFilter, IssueSortByType> source, int libraryId, int periodicalId)
     {
@@ -48,7 +41,7 @@ public class IssueRenderer : IRenderIssue
 
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link {
+            linkRenderer.Render(new Link {
                 ActionName = nameof(IssueController.GetIssues),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
@@ -57,9 +50,9 @@ public class IssueRenderer : IRenderIssue
             })
         };
 
-        if (_userHelper.IsWriter(libraryId))
+        if (userHelper.IsWriter(libraryId))
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.CreateIssue),
                 Method = HttpMethod.Post,
@@ -73,7 +66,7 @@ public class IssueRenderer : IRenderIssue
             var pageQuery = CreateQueryString(source, page);
             pageQuery.Add("pageNumber", (page.CurrentPageIndex + 1).ToString());
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.GetIssues),
                 Method = HttpMethod.Get,
@@ -87,7 +80,7 @@ public class IssueRenderer : IRenderIssue
         {
             var pageQuery = CreateQueryString(source, page);
             pageQuery.Add("pageNumber", (page.CurrentPageIndex - 1).ToString());
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.GetIssues),
                 Method = HttpMethod.Get,
@@ -107,28 +100,28 @@ public class IssueRenderer : IRenderIssue
 
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.GetIssueById),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(PeriodicalController.GetPeriodicalById),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Periodical,
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.GetIssueArticles),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Articles,
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssuePageController.GetPagesByIssue),
                 Method = HttpMethod.Get,
@@ -137,12 +130,12 @@ public class IssueRenderer : IRenderIssue
             })
         };
 
-        if (!string.IsNullOrWhiteSpace(source.ImageUrl) && _fileStorage.SupportsPublicLink)
+        if (!string.IsNullOrWhiteSpace(source.ImageUrl) && fileStorage.SupportsPublicLink)
 
         {
             links.Add(new LinkView
             {
-                Href = _fileStorage.GetPublicUrl(source.ImageUrl),
+                Href = fileStorage.GetPublicUrl(source.ImageUrl),
                 Method = "GET",
                 Rel = RelTypes.Image,
                 Accept = MimeTypes.Jpg
@@ -150,7 +143,7 @@ public class IssueRenderer : IRenderIssue
         }
         else if (source.ImageId.HasValue)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(FileController.GetLibraryFile),
                 Method = HttpMethod.Get,
@@ -159,9 +152,9 @@ public class IssueRenderer : IRenderIssue
             }));
         }
 
-        if (_userHelper.IsWriter(libraryId))
+        if (userHelper.IsWriter(libraryId))
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.UpdateIssue),
                 Method = HttpMethod.Put,
@@ -169,7 +162,7 @@ public class IssueRenderer : IRenderIssue
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.DeleteIssue),
                 Method = HttpMethod.Delete,
@@ -177,7 +170,7 @@ public class IssueRenderer : IRenderIssue
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.UpdateIssueImage),
                 Method = HttpMethod.Put,
@@ -185,7 +178,7 @@ public class IssueRenderer : IRenderIssue
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
             }));
             
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.PublishIssue),
                 Method = HttpMethod.Post,
@@ -193,7 +186,7 @@ public class IssueRenderer : IRenderIssue
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueArticleController.CreateIssueArticle),
                 Method = HttpMethod.Post,
@@ -201,7 +194,7 @@ public class IssueRenderer : IRenderIssue
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssuePageController.CreateIssuePage),
                 Method = HttpMethod.Post,
@@ -209,7 +202,7 @@ public class IssueRenderer : IRenderIssue
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssuePageController.UploadIssuePages),
                 Method = HttpMethod.Post,
@@ -217,7 +210,7 @@ public class IssueRenderer : IRenderIssue
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId, volumeNumber = source.VolumeNumber, issueNumber = source.IssueNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.CreateIssueContent),
                 Method = HttpMethod.Post,
@@ -247,7 +240,7 @@ public class IssueRenderer : IRenderIssue
 
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link {
+            linkRenderer.Render(new Link {
                 ActionName = nameof(IssueController.GetIssueContent),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
@@ -260,13 +253,13 @@ public class IssueRenderer : IRenderIssue
                     contentId = source.Id
                 }
             }),
-            _linkRenderer.Render(new Link {
+            linkRenderer.Render(new Link {
                 ActionName = nameof(PeriodicalController.GetPeriodicalById),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Periodical,
                 Parameters = new { libraryId = libraryId, periodicalId = source.PeriodicalId }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.GetIssueById),
                 Method = HttpMethod.Get,
@@ -280,12 +273,12 @@ public class IssueRenderer : IRenderIssue
             })
         };
 
-        if (!string.IsNullOrWhiteSpace(source.ContentUrl) && _fileStorage.SupportsPublicLink)
+        if (!string.IsNullOrWhiteSpace(source.ContentUrl) && fileStorage.SupportsPublicLink)
 
         {
             links.Add(new LinkView
             {
-                Href = _fileStorage.GetPublicUrl(source.ContentUrl),
+                Href = fileStorage.GetPublicUrl(source.ContentUrl),
                 Method = "GET",
                 Rel = RelTypes.Download,
                 Accept = source.MimeType,
@@ -294,7 +287,7 @@ public class IssueRenderer : IRenderIssue
         }
         else
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(FileController.GetLibraryFile),
                 Method = HttpMethod.Get,
@@ -305,9 +298,9 @@ public class IssueRenderer : IRenderIssue
             }));
         }
 
-        if (_userHelper.IsWriter(libraryId))
+        if (userHelper.IsWriter(libraryId))
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.UpdateIssueContent),
                 Method = HttpMethod.Put,
@@ -323,7 +316,7 @@ public class IssueRenderer : IRenderIssue
                 }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.DeleteIssueContent),
                 Method = HttpMethod.Delete,
@@ -357,7 +350,7 @@ public class IssueRenderer : IRenderIssue
                 Count = s.Count
             };
 
-            year.Links.Add(_linkRenderer.Render(new Link
+            year.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.GetIssues),
                 Method = HttpMethod.Get,
@@ -384,7 +377,7 @@ public class IssueRenderer : IRenderIssue
         {
             selfLink.QueryString.Add("sortDirection", sortDirection.ToString());
         };
-        result.Links.Add(_linkRenderer.Render(selfLink));
+        result.Links.Add(linkRenderer.Render(selfLink));
         return result;
     }
 

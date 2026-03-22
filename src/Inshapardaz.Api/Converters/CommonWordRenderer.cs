@@ -1,12 +1,10 @@
 ﻿using Inshapardaz.Api.Controllers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
-using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Api.Views.Tools;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
-using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Api.Converters;
 
@@ -17,18 +15,10 @@ public interface IRenderCommonWord
     CommonWordView Render(CommonWordModel word, string language);
 }
 
-public class CommonWordRenderer : IRenderCommonWord
+public class CommonWordRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IFileStorage fileStorage)
+    : IRenderCommonWord
 {
-    private readonly IRenderLink _linkRenderer;
-    private readonly IUserHelper _userHelper;
-    private readonly IFileStorage _fileStorage;
-
-    public CommonWordRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IFileStorage fileStorage)
-    {
-        _linkRenderer = linkRenderer;
-        _userHelper = userHelper;
-        _fileStorage = fileStorage;
-    }
+    private readonly IFileStorage _fileStorage = fileStorage;
 
     public PageView<CommonWordView> Render(PageRendererArgs<CommonWordModel> source, string language)
     {
@@ -39,7 +29,7 @@ public class CommonWordRenderer : IRenderCommonWord
 
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link {
+            linkRenderer.Render(new Link {
                 ActionName = nameof(CommonWordController.GetCommonWords),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
@@ -53,9 +43,9 @@ public class CommonWordRenderer : IRenderCommonWord
             })
         };
 
-        if (_userHelper.IsAdmin)
+        if (userHelper.IsAdmin)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(CommonWordController.AddCommonWord),
                 Method = HttpMethod.Post,
@@ -66,7 +56,7 @@ public class CommonWordRenderer : IRenderCommonWord
 
         if (page.CurrentPageIndex < page.PageCount)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(CommonWordController.GetCommonWords),
                 Method = HttpMethod.Get,
@@ -83,7 +73,7 @@ public class CommonWordRenderer : IRenderCommonWord
 
         if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(CommonWordController.GetCommonWords),
                 Method = HttpMethod.Get,
@@ -106,7 +96,7 @@ public class CommonWordRenderer : IRenderCommonWord
     {
         var view = word.Map();
 
-        view.Links.Add(_linkRenderer.Render(new Link
+        view.Links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(CommonWordController.GetCommonWordById),
             Method = HttpMethod.Get,
@@ -114,9 +104,9 @@ public class CommonWordRenderer : IRenderCommonWord
             Parameters = new { language = language, id = word.Id }
         }));
 
-        if (_userHelper.IsAdmin)
+        if (userHelper.IsAdmin)
         {
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(CommonWordController.UpdateCommonWord),
                 Method = HttpMethod.Put,
@@ -124,7 +114,7 @@ public class CommonWordRenderer : IRenderCommonWord
                 Parameters = new { language = language, id = word.Id }
             }));
 
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(CommonWordController.DeleteCommonWord),
                 Method = HttpMethod.Delete,

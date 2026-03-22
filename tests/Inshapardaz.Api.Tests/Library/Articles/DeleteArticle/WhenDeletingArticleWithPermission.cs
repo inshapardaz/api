@@ -1,10 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
-using Inshapardaz.Api.Tests.Framework.DataBuilders;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
@@ -16,7 +11,7 @@ namespace Inshapardaz.Api.Tests.Library.Articles.DeleteArticle
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingArticleWithPermission : TestBase
+    public class WhenDeletingArticleWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private ArticleAssert _assert;
@@ -24,10 +19,6 @@ namespace Inshapardaz.Api.Tests.Library.Articles.DeleteArticle
         private IEnumerable<ArticleContentDto> _contents;
         private int _authorId;
         private IEnumerable<TagDto> _expectedTags;
-
-        public WhenDeletingArticleWithPermission(Role role) : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -49,28 +40,16 @@ namespace Inshapardaz.Api.Tests.Library.Articles.DeleteArticle
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNoContent()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldReturnNoContent() => _response.ShouldBeNoContent();
 
         [Test]
-        public void ShouldHaveDeletedArticle()
-        {
-            _assert.ShouldHaveDeletedArticle(_expected.Id);
-        }
+        public void ShouldHaveDeletedArticle() => _assert.ShouldHaveDeletedArticle(_expected.Id);
 
         [Test]
-        public void ShouldNotHaveDeletedTheAuthor()
-        {
-            AuthorTestRepository.GetAuthorById(_authorId).Should().NotBeNull();
-        }
+        public void ShouldNotHaveDeletedTheAuthor() => AuthorTestRepository.GetAuthorById(_authorId).Should().NotBeNull();
 
         [Test]
         public void ShouldNotHaveDeletedTheCategory()
@@ -96,16 +75,10 @@ namespace Inshapardaz.Api.Tests.Library.Articles.DeleteArticle
         }
 
         [Test]
-        public void ShouldBeDeletedFromTheFavoritesOfAllUsers()
-        {
-            _assert.ShouldNotBeInFavorites(_expected.Id, AccountId);
-        }
+        public void ShouldBeDeletedFromTheFavoritesOfAllUsers() => _assert.ShouldNotBeInFavorites(_expected.Id, AccountId);
 
         [Test]
-        public void ShouldBeDeletedFromTheRecentReadArticles()
-        {
-            _assert.ShouldHaveDeletedArticleFromRecentReads(_expected.Id);
-        }
+        public void ShouldBeDeletedFromTheRecentReadArticles() => _assert.ShouldHaveDeletedArticleFromRecentReads(_expected.Id);
 
         [Test]
         public void ShouldHaveDeletedTheArticleImage()

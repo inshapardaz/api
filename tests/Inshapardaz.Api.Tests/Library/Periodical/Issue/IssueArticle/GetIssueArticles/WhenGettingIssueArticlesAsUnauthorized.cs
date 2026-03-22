@@ -1,6 +1,3 @@
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -31,16 +28,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -51,16 +42,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _view.CreateLink().Should().BeNull();
-        }
+        public void ShouldNotHaveCreateLink() => _view.CreateLink().Should().BeNull();
 
         [Test]
-        public void ShouldHaveCorrectNumberOfArticles()
-        {
-            Assert.That(_view.Data.Count(), Is.EqualTo(5));
-        }
+        public void ShouldHaveCorrectNumberOfArticles() => Assert.That(_view.Data.Count(), Is.EqualTo(5));
 
         [Test]
         public void ShouldHaveCorrectArticlesData()

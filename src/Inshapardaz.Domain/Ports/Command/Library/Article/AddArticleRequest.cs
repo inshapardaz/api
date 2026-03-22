@@ -3,49 +3,30 @@ using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Brighter;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Article;
 
-public class AddArticleRequest : LibraryBaseCommand
+public class AddArticleRequest(int libraryId, ArticleModel article) : LibraryBaseCommand(libraryId)
 {
-    public AddArticleRequest(int libraryId, ArticleModel article)
-        : base(libraryId)
-    {
-        Article = article;
-    }
-
     public int? AccountId { get; set; }
 
     public ArticleModel Result { get; set; }
-    public ArticleModel Article { get; }
+    public ArticleModel Article { get; } = article;
 }
 
-public class AddArticleRequestHandler : RequestHandlerAsync<AddArticleRequest>
+public class AddArticleRequestHandler(
+    IArticleRepository articleRepository,
+    IAuthorRepository authorRepository,
+    ICategoryRepository categoryRepository)
+    : RequestHandlerAsync<AddArticleRequest>
 {
-    private readonly IArticleRepository _articleRepository;
-    private readonly IAuthorRepository _authorRepository;
-    private readonly ICategoryRepository _categoryRepository;
-
-    public AddArticleRequestHandler(IArticleRepository articleRepository,
-        IAuthorRepository authorRepository,
-        ICategoryRepository categoryRepository)
-    {
-        _articleRepository = articleRepository;
-        _authorRepository = authorRepository;
-        _categoryRepository = categoryRepository;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<AddArticleRequest> HandleAsync(AddArticleRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         IEnumerable<AuthorModel> authors = null;
         if (command.Article.Authors != null && command.Article.Authors.Any())
         {
-            authors = await _authorRepository.GetAuthorByIds(command.LibraryId, command.Article.Authors.Select(a => a.Id), cancellationToken);
+            authors = await authorRepository.GetAuthorByIds(command.LibraryId, command.Article.Authors.Select(a => a.Id), cancellationToken);
             if (authors.Count() != command.Article.Authors.Count())
             {
                 throw new BadRequestException();
@@ -60,14 +41,14 @@ public class AddArticleRequestHandler : RequestHandlerAsync<AddArticleRequest>
         IEnumerable<CategoryModel> categories = null;
         if (command.Article.Categories != null && command.Article.Categories.Any())
         {
-            categories = await _categoryRepository.GetCategoriesByIds(command.LibraryId, command.Article.Categories.Select(c => c.Id), cancellationToken);
+            categories = await categoryRepository.GetCategoriesByIds(command.LibraryId, command.Article.Categories.Select(c => c.Id), cancellationToken);
             if (categories.Count() != command.Article.Categories.Count())
             {
                 throw new BadRequestException();
             }
         }
 
-        command.Result = await _articleRepository.AddArticle(command.LibraryId, command.Article, command.AccountId, cancellationToken);
+        command.Result = await articleRepository.AddArticle(command.LibraryId, command.Article, command.AccountId, cancellationToken);
 
         return await base.HandleAsync(command, cancellationToken);
     }

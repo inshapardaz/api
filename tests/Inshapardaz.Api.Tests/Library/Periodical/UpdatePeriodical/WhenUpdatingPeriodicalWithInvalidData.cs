@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Bogus;
+﻿using Bogus;
 using FluentAssertions;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
@@ -22,13 +18,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
     public class WhenUpdatingPeriodicalWithInvalidData
     {
         [TestFixture]
-        public class AndUsingNonExistingLibrary : TestBase
+        public class AndUsingNonExistingLibrary() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
-
-            public AndUsingNonExistingLibrary() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -40,28 +32,18 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             }
 
             [OneTimeTearDown]
-            public void Teardown()
-            {
-                Cleanup();
-            }
+            public void Teardown() => Cleanup();
 
             [Test]
-            public void ShouldHaveForbiddenResult()
-            {
-                _response.ShouldBeForbidden();
-            }
+            public void ShouldHaveForbiddenResult() => _response.ShouldBeForbidden();
         }
 
         [TestFixture]
-        public class AndUpdatingWithNonExistingCategory : TestBase
+        public class AndUpdatingWithNonExistingCategory() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
             private PeriodicalDto _periodicalToUpdate;
             private CategoryDto _category;
-
-            public AndUpdatingWithNonExistingCategory() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -82,16 +64,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             }
 
             [OneTimeTearDown]
-            public void Teardown()
-            {
-                Cleanup();
-            }
+            public void Teardown() => Cleanup();
 
             [Test]
-            public void ShouldHaveBadRequestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadRequestResult() => _response.ShouldBeBadRequest();
 
             [Test]
             public void ShouldNotUpdateTheCategories()
@@ -102,16 +78,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
         }
 
         [TestFixture]
-        public class AndUpdatingWithCategoryFromOtherLibrary : TestBase
+        public class AndUpdatingWithCategoryFromOtherLibrary() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
             private PeriodicalDto _periodicalToUpdate;
             private CategoryDto _category;
             private LibraryDataBuilder _library2Builder;
-
-            public AndUpdatingWithCategoryFromOtherLibrary() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -142,10 +114,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UpdatePeriodical
             }
 
             [Test]
-            public void ShouldHaveBadRequestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadRequestResult() => _response.ShouldBeBadRequest();
 
             [Test]
             public void ShouldNotUpdateTheCategories()

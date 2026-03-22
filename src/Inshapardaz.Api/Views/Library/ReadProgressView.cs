@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Api.Views.Library;
 

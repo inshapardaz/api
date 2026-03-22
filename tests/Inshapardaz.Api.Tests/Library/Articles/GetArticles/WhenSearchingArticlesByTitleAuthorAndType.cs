@@ -7,26 +7,16 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
 {
     [TestFixture]
-    public class WhenSearchingArticlesByTitleAuthorAndType
-        : TestBase
+    public class WhenSearchingArticlesByTitleAuthorAndType() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<ArticleView> _assert;
         private AuthorDto _author;
         private IEnumerable<ArticleDto> _authorArticles;
-
-        public WhenSearchingArticlesByTitleAuthorAndType() 
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -41,16 +31,10 @@ namespace Inshapardaz.Api.Tests.Library.Articles.GetArticles
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()

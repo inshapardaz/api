@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using System.Net;
-using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
@@ -37,34 +36,16 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             result.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
-        public static void ShouldBeUnauthorized(this HttpResponseMessage result)
-        {
-            result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-        }
+        public static void ShouldBeUnauthorized(this HttpResponseMessage result) => result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
-        public static void ShouldBeForbidden(this HttpResponseMessage result)
-        {
-            result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
-        }
+        public static void ShouldBeForbidden(this HttpResponseMessage result) => result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
 
-        public static void ShouldBeBadRequest(this HttpResponseMessage result)
-        {
-            result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        }
+        public static void ShouldBeBadRequest(this HttpResponseMessage result) => result.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        public static void ShouldBeGone(this HttpResponseMessage result)
-        {
-            result.StatusCode.Should().Be(HttpStatusCode.Gone);
-        }
+        public static void ShouldBeGone(this HttpResponseMessage result) => result.StatusCode.Should().Be(HttpStatusCode.Gone);
 
-        public static void ShouldBeInternalServerError(this HttpResponseMessage result)
-        {
-            result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-        }
+        public static void ShouldBeInternalServerError(this HttpResponseMessage result) => result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
 
-        public static void ShouldBeConflict(this HttpResponseMessage result)
-        {
-            result.StatusCode.Should().Be(HttpStatusCode.Conflict);
-        }
+        public static void ShouldBeConflict(this HttpResponseMessage result) => result.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
 }

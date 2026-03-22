@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -12,16 +10,11 @@ namespace Inshapardaz.Api.Tests.Library.Series.UpdateSeries
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingSeriesWithPermission : TestBase
+    public class WhenUpdatingSeriesWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private SeriesView _expected;
         private SeriesAssert _assert;
-
-        public WhenUpdatingSeriesWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -37,21 +30,12 @@ namespace Inshapardaz.Api.Tests.Library.Series.UpdateSeries
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveUpdatedTheSeries()
-        {
-            _assert.ShouldHaveSavedSeries();
-        }
+        public void ShouldHaveUpdatedTheSeries() => _assert.ShouldHaveSavedSeries();
     }
 }

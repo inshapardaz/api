@@ -5,16 +5,13 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingBookContentWithPermissions
-        : TestBase
+    public class WhenUpdatingBookContentWithPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
 
@@ -23,11 +20,6 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         private byte[] _expected;
         private BookContentAssert _assert;
         private string _fileName;
-
-        public WhenUpdatingBookContentWithPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -42,21 +34,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveUpdatedFileContents()
-        {
-            _assert.ShouldHaveBookContent(_expected, _fileName);
-        }
+        public void ShouldHaveUpdatedFileContents() => _assert.ShouldHaveBookContent(_expected, _fileName);
     }
 }

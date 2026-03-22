@@ -3,21 +3,15 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.InviteUser
 {
     [TestFixture]
-    public class WhenInvitingUserWhoIsAlreadyInvitedToAnotherLibrary : TestBase
+    public class WhenInvitingUserWhoIsAlreadyInvitedToAnotherLibrary() : TestBase(Role.Admin)
     {
         private HttpResponseMessage _response;
         private Framework.Dto.LibraryDto _library1, _library2;
         private Framework.Dto.AccountDto _account;
-
-        public WhenInvitingUserWhoIsAlreadyInvitedToAnotherLibrary() : base(Role.Admin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -39,10 +33,7 @@ namespace Inshapardaz.Api.Tests.Accounts.InviteUser
         }
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void UserShouldBeAddedToBothLibraries()

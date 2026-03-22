@@ -18,17 +18,8 @@ public interface IRenderAccount
     AuthenticateResponse Render(TokenResponse model);
 }
 
-public class AccountRenderer : IRenderAccount
+public class AccountRenderer(IRenderLink linkRenderer, IUserHelper userHelper) : IRenderAccount
 {
-    private readonly IRenderLink _linkRenderer;
-    private readonly IUserHelper _userHelper;
-
-    public AccountRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
-    {
-        _linkRenderer = linkRenderer;
-        _userHelper = userHelper;
-    }
-
     public PageView<AccountView> Render(PageRendererArgs<AccountModel> source, int? libraryId = null)
     {
         var page = new PageView<AccountView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
@@ -38,7 +29,7 @@ public class AccountRenderer : IRenderAccount
 
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link {
+            linkRenderer.Render(new Link {
                 ActionName = nameof(AccountsController.GetAll),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
@@ -51,9 +42,9 @@ public class AccountRenderer : IRenderAccount
             })
         };
 
-        if (_userHelper.IsAdmin && libraryId.HasValue)
+        if (userHelper.IsAdmin && libraryId.HasValue)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(AccountsController.InviteUser),
                 Method = HttpMethod.Post,
@@ -64,7 +55,7 @@ public class AccountRenderer : IRenderAccount
 
         if (page.CurrentPageIndex < page.PageCount)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(AccountsController.GetAll),
                 Method = HttpMethod.Get,
@@ -80,7 +71,7 @@ public class AccountRenderer : IRenderAccount
 
         if (page.PageCount > 1 && page.CurrentPageIndex > 1 && page.CurrentPageIndex <= page.PageCount)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(AccountsController.GetAll),
                 Method = HttpMethod.Get,
@@ -102,7 +93,7 @@ public class AccountRenderer : IRenderAccount
     {
         var view = model.Map();
 
-        view.Links.Add(_linkRenderer.Render(new Link
+        view.Links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(AccountsController.GetById),
             Method = HttpMethod.Get,
@@ -110,9 +101,9 @@ public class AccountRenderer : IRenderAccount
             Parameters = new { id = model.Id }
         }));
 
-        if (_userHelper.IsAdmin)
+        if (userHelper.IsAdmin)
         {
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(AccountsController.Update),
                 Method = HttpMethod.Put,
@@ -120,7 +111,7 @@ public class AccountRenderer : IRenderAccount
                 Parameters = new { id = model.Id }
             }));
 
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(LibraryController.AddLibraryToAccount),
                 Method = HttpMethod.Post,
@@ -129,19 +120,19 @@ public class AccountRenderer : IRenderAccount
             }));
         }
 
-        var isLibraryAdmin = libraryId.HasValue && _userHelper.IsLibraryAdmin(libraryId.Value);
-        if (isLibraryAdmin || _userHelper.IsAdmin)
+        var isLibraryAdmin = libraryId.HasValue && userHelper.IsLibraryAdmin(libraryId.Value);
+        if (isLibraryAdmin || userHelper.IsAdmin)
         {
             if (libraryId.HasValue)
             {
-                view.Links.Add(_linkRenderer.Render(new Link
+                view.Links.Add(linkRenderer.Render(new Link
                 {
                     ActionName = nameof(AccountsController.UpdateLibraryUser),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.UpdateUser,
                     Parameters = new { libraryId = libraryId, id = model.Id }
                 }));
-                view.Links.Add(_linkRenderer.Render(new Link
+                view.Links.Add(linkRenderer.Render(new Link
                 {
                     ActionName = nameof(LibraryController.RemoveLibraryFromAccount),
                     Method = HttpMethod.Delete,
@@ -149,16 +140,16 @@ public class AccountRenderer : IRenderAccount
                     Parameters = new { libraryId = libraryId, accountId = model.Id }
                 }));
             }
-            else if (_userHelper.IsAdmin)
+            else if (userHelper.IsAdmin)
             {
-                view.Links.Add(_linkRenderer.Render(new Link
+                view.Links.Add(linkRenderer.Render(new Link
                 {
                     ActionName = nameof(AccountsController.Update),
                     Method = HttpMethod.Post,
                     Rel = RelTypes.Update,
                     Parameters = new { id = model.Id }
                 }));
-                view.Links.Add(_linkRenderer.Render(new Link
+                view.Links.Add(linkRenderer.Render(new Link
                 {
                     ActionName = nameof(AccountsController.Delete),
                     Method = HttpMethod.Delete,
@@ -171,10 +162,7 @@ public class AccountRenderer : IRenderAccount
         return view;
     }
 
-    public IEnumerable<AccountLookupView> RenderLookup(IEnumerable<AccountModel> writers)
-    {
-        return writers.Select(w => w.MapToLookup());
-    }
+    public IEnumerable<AccountLookupView> RenderLookup(IEnumerable<AccountModel> writers) => writers.Select(w => w.MapToLookup());
 
     public AuthenticateResponse Render(TokenResponse model)
     {

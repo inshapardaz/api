@@ -1,12 +1,8 @@
-﻿using System.Collections.Generic;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 
@@ -15,18 +11,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssue
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingIssueWithPermission
-        : TestBase
+    public class WhenDeletingIssueWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IssueAssert _assert;
         private IssueDto _expected;
         private IEnumerable<TagDto> _expectedTags;
-
-        public WhenDeletingIssueWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -45,40 +35,22 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssue
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNoContent()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldReturnNoContent() => _response.ShouldBeNoContent();
 
         [Test]
-        public void ShouldHaveDeletedIssue()
-        {
-            _assert.ShouldHaveDeletedIssue(_expected.Id);
-        }
+        public void ShouldHaveDeletedIssue() => _assert.ShouldHaveDeletedIssue(_expected.Id);
 
         [Test]
-        public void ShouldHaveDeletedThePages()
-        {
-            _assert.ShouldHaveDeletedPagesForIssue(_expected.Id);
-        }
+        public void ShouldHaveDeletedThePages() => _assert.ShouldHaveDeletedPagesForIssue(_expected.Id);
 
         [Test]
-        public void ShouldHaveDeletedTheArticles()
-        {
-            _assert.ShouldHaveDeletedArticlesForIssue(_expected.Id);
-        }
+        public void ShouldHaveDeletedTheArticles() => _assert.ShouldHaveDeletedArticlesForIssue(_expected.Id);
 
         [Test]
-        public void ShouldHaveDeletedTheImage()
-        {
-            _assert.ShouldHaveDeletedIssueImage(_expected.Id);
-        }
+        public void ShouldHaveDeletedTheImage() => _assert.ShouldHaveDeletedIssueImage(_expected.Id);
 
 
         [Test]
@@ -96,12 +68,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.DeleteIssue
         }
 
         [Test]
-        public void ShouldHaveDeletedArticles()
-        {
-            _assert.ShouldHaveDeletedArticlesForIssue(_expected.Id);
-        }
-        
-        
+        public void ShouldHaveDeletedArticles() => _assert.ShouldHaveDeletedArticlesForIssue(_expected.Id);
+
+
         [Test]
         public void ShouldHaveDeletedArticleTags()
         {

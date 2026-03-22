@@ -4,29 +4,17 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using System.Net.Http;
-using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class BookShelfAssert
+    public class BookShelfAssert(
+        IBookShelfTestRepository bookShelfRepository,
+        IFileTestRepository fileRepository,
+        FakeFileStorage fileStorage)
     {
         private BookShelfView _bookshelf;
         private int _libraryId;
         public HttpResponseMessage _response;
-
-        private readonly IBookShelfTestRepository _bookShelfRepository;
-        private readonly IFileTestRepository _fileRepository;
-        private readonly FakeFileStorage _fileStorage;
-
-        public BookShelfAssert(IBookShelfTestRepository bookShelfRepository,
-            IFileTestRepository fileRepository,
-            FakeFileStorage fileStorage)
-        {
-            _bookShelfRepository = bookShelfRepository;
-            _fileRepository = fileRepository;
-            _fileStorage = fileStorage;
-        }
 
         public BookShelfAssert ForResponse(HttpResponseMessage response)
         {
@@ -182,14 +170,14 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public BookShelfAssert ShouldHaveDeletedBookShelf(int bookShelfId)
         {
-            var bookShelf = _bookShelfRepository.GetBookShelfById(bookShelfId);
+            var bookShelf = bookShelfRepository.GetBookShelfById(bookShelfId);
             bookShelf.Should().BeNull();
             return this;
         }
 
         public BookShelfAssert ShouldNotHaveDeletedBookShelf(int bookShelfId)
         {
-            var bookShelf = _bookShelfRepository.GetBookShelfById(bookShelfId);
+            var bookShelf = bookShelfRepository.GetBookShelfById(bookShelfId);
             bookShelf.Should().NotBeNull();
             return this;
         }
@@ -210,7 +198,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public BookShelfAssert ShouldHaveSavedBookShelf(int accountId)
         {
-            var dbBookShelf = _bookShelfRepository.GetBookShelfById(_bookshelf.Id);
+            var dbBookShelf = bookShelfRepository.GetBookShelfById(_bookshelf.Id);
             dbBookShelf.Should().NotBeNull();
             _bookshelf.Name.Should().Be(dbBookShelf.Name);
             accountId.Should().Be(dbBookShelf.AccountId);
@@ -223,22 +211,22 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _bookshelf.Id.Should().Be(bookShelf.Id);
             _bookshelf.Name.Should().Be(bookShelf.Name);
             _bookshelf.Description.Should().Be(bookShelf.Description);
-            _bookshelf.BookCount.Should().Be(_bookShelfRepository.GetBookCountByBookShelf(_bookshelf.Id));
+            _bookshelf.BookCount.Should().Be(bookShelfRepository.GetBookCountByBookShelf(_bookshelf.Id));
             return this;
         }
 
         public BookShelfAssert ShouldHaveUpdatedBookShelfImage(int bookshelfId, byte[] newImage)
         {
-            var imageUrl = _bookShelfRepository.GetBookShelfImageUrl(bookshelfId);
+            var imageUrl = bookShelfRepository.GetBookShelfImageUrl(bookshelfId);
             imageUrl.Should().NotBeNull();
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.Equal(newImage);
             return this;
         }
 
         public BookShelfAssert ShouldHavePublicImage(int bookshelfId)
         {
-            var image = _bookShelfRepository.GetBookShelfImage(bookshelfId);
+            var image = bookShelfRepository.GetBookShelfImage(bookshelfId);
             image.Should().NotBeNull();
             image.IsPublic.Should().BeTrue();
             return this;
@@ -246,28 +234,28 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public BookShelfAssert ShouldNotHaveUpdatedBookShelfImage(int bookshelfId, byte[] newImage)
         {
-            var imageUrl = _bookShelfRepository.GetBookShelfImageUrl(bookshelfId);
+            var imageUrl = bookShelfRepository.GetBookShelfImageUrl(bookshelfId);
             imageUrl.Should().NotBeNull();
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotEqual(newImage);
             return this;
         }
 
         public BookShelfAssert ShouldHaveAddedBookShelfImage(int bookshelfId)
         {
-            var imageUrl = _bookShelfRepository.GetBookShelfImageUrl(bookshelfId);
+            var imageUrl = bookShelfRepository.GetBookShelfImageUrl(bookshelfId);
             imageUrl.Should().NotBeNull();
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNullOrEmpty();
             return this;
         }
 
         public BookShelfAssert ShouldHaveDeletedBookShelfImage(int bookshelfId, long imageId, string filePath)
         {
-            var image = _bookShelfRepository.GetBookShelfImage(bookshelfId);
+            var image = bookShelfRepository.GetBookShelfImage(bookshelfId);
             image.Should().BeNull();
-            _fileRepository.GetFileById(imageId).Should().BeNull();
-            var file = _fileStorage.DoesFileExists(filePath).Should().BeFalse();
+            fileRepository.GetFileById(imageId).Should().BeNull();
+            var file = fileStorage.DoesFileExists(filePath).Should().BeFalse();
             return this;
 
         }

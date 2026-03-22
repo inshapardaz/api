@@ -2,23 +2,15 @@
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
-using System.Net.Http;
 using Inshapardaz.Api.Views.Tools;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    internal class CommonWordAssert
+    internal class CommonWordAssert(ICommonWordsTestRepository commonWordsTestRepository)
     {
         private CommonWordView _commonWord;
         public HttpResponseMessage _response;
         public CommonWordView View => _commonWord;
-
-        private readonly ICommonWordsTestRepository _commonWordsTestRepository;
-
-        public CommonWordAssert(ICommonWordsTestRepository commonWordsTestRepository)
-        {
-            _commonWordsTestRepository = commonWordsTestRepository;
-        }
 
 
         public CommonWordAssert ForResponse(HttpResponseMessage response)
@@ -52,14 +44,14 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         internal CommonWordAssert ShouldHaveDeletedCommonWord(long wordId)
         {
-            var correction = _commonWordsTestRepository.GetCommonWordById(wordId);
+            var correction = commonWordsTestRepository.GetCommonWordById(wordId);
             correction.Should().BeNull();
             return this;
         }
 
         internal CommonWordAssert ShouldNotHaveDeletedWord(long wordId)
         {
-            var correction = _commonWordsTestRepository.GetCommonWordById(wordId);
+            var correction = commonWordsTestRepository.GetCommonWordById(wordId);
             correction.Should().NotBeNull();
             return this;
         }
@@ -105,7 +97,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public CommonWordAssert ShouldHaveSavedWord()
         {
-            var dbWord = _commonWordsTestRepository.GetCommonWordById(_commonWord.Id);
+            var dbWord = commonWordsTestRepository.GetCommonWordById(_commonWord.Id);
             dbWord.Should().NotBeNull();
             _commonWord.Language.Should().Be(dbWord.Language);
             _commonWord.Word.Should().Be(dbWord.Word);
@@ -114,7 +106,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public CommonWordAssert ShouldMatchSavedWord(CommonWordDto word)
         {
-            var dbWord = _commonWordsTestRepository.GetCommonWordById(word.Id);
+            var dbWord = commonWordsTestRepository.GetCommonWordById(word.Id);
             dbWord.Should().NotBeNull();
             word.Language.Should().Be(dbWord.Language);
             word.Word.Should().Be(dbWord.Word);

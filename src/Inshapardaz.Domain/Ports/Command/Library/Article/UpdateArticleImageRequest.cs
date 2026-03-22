@@ -4,22 +4,13 @@ using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Article;
 
-public class UpdateArticleImageRequest : LibraryBaseCommand
+public class UpdateArticleImageRequest(int libraryId, long articleId, int? accountId) : LibraryBaseCommand(libraryId)
 {
-    public UpdateArticleImageRequest(int libraryId, long articleId, int? accountId)
-        : base(libraryId)
-    {
-        ArticleId = articleId;
-        AccountId = accountId;
-    }
-
-    public long ArticleId { get; }
-    public int? AccountId { get; }
+    public long ArticleId { get; } = articleId;
+    public int? AccountId { get; } = accountId;
     public FileModel Image { get; set; }
 
     public RequestResult Result { get; set; } = new RequestResult();
@@ -32,21 +23,15 @@ public class UpdateArticleImageRequest : LibraryBaseCommand
     }
 }
 
-public class UpdateArticleImageRequestHandler : RequestHandlerAsync<UpdateArticleImageRequest>
+public class UpdateArticleImageRequestHandler(
+    IArticleRepository articleRepository,
+    IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<UpdateArticleImageRequest>
 {
-    private readonly IArticleRepository _articleRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public UpdateArticleImageRequestHandler(IArticleRepository articleRepository, IAmACommandProcessor commandProcessor)
-    {
-        _articleRepository = articleRepository;
-        _commandProcessor = commandProcessor;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateArticleImageRequest> HandleAsync(UpdateArticleImageRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var article = await _articleRepository.GetArticle(command.LibraryId, command.ArticleId, cancellationToken);
+        var article = await articleRepository.GetArticle(command.LibraryId, command.ArticleId, cancellationToken);
 
         if (article == null)
         {
@@ -62,12 +47,12 @@ public class UpdateArticleImageRequestHandler : RequestHandlerAsync<UpdateArticl
             ExistingFileId = article.ImageId
         };
 
-        await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
         command.Result.File = saveContentCommand.Result;
                 
         if (!article.ImageId.HasValue)
         {
-            await _articleRepository.UpdateArticleImage(command.LibraryId, command.ArticleId, command.Result.File.Id, cancellationToken);
+            await articleRepository.UpdateArticleImage(command.LibraryId, command.ArticleId, command.Result.File.Id, cancellationToken);
             command.Result.HasAddedNew = true;
         }
 

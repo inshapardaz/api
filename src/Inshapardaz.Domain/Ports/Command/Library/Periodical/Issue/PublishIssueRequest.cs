@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
@@ -13,73 +8,50 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue;
 
-public class PublishIssueRequest : LibraryBaseCommand
+public class PublishIssueRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber)
+    : LibraryBaseCommand(libraryId)
 {
-    public PublishIssueRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber) : base(libraryId)
-    {
-        PeriodicalId = periodicalId;
-        VolumeNumber = volumeNumber;
-        IssueNumber = issueNumber;
-    }
+    public int IssueNumber { get; set; } = issueNumber;
 
-    public int IssueNumber { get; set; }
+    public int VolumeNumber { get; set; } = volumeNumber;
 
-    public int VolumeNumber { get; set; }
-
-    public int PeriodicalId { get; set; }
+    public int PeriodicalId { get; set; } = periodicalId;
 
     public string Result { get; set; }
 
 }
 
-public class PublishIssueRequestHandler : RequestHandlerAsync<PublishIssueRequest>
+public class PublishIssueRequestHandler(
+    IPeriodicalRepository periodicalRepository,
+    IIssueRepository issueRepository,
+    IIssuePageRepository issuePageRepository,
+    IIssueArticleRepository issueArticleRepository,
+    IFileStorage fileStorage,
+    IFileRepository fileRepository,
+    IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<PublishIssueRequest>
 {
-    private readonly IPeriodicalRepository _periodicalRepository;
-    private readonly IIssueRepository _issueRepository;
-    private readonly IIssuePageRepository _issuePageRepository;
-    private readonly IIssueArticleRepository _issueArticleRepository;
-    private readonly IFileStorage _fileStorage;
-    private readonly IFileRepository _fileRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public PublishIssueRequestHandler(IPeriodicalRepository periodicalRepository,
-        IIssueRepository issueRepository,
-        IIssuePageRepository issuePageRepository,
-        IIssueArticleRepository issueArticleRepository,
-        IFileStorage fileStorage, 
-        IFileRepository fileRepository, 
-        IAmACommandProcessor commandProcessor)
-    {
-        _issueRepository = issueRepository;
-        _issuePageRepository = issuePageRepository;
-        _issueArticleRepository = issueArticleRepository;
-        _fileStorage = fileStorage;
-        _fileRepository = fileRepository;
-        _commandProcessor = commandProcessor;
-        _periodicalRepository = periodicalRepository;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin)]
     public override async Task<PublishIssueRequest> HandleAsync(PublishIssueRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var periodical = await _periodicalRepository.GetPeriodicalById(command.LibraryId, command.PeriodicalId, cancellationToken);
-        var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId,command.VolumeNumber, command.IssueNumber, cancellationToken);
-        var articles = await _issueArticleRepository.GetIssueArticlesByIssue(command.LibraryId, command.PeriodicalId,command.VolumeNumber, command.IssueNumber, cancellationToken);
+        var periodical = await periodicalRepository.GetPeriodicalById(command.LibraryId, command.PeriodicalId, cancellationToken);
+        var issue = await issueRepository.GetIssue(command.LibraryId, command.PeriodicalId,command.VolumeNumber, command.IssueNumber, cancellationToken);
+        var articles = await issueArticleRepository.GetIssueArticlesByIssue(command.LibraryId, command.PeriodicalId,command.VolumeNumber, command.IssueNumber, cancellationToken);
         var articleText = new List<string>();
         foreach (var article in articles)
         {
-            var pages = await _issuePageRepository.GetPagesByIssueArticle(command.LibraryId, command.PeriodicalId,command.VolumeNumber, command.IssueNumber, article.Id, cancellationToken);
+            var pages = await issuePageRepository.GetPagesByIssueArticle(command.LibraryId, command.PeriodicalId,command.VolumeNumber, command.IssueNumber, article.Id, cancellationToken);
             var finalText = await CombinePages(pages, cancellationToken);
             articleText.Add(finalText);
             if (article.Contents.Any(cc => cc.Language == periodical.Language))
             {
                 var cmd = new UpdateIssueArticleContentRequest(command.LibraryId, command.PeriodicalId,command.VolumeNumber, command.IssueNumber, article.SequenceNumber, finalText, periodical.Language);               
-                await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
+                await commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
             }
             else
             {
                 var cmd = new AddIssueArticleContentRequest(command.LibraryId, command.PeriodicalId,command.VolumeNumber, command.IssueNumber, article.SequenceNumber, finalText, periodical.Language);
-                await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
+                await commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
             }
         }
 
@@ -111,10 +83,10 @@ public class PublishIssueRequestHandler : RequestHandlerAsync<PublishIssueReques
             var separator = " ";
             if (page.FileId.HasValue)
             {
-                var file = await _fileRepository.GetFileById(page.FileId.Value, cancellationToken);
+                var file = await fileRepository.GetFileById(page.FileId.Value, cancellationToken);
                 if (file != null)
                 {
-                    page.Text = await _fileStorage.GetTextFile(file.FilePath, cancellationToken);
+                    page.Text = await fileStorage.GetTextFile(file.FilePath, cancellationToken);
                 }
             }
             var finalText = page.Text.Trim();

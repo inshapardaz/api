@@ -4,43 +4,24 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
 using Inshapardaz.Api.Extensions;
 using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class IssueAssert
+    public class IssueAssert(
+        IIssueTestRepository issueRepository,
+        IIssueArticleTestRepository articleRepository,
+        IIssuePageTestRepository pageRepository,
+        FakeFileStorage fileStorage,
+        IAuthorTestRepository authorRepository,
+        ITagTestRepository tagsRepository)
     {
         private HttpResponseMessage _response;
         private IssueView _view;
         private int _libraryId;
 
-        private readonly IIssueTestRepository _issueRepository;
-        private readonly IIssuePageTestRepository _issuePageRepository;
-        private readonly IIssueArticleTestRepository _articleRepository;
-        private readonly IAuthorTestRepository _authorRepository;
-        private readonly ITagTestRepository _tagsRepository;
-        private readonly FakeFileStorage _fileStorage;
-
-        public IssueAssert(IIssueTestRepository issueRepository,
-            IIssueArticleTestRepository articleRepository,
-            IIssuePageTestRepository pageRepository,
-            FakeFileStorage fileStorage, 
-            IAuthorTestRepository authorRepository, 
-            ITagTestRepository tagsRepository)
-        {
-            _issueRepository = issueRepository;
-            _articleRepository = articleRepository;
-            _fileStorage = fileStorage;
-            _authorRepository = authorRepository;
-            _tagsRepository = tagsRepository;
-            _issuePageRepository = pageRepository;
-        }
+        private readonly IAuthorTestRepository _authorRepository = authorRepository;
 
         public IssueAssert ForResponse(HttpResponseMessage response)
         {
@@ -230,7 +211,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueAssert ShouldHaveCorrectContentsLink()
         {
-            var contents = _issueRepository.GetIssueContents(_view.Id);
+            var contents = issueRepository.GetIssueContents(_view.Id);
 
             contents.Should().HaveSameCount(_view.Contents);
 
@@ -244,7 +225,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueAssert ShouldHaveCorrectContents()
         {
-            var contents = _issueRepository.GetIssueContents(_view.Id);
+            var contents = issueRepository.GetIssueContents(_view.Id);
 
             contents.Should().HaveSameCount(_view.Contents);
 
@@ -288,7 +269,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueAssert ShouldHaveSavedIssue()
         {
-            var dbIssue = _issueRepository.GetIssueById(_view.Id);
+            var dbIssue = issueRepository.GetIssueById(_view.Id);
             dbIssue.Should().NotBeNull();
             _view.VolumeNumber.Should().Be(dbIssue.VolumeNumber);
             _view.IssueNumber.Should().Be(dbIssue.IssueNumber);
@@ -296,7 +277,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
             if (_view?.Tags is not null && _view.Tags.Any())
             {
-                var tags = _tagsRepository.GetTagsByIssue(_view.Id);
+                var tags = tagsRepository.GetTagsByIssue(_view.Id);
                 _view.Tags.Select(x => x.Name).ToList()
                     .Should().BeEquivalentTo(tags.Select(x => x.Name).ToList());
             }
@@ -306,28 +287,28 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueAssert ShouldHaveDeletedIssue(int issueId)
         {
-            var dbIssue = _issueRepository.GetIssueById(issueId);
+            var dbIssue = issueRepository.GetIssueById(issueId);
             dbIssue.Should().BeNull();
             return this;
         }
 
         public IssueAssert ShouldHaveDeletedIssueImage(int issueId)
         {
-            var issueImage = _issueRepository.GetIssueImage(issueId);
+            var issueImage = issueRepository.GetIssueImage(issueId);
             issueImage.Should().BeNull();
             return this;
         }
 
         public IssueAssert ShouldHaveDeletedArticlesForIssue(int issueId)
         {
-            var articles = _articleRepository.GetIssueArticlesByIssue(issueId);
+            var articles = articleRepository.GetIssueArticlesByIssue(issueId);
             articles.Should().BeNullOrEmpty();
             return this;
         }
 
         public IssueAssert ShouldHaveDeletedPagesForIssue(int issueId)
         {
-            var pages = _issuePageRepository.GetIssuePagesByIssue(issueId);
+            var pages = pageRepository.GetIssuePagesByIssue(issueId);
             pages.Should().BeNullOrEmpty();
             return this;
         }
@@ -355,7 +336,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
             if (expected.Tags is not null && expected.Tags.Any())
             {
-                var tags = _tagsRepository.GetTagsByIssue(_view.Id);
+                var tags = tagsRepository.GetTagsByIssue(_view.Id);
                 _view.Tags.Should().HaveSameCount(tags);
                 foreach (var tag in tags)
                 {
@@ -408,35 +389,35 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueAssert ShouldNotHaveUpdatedIssueImage(int issueId, byte[] oldImage)
         {
-            var imageUrl = _issueRepository.GetIssueImageUrl(issueId);
+            var imageUrl = issueRepository.GetIssueImageUrl(issueId);
             imageUrl.Should().NotBeNull();
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().Equal(oldImage);
             return this;
         }
 
         public IssueAssert ShouldHaveAddedIssueImage(int issueId)
         {
-            var imageUrl = _issueRepository.GetIssueImageUrl(issueId);
+            var imageUrl = issueRepository.GetIssueImageUrl(issueId);
             imageUrl.Should().NotBeNull();
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNullOrEmpty();
             return this;
         }
 
         public IssueAssert ShouldHaveUpdatedIssueImage(IssueDto issue, byte[] newImage)
         {
-            var imageUrl = _issueRepository.GetIssueImageUrl(issue.Id);
+            var imageUrl = issueRepository.GetIssueImageUrl(issue.Id);
             imageUrl.Should().NotBeNull();
             imageUrl.Should().EndWith($"periodicals/{issue.PeriodicalId}/volumes/{issue.VolumeNumber}/issues/{issue.IssueNumber}/files/issue-image.jpg");
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.Equal(newImage);
             return this;
         }
 
         public IssueAssert ShouldHavePublicImage(int issueId)
         {
-            var image = _issueRepository.GetIssueImage(issueId);
+            var image = issueRepository.GetIssueImage(issueId);
             image.Should().NotBeNull();
             image.IsPublic.Should().BeTrue();
             return this;
@@ -444,7 +425,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public IssueAssert ShouldBeSameTags(IEnumerable<TagView> newTags)
         {
-            var tags = _tagsRepository.GetTagsByIssue(_view.Id);
+            var tags = tagsRepository.GetTagsByIssue(_view.Id);
             _view.Tags.Should().HaveSameCount(tags);
             _view.Tags.Select(c => c.Name).ToList()
                 .Should().BeEquivalentTo(newTags.Select(c => c.Name).ToList());

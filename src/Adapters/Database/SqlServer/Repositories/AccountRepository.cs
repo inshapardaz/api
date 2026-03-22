@@ -1,24 +1,14 @@
 ﻿using Dapper;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapters.Database.SqlServer.Repositories;
 
-public class AccountRepository : IAccountRepository
+public class AccountRepository(SqlServerConnectionProvider connectionProvider) : IAccountRepository
 {
-    private readonly SqlServerConnectionProvider _connectionProvider;
-
-    public AccountRepository(SqlServerConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-
     public async Task<Page<AccountModel>> FindAccounts(string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT *
                             FROM Account
@@ -49,7 +39,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<Page<AccountModel>> GetAccounts(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT  *
                             FROM Accounts
@@ -76,7 +66,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<Page<AccountModel>> GetAccountsByLibrary(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT  a.*, al.Role AS `Role`
                             FROM Accounts a
@@ -108,7 +98,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<Page<AccountModel>> FindAccountsByLibrary(int libraryId, string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT a.*, al.Role AS `Role`
                             FROM Accounts a
@@ -142,7 +132,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<IEnumerable<AccountModel>> GetWriters(int libraryId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"Select a.* from Accounts as a
                             INNER JOIN AccountLibrary as al on a.Id = al.AccountId
@@ -155,7 +145,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<IEnumerable<AccountModel>> FindWriters(int libraryId, string query, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"Select a.* from Accounts as a
                             INNER JOIN AccountLibrary as al on a.Id = al.AccountId
@@ -168,7 +158,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<int> AddInvitedAccount(string name, string email, Role role, string invitationCode, System.DateTime invitationCodeExpiry, int? libraryId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"Insert Into Accounts (Name, Email, InvitationCode, InvitationCodeExpiry, IsSuperAdmin, AcceptTerms, Created)
                         OUTPUT Inserted.Id VALUES (@Name, @Email, @InvitationCode, @InvitationCodeExpiry, @IsSuperAdmin, 1, GETDATE());";
@@ -203,7 +193,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<AccountModel> GetAccountByInvitationCode(string invitationCode, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"Select * from Accounts WHERE InvitationCode = @InvitationCode";
             var command = new CommandDefinition(sql, new { InvitationCode = invitationCode }, cancellationToken: cancellationToken);
@@ -214,7 +204,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<AccountModel> GetAccountByEmail(string email, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"Select * from Accounts WHERE Email = @Email";
             var command = new CommandDefinition(sql, new { Email = email }, cancellationToken: cancellationToken);
@@ -225,7 +215,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<AccountModel> AddAccount(AccountModel account, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"Insert Into Accounts (
                     Name, 
@@ -285,7 +275,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task AddAccountToLibrary(int libraryId, int accountId, Role role, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = "Insert Into AccountLibrary VALUES (@AccountId, @LibraryId, @Role)";
             var command = new CommandDefinition(sql, new
@@ -300,7 +290,7 @@ public class AccountRepository : IAccountRepository
     }
     public async Task UpdateInvitationCode(string email, string invitationCode, System.DateTime invitationCodeExpiry, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = "Update Accounts SET InvitationCode = @InvitationCode, InvitationCodeExpiry = @InvitationCodeExpiry WHERE Email = @Email";
             var command = new CommandDefinition(sql, new { InvitationCode = invitationCode, InvitationCodeExpiry = invitationCodeExpiry, Email = email }, cancellationToken: cancellationToken);
@@ -310,7 +300,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<Role> GetUserRole(int accountId, int libraryId, CancellationToken cancellationToken = default)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT AT.* FROM AccountLibrary AL
                             INNER JOIN Accounts a ON a.Id = AL.AccountId
@@ -324,7 +314,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<AccountModel> GetAccountById(int accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"Select * from Accounts WHERE Id = @AccountId";
             var command = new CommandDefinition(sql, new { AccountId = accountId }, cancellationToken: cancellationToken);
@@ -335,7 +325,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<AccountModel> GetLibraryAccountById(int libraryId, int accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"Select a.*, al.Role as `Role`
                             FROM Accounts a
@@ -349,7 +339,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<RefreshTokenModel> GetRefreshToken(string token, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT * FROM RefreshToken
                             WHERE Token = @Token";
@@ -361,7 +351,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task AddRefreshToken(RefreshTokenModel refreshToken, int accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"INSERT INTO RefreshToken
                 (AccountId, Token, Expires, Created, CreatedByIp, Revoked, RevokedByIp, ReplacedByToken)
@@ -385,7 +375,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task RemoveOldRefreshTokens(AccountModel account, int tokenAgeInDays, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"DELETE FROM RefreshToken
                             WHERE AccountId = @AccountId AND Revoked IS NULL AND Created < GETDATE() - @MaxAge";
@@ -397,7 +387,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task RevokeRefreshToken(string refreshToken, string ipAddress, string newRefreshToken, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"UPDATE RefreshToken
                             SET Revoked = GETDATE(),
@@ -412,7 +402,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task<AccountModel> GetAccountByResetToken(string token, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"Select * from Accounts WHERE ResetToken = @ResetToken";
             var command = new CommandDefinition(sql, new { ResetToken = token }, cancellationToken: cancellationToken);
@@ -423,7 +413,7 @@ public class AccountRepository : IAccountRepository
 
     public async Task UpdateAccount(AccountModel account, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"UPDATE Accounts
                             SET Name = @Name,

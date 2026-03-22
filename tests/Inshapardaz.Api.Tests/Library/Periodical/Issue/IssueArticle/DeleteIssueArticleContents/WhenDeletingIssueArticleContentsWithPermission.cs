@@ -4,18 +4,13 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssueArticleContents
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingIssueArticleContentsWithPermission
-        : TestBase
+    public class WhenDeletingIssueArticleContentsWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IssueArticleContentAssert _assert;
@@ -23,11 +18,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssu
         private IssueArticleDto _article;
         private IssueArticleContentDto _content;
         private List<FileDto> _files;
-
-        public WhenDeletingIssueArticleContentsWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -41,27 +31,15 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.DeleteIssu
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveNoContentResult()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldHaveNoContentResult() => _response.ShouldBeNoContent();
 
         [Test]
-        public void ShouldHaveDeletedArticleContents()
-        {
-            _assert.ShouldHaveDeletedContent(_issue, _article, _content.Language);
-        }
+        public void ShouldHaveDeletedArticleContents() => _assert.ShouldHaveDeletedContent(_issue, _article, _content.Language);
 
         [Test]
-        public void ShouldHaveDeletedArticleContentsFiles()
-        {
-            _assert.ShouldHaveDeletedContent(IssueBuilder.ArticleContents.Where(x => x.ArticleId == _article.Id).ToList(), _files);
-        }
+        public void ShouldHaveDeletedArticleContentsFiles() => _assert.ShouldHaveDeletedContent(IssueBuilder.ArticleContents.Where(x => x.ArticleId == _article.Id).ToList(), _files);
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,39 +24,21 @@ namespace Inshapardaz.Api.Tests.Library.Author.GetAuthorById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
-        public void ShouldHaveBooksLink()
-        {
-            _assert.ShouldHaveBooksLink();
-        }
+        public void ShouldHaveBooksLink() => _assert.ShouldHaveBooksLink();
 
         [Test]
-        public void ShouldNotHaveImageLink()
-        {
-            _assert.ShouldNotHaveImageLink();
-        }
+        public void ShouldNotHaveImageLink() => _assert.ShouldNotHaveImageLink();
 
         [Test]
-        public void ShouldReturnCorrectAuthorData()
-        {
-            _assert.ShouldHaveCorrectAuthorRetunred(_expected);
-        }
+        public void ShouldReturnCorrectAuthorData() => _assert.ShouldHaveCorrectAuthorRetunred(_expected);
     }
 }

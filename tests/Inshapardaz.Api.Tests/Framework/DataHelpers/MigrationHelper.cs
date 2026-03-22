@@ -1,10 +1,6 @@
-using System;
-using System.IO;
-using System.Linq;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
 using Inshapardaz.Database.Migrations;
-using Inshapardaz.Domain.Adapters.Configuration;
 using Inshapardaz.Domain.Models.Library;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

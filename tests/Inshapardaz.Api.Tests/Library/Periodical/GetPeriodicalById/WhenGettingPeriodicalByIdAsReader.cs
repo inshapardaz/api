@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
@@ -10,15 +8,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicalById
 {
     [TestFixture]
-    public class WhenGettingPeriodicalByIdAsReader : TestBase
+    public class WhenGettingPeriodicalByIdAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private PeriodicalDto _expected;
         private PeriodicalAssert _assert;
-
-        public WhenGettingPeriodicalByIdAsReader() : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,34 +27,19 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicalById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
-        public void ShouldHaveImageLink()
-        {
-            _assert.ShouldHaveImageLink();
-        }
+        public void ShouldHaveImageLink() => _assert.ShouldHaveImageLink();
 
         [Test]
-        public void ShouldHaveIssuesLink()
-        {
-            _assert.ShouldHaveIssuesLink();
-        }
+        public void ShouldHaveIssuesLink() => _assert.ShouldHaveIssuesLink();
 
         [Test]
         public void ShouldNotHaveEditLinks()
@@ -72,9 +51,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.GetPeriodicalById
         }
 
         [Test]
-        public void ShouldReturnCorrectPeriodicalData()
-        {
-            _assert.ShouldBeSameAs(_expected, 2);
-        }
+        public void ShouldReturnCorrectPeriodicalData() => _assert.ShouldBeSameAs(_expected, 2);
     }
 }

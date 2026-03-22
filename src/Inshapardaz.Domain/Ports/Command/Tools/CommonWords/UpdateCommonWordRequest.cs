@@ -1,19 +1,12 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Tools;
 
-public class UpdateCommonWordRequest : RequestBase
+public class UpdateCommonWordRequest(CommonWordModel commonWordModel) : RequestBase
 {
-    public UpdateCommonWordRequest(CommonWordModel commonWordModel)
-    {
-        WordModel = commonWordModel;
-    }
-
-    public CommonWordModel WordModel { get; }
+    public CommonWordModel WordModel { get; } = commonWordModel;
     public RequestResult Result { get; set; } = new RequestResult();
     public class RequestResult
     {
@@ -23,28 +16,22 @@ public class UpdateCommonWordRequest : RequestBase
     }
 }
 
-public class UpdateCommonWordRequestHandler : RequestHandlerAsync<UpdateCommonWordRequest>
+public class UpdateCommonWordRequestHandler(ICommonWordsRepository commonWordsRepository)
+    : RequestHandlerAsync<UpdateCommonWordRequest>
 {
-    private readonly ICommonWordsRepository _commonWordsRepository;
-
-    public UpdateCommonWordRequestHandler(ICommonWordsRepository commonWordsRepository)
-    {
-        _commonWordsRepository = commonWordsRepository;
-    }
-
     [AuthorizeAdmin(1)]
     public override async Task<UpdateCommonWordRequest> HandleAsync(UpdateCommonWordRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var result = await _commonWordsRepository.GetWordById(command.WordModel.Language, command.WordModel.Id, cancellationToken);
+        var result = await commonWordsRepository.GetWordById(command.WordModel.Language, command.WordModel.Id, cancellationToken);
 
         if (result == null)
         {
-            command.Result.WordModel = await _commonWordsRepository.AddWord(command.WordModel, cancellationToken);
+            command.Result.WordModel = await commonWordsRepository.AddWord(command.WordModel, cancellationToken);
             command.Result.HasAddedNew = true;
         }
         else
         {
-            command.Result.WordModel = await _commonWordsRepository.UpdateWord(command.WordModel, cancellationToken); ;
+            command.Result.WordModel = await commonWordsRepository.UpdateWord(command.WordModel, cancellationToken); ;
         }
 
         return await base.HandleAsync(command, cancellationToken);

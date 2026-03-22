@@ -2,21 +2,13 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
 {
     [TestFixture]
-    public class WhenGettingChaptersForNonExistingBook
-        : TestBase
+    public class WhenGettingChaptersForNonExistingBook() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
-
-        public WhenGettingChaptersForNonExistingBook()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,15 +19,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveNotFoundResult()
-        {
-            _response.ShouldBeNotFound();
-        }
+        public void ShouldHaveNotFoundResult() => _response.ShouldBeNotFound();
     }
 }

@@ -2,28 +2,16 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapters.Database.SqlServer.Repositories.Library;
 
-public class BookRepository : IBookRepository
+public class BookRepository(SqlServerConnectionProvider connectionProvider) : IBookRepository
 {
-    private readonly SqlServerConnectionProvider _connectionProvider;
-
-    public BookRepository(SqlServerConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-
     public async Task<BookModel> AddBook(int libraryId, BookModel book, int? AccountId, CancellationToken cancellationToken)
     {
         int bookId;
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             book.LibraryId = libraryId;
             var sql = @"Insert Into Book
@@ -67,7 +55,7 @@ public class BookRepository : IBookRepository
     public async Task UpdateBook(int libraryId, BookModel book, CancellationToken cancellationToken)
     {
         book.LibraryId = libraryId;
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update Book SET
                             Title = @Title, [Description] = @Description,
@@ -112,7 +100,7 @@ public class BookRepository : IBookRepository
 
     public async Task DeleteBook(int libraryId, int bookId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Delete From Book Where LibraryId = @LibraryId AND Id = @Id";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = bookId }, cancellationToken: cancellationToken);
@@ -122,7 +110,7 @@ public class BookRepository : IBookRepository
 
     public async Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var param = new
             {
@@ -159,7 +147,7 @@ public class BookRepository : IBookRepository
 
     public async Task<Page<string>> FindPublishers(int libraryId, string query, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var parameters = new
                         {
@@ -201,7 +189,7 @@ public class BookRepository : IBookRepository
 
     public async Task<Page<BookModel>> GetBooks(int libraryId, int pageNumber, int pageSize, int? AccountId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sortByQuery = $"b.{GetSortByQuery(sortBy)}";
             var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
@@ -285,7 +273,7 @@ public class BookRepository : IBookRepository
 
     public async Task<Page<BookModel>> SearchBooks(int libraryId, string searchText, int pageNumber, int pageSize, int? AccountId, BookFilter filter, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sortByQuery = $"b.{GetSortByQuery(sortBy)}";
             var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
@@ -369,7 +357,7 @@ public class BookRepository : IBookRepository
 
     public async Task<Page<BookModel>> GetBooksByUser(int libraryId, int accountId, int pageNumber, int pageSize, StatusType status, BookSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sortByQuery = $"b.{GetSortByQuery(sortBy)}";
             var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
@@ -431,7 +419,7 @@ public class BookRepository : IBookRepository
     public async Task<BookModel> GetBookById(int libraryId, long bookId, int? AccountId,
         CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             BookModel book = null;
             var sql = @"Select b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
@@ -475,7 +463,7 @@ public class BookRepository : IBookRepository
 
     public async Task<BookModel> GetBookBySource(int libraryId, string source, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             BookModel book = null;
             var sql = @"Select b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
@@ -518,7 +506,7 @@ public class BookRepository : IBookRepository
         ReadProgressModel progress,
         CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"REPLACE Into RecentBooks (BookId, AccountId, DateRead, LibraryId, ProgressType, ProgressId, ProgressValue)
                             VALUES (@BookId, @AccountId, GETDATE(), @LibraryId, @ProgressType, @ProgressId, @ProgressValue);
@@ -538,7 +526,7 @@ public class BookRepository : IBookRepository
 
     public async Task DeleteBookFromRecent(int libraryId, int AccountId, int bookId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Delete From RecentBooks Where LibraryId = @LibraryId And BookId = @BookId And AccountId = @AccountId;";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId, AccountId = AccountId }, cancellationToken: cancellationToken);
@@ -548,7 +536,7 @@ public class BookRepository : IBookRepository
 
     public async Task AddBookToFavorites(int libraryId, int? AccountId, int bookId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var check = "Select count(*) From FavoriteBooks Where LibraryId = @LibraryId And AccountId = @AccountId And BookId = @BookId;";
             var commandCheck = new CommandDefinition(check, new { LibraryId = libraryId, AccountId = AccountId, BookId = bookId }, cancellationToken: cancellationToken);
@@ -564,7 +552,7 @@ public class BookRepository : IBookRepository
 
     public async Task DeleteBookFromFavorites(int libraryId, int AccountId, int bookId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Delete From FavoriteBooks Where LibraryId = @LibraryId And AccountId = @AccountId And BookId = @BookId";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = AccountId, BookId = bookId }, cancellationToken: cancellationToken);
@@ -574,7 +562,7 @@ public class BookRepository : IBookRepository
 
     public async Task DeleteBookContent(int libraryId, int bookId, long contentId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Delete bc
                             From BookContent bc
@@ -588,7 +576,7 @@ public class BookRepository : IBookRepository
 
     public async Task<BookContentModel> GetBookContent(int libraryId, int bookId, string language, string mimeType, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
                             FROM BookContent bc
@@ -602,7 +590,7 @@ public class BookRepository : IBookRepository
 
     public async Task<BookContentModel> GetBookContent(int libraryId, int bookId, long contentId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
                             FROM BookContent bc
@@ -616,7 +604,7 @@ public class BookRepository : IBookRepository
 
     public async Task<IEnumerable<BookContentModel>> GetBookContents(int libraryId, int bookId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
                             FROM BookContent bc
@@ -630,7 +618,7 @@ public class BookRepository : IBookRepository
 
     public async Task UpdateBookContent(int libraryId, int bookId, int contentId, string language, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE bc 
                             SET Language = @Language
@@ -652,7 +640,7 @@ public class BookRepository : IBookRepository
 
     public async Task<int> AddBookContent(int bookId, long fileId, string language, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO BookContent (BookId, FileId, Language)
                             OUTPUT Inserted.Id VALUES (@BookId, @FileId, @Language)";
@@ -663,7 +651,7 @@ public class BookRepository : IBookRepository
 
     public async Task UpdateBookImage(int libraryId, int bookId, long imageId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update Book
                             Set ImageId = @ImageId
@@ -675,7 +663,7 @@ public class BookRepository : IBookRepository
 
     public async Task<IEnumerable<PageSummaryModel>> GetBookPageSummary(int libraryId, IEnumerable<int> bookIds, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var bookSummaries = new Dictionary<int, PageSummaryModel>();
             const string sql = @"Select bp.BookId, bp.[Status], Count(*),

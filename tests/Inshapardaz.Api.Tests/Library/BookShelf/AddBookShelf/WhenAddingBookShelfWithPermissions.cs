@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -13,15 +11,10 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.AddBookShelf
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
     [TestFixture(Role.Reader)]
-    public class WhenAddingBookShelfWithPermissions
-        : TestBase
+    public class WhenAddingBookShelfWithPermissions(Role role) : TestBase(role)
     {
         private BookShelfAssert _assert;
         private HttpResponseMessage _response;
-
-        public WhenAddingBookShelfWithPermissions(Role role) : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -34,28 +27,16 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.AddBookShelf
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldSaveTheSeries()
-        {
-            _assert.ShouldHaveSavedBookShelf(AccountId);
-        }
+        public void ShouldSaveTheSeries() => _assert.ShouldHaveSavedBookShelf(AccountId);
 
         [Test]
         public void ShouldHaveLinks()

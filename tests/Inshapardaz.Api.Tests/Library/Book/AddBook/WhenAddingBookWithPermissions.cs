@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -14,14 +11,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenAddingBookWithPermissions : TestBase
+    public class WhenAddingBookWithPermissions(Role role) : TestBase(role)
     {
         private BookAssert _bookAssert;
         private HttpResponseMessage _response;
-
-        public WhenAddingBookWithPermissions(Role role) : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -45,28 +38,16 @@ namespace Inshapardaz.Api.Tests.Library.Book.AddBook
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _bookAssert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _bookAssert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldSaveTheBook()
-        {
-            _bookAssert.ShouldHaveSavedBook();
-        }
+        public void ShouldSaveTheBook() => _bookAssert.ShouldHaveSavedBook();
 
         [Test]
         public void ShouldHaveLinks()

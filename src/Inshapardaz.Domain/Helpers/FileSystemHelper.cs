@@ -1,7 +1,4 @@
-﻿using System.IO;
-using System.Linq;
-
-namespace Inshapardaz.Domain.Helpers;
+﻿namespace Inshapardaz.Domain.Helpers;
 
 public static class FileSystemHelper
 {
@@ -24,10 +21,7 @@ public static class FileSystemHelper
         if (File.Exists(path)) File.Delete(path);
     }
 
-    public static string ToSafeFilename(this string filename)
-    {
-        return Path.GetInvalidFileNameChars().Aggregate(filename, (current, c) => current.Replace(c.ToString(), string.Empty));
-    }
+    public static string ToSafeFilename(this string filename) => Path.GetInvalidFileNameChars().Aggregate(filename, (current, c) => current.Replace(c.ToString(), string.Empty));
 
     public static void TryDeleteDirectory(this string path)
     {

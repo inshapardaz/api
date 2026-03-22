@@ -3,19 +3,11 @@ using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Paramore.Brighter;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library;
 
-public class UpdateLibraryImageRequest : LibraryBaseCommand
+public class UpdateLibraryImageRequest(int libraryId) : LibraryBaseCommand(libraryId)
 {
-    public UpdateLibraryImageRequest(int libraryId)
-        : base(libraryId)
-    {
-    }
-
     public FileModel Image { get; set; }
 
     public RequestResult Result { get; set; } = new RequestResult();
@@ -28,23 +20,16 @@ public class UpdateLibraryImageRequest : LibraryBaseCommand
     }
 }
 
-public class UpdateLibraryImageRequestHandler : RequestHandlerAsync<UpdateLibraryImageRequest>
+public class UpdateLibraryImageRequestHandler(
+    ILibraryRepository libraryRepository,
+    IFileRepository fileRepository,
+    IFileStorage fileStorage)
+    : RequestHandlerAsync<UpdateLibraryImageRequest>
 {
-    private readonly ILibraryRepository _libraryRepository;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
-
-    public UpdateLibraryImageRequestHandler(ILibraryRepository libraryRepository, IFileRepository fileRepository, IFileStorage fileStorage)
-    {
-        _libraryRepository = libraryRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
-    }
-
     [LibraryAuthorize(1, Role.Admin, Role.LibraryAdmin)]
     public override async Task<UpdateLibraryImageRequest> HandleAsync(UpdateLibraryImageRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
+        var library = await libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
 
         if (library == null)
         {
@@ -55,16 +40,16 @@ public class UpdateLibraryImageRequestHandler : RequestHandlerAsync<UpdateLibrar
         {
             command.Image.Id = library.ImageId.Value;
 
-            var existingImage = await _fileRepository.GetFileById(library.ImageId.Value, cancellationToken);
+            var existingImage = await fileRepository.GetFileById(library.ImageId.Value, cancellationToken);
             if (existingImage != null && !string.IsNullOrWhiteSpace(existingImage.FilePath))
             {
-                await _fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
+                await fileStorage.TryDeleteImage(existingImage.FilePath, cancellationToken);
             }
 
             var url = await AddImageToFileStore(library.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
             command.Image.FilePath = url;
             command.Image.IsPublic = true;
-            await _fileRepository.UpdateFile(command.Image, cancellationToken);
+            await fileRepository.UpdateFile(command.Image, cancellationToken);
             command.Result.File = command.Image;
             command.Result.File.Id = library.ImageId.Value;
         }
@@ -74,10 +59,10 @@ public class UpdateLibraryImageRequestHandler : RequestHandlerAsync<UpdateLibrar
             var url = await AddImageToFileStore(library.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
             command.Image.FilePath = url;
             command.Image.IsPublic = true;
-            command.Result.File = await _fileRepository.AddFile(command.Image, cancellationToken);
+            command.Result.File = await fileRepository.AddFile(command.Image, cancellationToken);
             command.Result.HasAddedNew = true;
 
-            await _libraryRepository.UpdateLibraryImage(command.LibraryId, command.Result.File.Id, cancellationToken);
+            await libraryRepository.UpdateLibraryImage(command.LibraryId, command.Result.File.Id, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);
@@ -86,7 +71,7 @@ public class UpdateLibraryImageRequestHandler : RequestHandlerAsync<UpdateLibrar
     private async Task<string> AddImageToFileStore(int libraryId, string fileName, byte[] contents, string mimeType, CancellationToken cancellationToken)
     {
         var filePath = GetUniqueFileName(libraryId, fileName);
-        return await _fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
+        return await fileStorage.StoreImage(filePath, contents, mimeType, cancellationToken);
     }
 
     private static string GetUniqueFileName(int libraryId, string fileName)

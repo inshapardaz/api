@@ -4,23 +4,15 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
 {
-    public class WhenUpdatingChapterWithDifferentChapterNumber
-        : TestBase
+    public class WhenUpdatingChapterWithDifferentChapterNumber() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private ChapterView _newChapter;
         private ChapterAssert _assert;
         private int _chapterNumber;
-
-        public WhenUpdatingChapterWithDifferentChapterNumber()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,21 +27,12 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapter
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOKResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOKResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveUpdatedChater()
-        {
-            _assert.ShouldHaveSavedChapter();
-        }
+        public void ShouldHaveUpdatedChater() => _assert.ShouldHaveSavedChapter();
     }
 }

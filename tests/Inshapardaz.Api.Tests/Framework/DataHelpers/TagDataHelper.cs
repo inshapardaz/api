@@ -2,10 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -40,17 +37,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         IEnumerable<TagDto> GetTagsByIssue(int viewId);
     }
 
-    public class MySqlTagTestRepository : ITagTestRepository
+    public class MySqlTagTestRepository(IProvideConnection connectionProvider) : ITagTestRepository
     {
-        private readonly IProvideConnection _connectionProvider;
-
-        public MySqlTagTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
         public void AddTag(TagDto tag)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             var id = connection.ExecuteScalar<int>("INSERT INTO Tag (`Name`, LibraryId) VALUES (@Name, @LibraryId); SELECT LAST_INSERT_ID();", tag);
             tag.Id = id;
         }
@@ -65,34 +56,34 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteTags(IEnumerable<TagDto> tags)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             var sql = "DELETE FROM Tag WHERE Id IN @Ids";
             connection.Execute(sql, new { Ids = tags.Select(a => a.Id) });
         }
 
         public TagDto GetTagById(int libraryId, int id)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             return connection.QuerySingleOrDefault<TagDto>("SELECT * FROM Tag WHERE Id = @Id AND LibraryId = @LibraryId",
                 new { Id = id, LibraryId = libraryId });
         }
 
         public bool DoesTagExists(int id)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             return connection.ExecuteScalar<bool>("SELECT COUNT(*) FROM Tag WHERE Id = @Id", new { Id = id });
         }
 
         public IEnumerable<TagDto> GetTags(params int[] ids)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             return connection.Query<TagDto>("SELECT * FROM Tag WHERE Id IN @TagIds",
                 new { TagIds = ids });
         }
         
         public IEnumerable<TagDto> GetTagsByBook(int id)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             return connection.Query<TagDto>(@"SELECT c.* FROM Tag c
                                 INNER JOIN BookTag bc ON c.Id = bc.TagId
                                 WHERE bc.BookId = @BookId ", new { BookId = id });
@@ -100,7 +91,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<TagDto> GetTagsByPeriodical(int id)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             return connection.Query<TagDto>(@"SELECT c.* From Tag c
                                 INNER JOIN PeriodicalTag pc ON c.Id = pc.TagId
                                 WHERE pc.PeriodicalId = @PeriodicalId", new { PeriodicalId = id });
@@ -108,7 +99,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<TagDto> GetTagsByArticle(long id)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             return connection.Query<TagDto>(@"SELECT t.* FROM Tag t
                                 INNER JOIN ArticleTag at ON t.Id = at.TagId
                                 WHERE at.ArticleId = @ArticleId ", new { ArticleId = id });
@@ -116,7 +107,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<TagDto> GetTagsByIssue(int id)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             return connection.Query<TagDto>(@"SELECT t.* FROM Tag t
                                 INNER JOIN IssueTag it ON t.Id = it.TagId
                                 WHERE it.IssueId = @IssueId ", new { IssueId = id });
@@ -124,7 +115,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBooksToTag(IEnumerable<BookDto> books, TagDto tag)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             foreach (var book in books)
             {
                 connection.Execute("INSERT INTO BookTag (BookId, TagId) VALUES(@BookId, @TagId)",
@@ -134,7 +125,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBookToTags(int bookId, IEnumerable<TagDto> tags)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             foreach (var category in tags)
             {
                 connection.Execute("INSERT INTO BookTag (BookId, TagId) VALUES(@BookId, @TagId)",
@@ -144,7 +135,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddPeriodicalToTag(IEnumerable<PeriodicalDto> periodicals, TagDto tag)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             foreach (var periodical in periodicals)
             {
                 connection.Execute("INSERT INTO PeriodicalTag (PeriodicalId, TagId) VALUES(@PeriodicalId, @TagId)",
@@ -154,7 +145,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddPeriodicalToTags(int periodicalId, IEnumerable<TagDto> tags)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             foreach (var category in tags)
             {
                 connection.Execute("INSERT INTO PeriodicalTag (PeriodicalId, TagId) VALUES(@PeriodicalId, @TagId)",
@@ -164,7 +155,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddIssueToTags(long issueId, IEnumerable<TagDto> tags)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             foreach (var category in tags)
             {
                 connection.Execute("INSERT INTO IssueTag (IssueId, TagId) VALUES(@IssueId, @TagId)",
@@ -174,7 +165,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddArticleToTags(long articleId, IEnumerable<TagDto> tags)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             foreach (var category in tags)
             {
                 connection.Execute("INSERT INTO ArticleTag (ArticleId, TagId) VALUES(@ArticleId, @TagId)",
@@ -182,17 +173,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             }
         }
     }
-    public class SqlServerTagTestRepository : ITagTestRepository
+    public class SqlServerTagTestRepository(IProvideConnection connectionProvider) : ITagTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public SqlServerTagTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
         public void AddTag(TagDto tag)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             var id = connection.ExecuteScalar<int>("INSERT INTO Tag (Name, LibraryId) OUTPUT Inserted.Id VALUES (@Name, @LibraryId)", tag);
             tag.Id = id;
         }
@@ -207,33 +192,30 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteTags(IEnumerable<TagDto> tags)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             var sql = "DELETE FROM Tag WHERE Id IN @Ids";
             connection.Execute(sql, new { Ids = tags.Select(a => a.Id) });
         }
 
         public TagDto GetTagById(int libraryId, int id)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             return connection.QuerySingleOrDefault<TagDto>("SELECT * FROM Tag WHERE Id = @Id AND LibraryId = @LibraryId",
                 new { Id = id, LibraryId = libraryId });
         }
 
-        public bool DoesTagExists(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public bool DoesTagExists(int id) => throw new NotImplementedException();
 
         public IEnumerable<TagDto> GetTags(params int[] ids)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             return connection.Query<TagDto>("SELECT * FROM Tag WHERE Id IN @TagIds",
                 new { TagIds = ids });
         }
         
         public IEnumerable<TagDto> GetTagsByBook(int id)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             return connection.Query<TagDto>(@"SELECT c.* FROM Tag c
                                 INNER JOIN BookTag bc ON c.Id = bc.TagId
                                 WHERE bc.BookId = @BookId ", new { BookId = id });
@@ -241,7 +223,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<TagDto> GetTagsByPeriodical(int id)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             return connection.Query<TagDto>(@"SELECT c.* From Tag c
                                 INNER JOIN PeriodicalTag pc ON c.Id = pc.TagId
                                 WHERE pc.PeriodicalId = @PeriodicalId", new { PeriodicalId = id });
@@ -249,7 +231,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<TagDto> GetTagsByArticle(long id)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             return connection.Query<TagDto>(@"SELECT c.* FROM Tag c
                                 INNER JOIN ArticleTag bc ON c.Id = bc.TagId
                                 WHERE bc.ArticleId = @ArticleId ", new { ArticleId = id });
@@ -257,7 +239,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBooksToTag(IEnumerable<BookDto> books, TagDto tag)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             foreach (var book in books)
             {
                 connection.Execute("INSERT INTO BookTag (BookId, TagId) VALUES(@BookId, @TagId)",
@@ -267,7 +249,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddBookToTags(int bookId, IEnumerable<TagDto> tags)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             foreach (var category in tags)
             {
                 connection.Execute("INSERT INTO BookTag (BookId, TagId) VALUES(@BookId, @TagId)",
@@ -277,7 +259,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddPeriodicalToTag(IEnumerable<PeriodicalDto> periodicals, TagDto tag)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             foreach (var periodical in periodicals)
             {
                 connection.Execute("INSERT INTO PeriodicalTag (PeriodicalId, TagId) VALUES(@PeriodicalId, @TagId)",
@@ -287,7 +269,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void AddPeriodicalToTags(int periodicalId, IEnumerable<TagDto> tags)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             foreach (var category in tags)
             {
                 connection.Execute("INSERT INTO PeriodicalTag (PeriodicalId, TagId) VALUES(@PeriodicalId, @TagId)",
@@ -295,14 +277,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             }
         }
 
-        public void AddIssueToTags(long issueId, IEnumerable<TagDto> tags)
-        {
-            throw new NotImplementedException();
-        }
+        public void AddIssueToTags(long issueId, IEnumerable<TagDto> tags) => throw new NotImplementedException();
 
         public void AddArticleToTags(long articleId, IEnumerable<TagDto> tags)
         {
-            using var connection = _connectionProvider.GetConnection();
+            using var connection = connectionProvider.GetConnection();
             foreach (var category in tags)
             {
                 connection.Execute("INSERT INTO ArticleTag (ArticleId, TagId) VALUES(@ArticleId, @TagId)",
@@ -310,10 +289,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             }
         }
 
-        public IEnumerable<TagDto> GetTagsByIssue(int viewId)
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<TagDto> GetTagsByIssue(int viewId) => throw new NotImplementedException();
     }
 
     public static class TagDataHelper
@@ -348,10 +324,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                 new { Id = id, LibraryId = libraryId });
         }
 
-        public static bool DoesTagExists(this IDbConnection connection, int id)
-        {
-            throw new NotImplementedException();
-        }
+        public static bool DoesTagExists(this IDbConnection connection, int id) => throw new NotImplementedException();
 
         public static IEnumerable<TagDto> GetTagsByBook(this IDbConnection connection, int id)
         {

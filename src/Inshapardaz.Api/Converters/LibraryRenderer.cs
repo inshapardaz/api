@@ -15,19 +15,9 @@ public interface IRenderLibrary
     LibraryView Render(LibraryModel model);
 }
 
-public class LibraryRenderer : IRenderLibrary
+public class LibraryRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IFileStorage fileStorage)
+    : IRenderLibrary
 {
-    private readonly IRenderLink _linkRenderer;
-    private readonly IUserHelper _userHelper;
-    private readonly IFileStorage _fileStorage;
-
-    public LibraryRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IFileStorage fileStorage)
-    {
-        _linkRenderer = linkRenderer;
-        _userHelper = userHelper;
-        _fileStorage = fileStorage;
-    }
-
     public PageView<LibraryView> Render(PageRendererArgs<LibraryModel> source)
     {
         var page = new PageView<LibraryView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
@@ -49,7 +39,7 @@ public class LibraryRenderer : IRenderLibrary
 
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link {
+            linkRenderer.Render(new Link {
                 ActionName = nameof(LibraryController.GetLibraries),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
@@ -58,9 +48,9 @@ public class LibraryRenderer : IRenderLibrary
             })
         };
 
-        if (_userHelper.IsAdmin)
+        if (userHelper.IsAdmin)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(LibraryController.CreateLibrary),
                 Method = HttpMethod.Post,
@@ -82,7 +72,7 @@ public class LibraryRenderer : IRenderLibrary
                 queryStringNext.Add("accountId", source.RouteArguments.AccountId.Value.ToString());
             }
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(LibraryController.GetLibraries),
                 Method = HttpMethod.Get,
@@ -106,7 +96,7 @@ public class LibraryRenderer : IRenderLibrary
                 queryStringPrev.Add("accountId", source.RouteArguments.AccountId.Value.ToString());
             }
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(LibraryController.GetLibraries),
                 Method = HttpMethod.Get,
@@ -123,7 +113,7 @@ public class LibraryRenderer : IRenderLibrary
     {
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(LibraryController.GetLibraryById),
                 Method = HttpMethod.Get,
@@ -131,28 +121,28 @@ public class LibraryRenderer : IRenderLibrary
                 Parameters = new { libraryId = model.Id }
             }),
 
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(AuthorController.GetAuthors),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Authors,
                 Parameters = new { libraryId = model.Id }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(CategoryController.GetCategories),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Categories,
                 Parameters = new { libraryId = model.Id }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(SeriesController.GetSeries),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Series,
                 Parameters = new { libraryId = model.Id }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookController.GetBooks),
                 Method = HttpMethod.Get,
@@ -163,7 +153,7 @@ public class LibraryRenderer : IRenderLibrary
 
         if (model.SupportsPeriodicals)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(PeriodicalController.GetPeriodicals),
                 Method = HttpMethod.Get,
@@ -172,11 +162,11 @@ public class LibraryRenderer : IRenderLibrary
             }));
         }
 
-        if (!string.IsNullOrWhiteSpace(model.ImageUrl) && _fileStorage.SupportsPublicLink)
+        if (!string.IsNullOrWhiteSpace(model.ImageUrl) && fileStorage.SupportsPublicLink)
         {
             links.Add(new LinkView
             {
-                Href = _fileStorage.GetPublicUrl(model.ImageUrl),
+                Href = fileStorage.GetPublicUrl(model.ImageUrl),
                 Method = "GET",
                 Rel = RelTypes.Image,
                 Accept = MimeTypes.Jpg
@@ -184,7 +174,7 @@ public class LibraryRenderer : IRenderLibrary
         }
         else if (model.ImageId.HasValue)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(FileController.GetLibraryFile),
                 Method = HttpMethod.Get,
@@ -194,9 +184,9 @@ public class LibraryRenderer : IRenderLibrary
         }
 
 
-        if (_userHelper.IsAuthenticated)
+        if (userHelper.IsAuthenticated)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookController.GetBooks),
                 Method = HttpMethod.Get,
@@ -206,9 +196,9 @@ public class LibraryRenderer : IRenderLibrary
             }));
         }
 
-        if (_userHelper.IsWriter(model.Id) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(model.Id))
+        if (userHelper.IsWriter(model.Id) || userHelper.IsAdmin || userHelper.IsLibraryAdmin(model.Id))
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookController.CreateBook),
                 Method = HttpMethod.Post,
@@ -216,7 +206,7 @@ public class LibraryRenderer : IRenderLibrary
                 Parameters = new { libraryId = model.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(AuthorController.CreateAuthor),
                 Method = HttpMethod.Post,
@@ -224,7 +214,7 @@ public class LibraryRenderer : IRenderLibrary
                 Parameters = new { libraryId = model.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(SeriesController.CreateSeries),
                 Method = HttpMethod.Post,
@@ -232,7 +222,7 @@ public class LibraryRenderer : IRenderLibrary
                 Parameters = new { libraryId = model.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(UserController.GetBookPagesByUser),
                 Method = HttpMethod.Get,
@@ -240,7 +230,7 @@ public class LibraryRenderer : IRenderLibrary
                 Parameters = new { libraryId = model.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(UserController.GetBooksByUser),
                 Method = HttpMethod.Get,
@@ -248,7 +238,7 @@ public class LibraryRenderer : IRenderLibrary
                 Parameters = new { libraryId = model.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(UserController.GetUserPublicationSummary),
                 Method = HttpMethod.Get,
@@ -256,7 +246,7 @@ public class LibraryRenderer : IRenderLibrary
                 Parameters = new { libraryId = model.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(PeriodicalController.CreatePeriodical),
                 Method = HttpMethod.Get,
@@ -265,9 +255,9 @@ public class LibraryRenderer : IRenderLibrary
             }));
         }
 
-        if (_userHelper.IsLibraryAdmin(model.Id) || _userHelper.IsAdmin)
+        if (userHelper.IsLibraryAdmin(model.Id) || userHelper.IsAdmin)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(LibraryController.UpdateLibrary),
                 Method = HttpMethod.Put,
@@ -275,7 +265,7 @@ public class LibraryRenderer : IRenderLibrary
                 Parameters = new { libraryId = model.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(LibraryController.UpdateLibraryImage),
                 Method = HttpMethod.Put,
@@ -283,7 +273,7 @@ public class LibraryRenderer : IRenderLibrary
                 Parameters = new { libraryId = model.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(CategoryController.CreateCategory),
                 Method = HttpMethod.Post,
@@ -291,7 +281,7 @@ public class LibraryRenderer : IRenderLibrary
                 Parameters = new { libraryId = model.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(AccountsController.GetLibraryUsers),
                 Method = HttpMethod.Get,
@@ -299,7 +289,7 @@ public class LibraryRenderer : IRenderLibrary
                 Parameters = new { libraryId = model.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(AccountsController.InviteUser),
                 Method = HttpMethod.Get,
@@ -308,9 +298,9 @@ public class LibraryRenderer : IRenderLibrary
             }));
         }
 
-        if (_userHelper.IsAdmin)
+        if (userHelper.IsAdmin)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(LibraryController.DeleteLibrary),
                 Method = HttpMethod.Delete,
@@ -324,16 +314,16 @@ public class LibraryRenderer : IRenderLibrary
             Id = model.Id,
             Name = model.Name,
             Description = model.Description,
-            OwnerEmail = _userHelper.IsAdmin ? model.OwnerEmail : model.OwnerEmail.MaskEmail(),
+            OwnerEmail = userHelper.IsAdmin ? model.OwnerEmail : model.OwnerEmail.MaskEmail(),
             Language = model.Language,
             SupportsPeriodicals = model.SupportsPeriodicals,
             PrimaryColor = model.PrimaryColor,
             SecondaryColor = model.SecondaryColor,
             Public = model.Public,
             Links = links,
-            DatabaseConnection = _userHelper.IsAdmin ? model.DatabaseConnection : null,
-            FileStoreType = _userHelper.IsAdmin ? model.FileStoreType.ToDescription() : null,
-            FileStoreSource = _userHelper.IsAdmin ? model.FileStoreSource : null
+            DatabaseConnection = userHelper.IsAdmin ? model.DatabaseConnection : null,
+            FileStoreType = userHelper.IsAdmin ? model.FileStoreType.ToDescription() : null,
+            FileStoreSource = userHelper.IsAdmin ? model.FileStoreSource : null
         };
     }
 }

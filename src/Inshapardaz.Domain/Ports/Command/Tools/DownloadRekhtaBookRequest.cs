@@ -1,6 +1,4 @@
-﻿using System;
-using Common;
-using Inshapardaz.Domain.Adapters.Configuration;
+﻿using Inshapardaz.Domain.Adapters.Configuration;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Helpers;
@@ -11,24 +9,14 @@ using Inshapardaz.Domain.Ports.Command.Library.Book.Page;
 using Microsoft.Extensions.Options;
 using Paramore.Brighter;
 using RekhtaDownloader.Models;
-using System.Collections.Generic;
-using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
 namespace Inshapardaz.Domain.Ports.Command.Tools;
 
-public class DownloadRekhtaBookRequest : RequestBase
+public class DownloadRekhtaBookRequest(string url) : RequestBase
 {
-    public DownloadRekhtaBookRequest(string url)
-    {
-        Url = url.Contains("?") ? url.Substring(0, url.IndexOf("?")) : url;
-    }
-
-    public string Url { get; init; }
+    public string Url { get; init; } = url.Contains("?") ? url.Substring(0, url.IndexOf("?")) : url;
 
     public bool CreatePdf { get; set; }
 
@@ -44,53 +32,35 @@ public class DownloadRekhtaBookRequest : RequestBase
     }
 }
 
-public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekhtaBookRequest>
+public class DownloadRekhtaBookRequestHandler(
+    IAmACommandProcessor commandProcessor,
+    IOptions<Settings> settings,
+    IBookRepository bookRepository,
+    IBookPageRepository bookPageRepository,
+    IFileRepository fileRepository,
+    IFileStorage fileStorage,
+    IAuthorRepository authorRepository,
+    ILogger<DownloadRekhtaBookRequestHandler> logger)
+    : RequestHandlerAsync<DownloadRekhtaBookRequest>
 {
-    private readonly IBookRepository _bookRepository;
-    private readonly IBookPageRepository _bookPageRepository;
-    private readonly IAuthorRepository _authorRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly Settings _settings;
-    private readonly IFileRepository _fileRepository;
-    private readonly IFileStorage _fileStorage;
-    private ILogger<DownloadRekhtaBookRequestHandler> _logger;
-
-    public DownloadRekhtaBookRequestHandler(
-        IAmACommandProcessor commandProcessor,
-        IOptions<Settings> settings,
-        IBookRepository bookRepository,
-        IBookPageRepository bookPageRepository,
-        IFileRepository fileRepository,
-        IFileStorage fileStorage,
-        IAuthorRepository authorRepository, 
-        ILogger<DownloadRekhtaBookRequestHandler> logger)
-    {
-        _commandProcessor = commandProcessor;
-        _settings = settings.Value;
-        _bookRepository = bookRepository;
-        _bookPageRepository = bookPageRepository;
-        _fileRepository = fileRepository;
-        _fileStorage = fileStorage;
-        _authorRepository = authorRepository;
-        _logger = logger;
-    }
+    private readonly Settings _settings = settings.Value;
 
     [AuthorizeAdmin(1)]
     public override async Task<DownloadRekhtaBookRequest> HandleAsync(DownloadRekhtaBookRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        _logger.BeginScope("Downloading {Url} for {Library}", command.Url, _settings.DefaultLibraryId);
-        var book = await _bookRepository.GetBookBySource(_settings.DefaultLibraryId, command.Url, cancellationToken);
+        logger.BeginScope("Downloading {Url} for {Library}", command.Url, _settings.DefaultLibraryId);
+        var book = await bookRepository.GetBookBySource(_settings.DefaultLibraryId, command.Url, cancellationToken);
         if (book != null)
         {
-            var bookContents = await _bookRepository.GetBookContents(_settings.DefaultLibraryId, book.Id, cancellationToken);
+            var bookContents = await bookRepository.GetBookContents(_settings.DefaultLibraryId, book.Id, cancellationToken);
             if (command.CreatePdf)
             {
                 if (bookContents.Any(c => c.MimeType == MimeTypes.Pdf))
                 {
-                    var file = await _fileRepository.GetFileById(bookContents.First(c => c.MimeType == MimeTypes.Pdf).FileId, cancellationToken);
+                    var file = await fileRepository.GetFileById(bookContents.First(c => c.MimeType == MimeTypes.Pdf).FileId, cancellationToken);
                     if (file != null)
                     {
-                        var contents = await _fileStorage.GetFile(file.FilePath, cancellationToken);
+                        var contents = await fileStorage.GetFile(file.FilePath, cancellationToken);
                         if (contents != null)
                         {
                             var result = new DownloadRekhtaBookRequest.Result()
@@ -110,7 +80,7 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
             }
             else
             {
-                var pages = await _bookPageRepository.GetAllPagesByBook(_settings.DefaultLibraryId, book.Id, cancellationToken);
+                var pages = await bookPageRepository.GetAllPagesByBook(_settings.DefaultLibraryId, book.Id, cancellationToken);
                 if (pages != null && pages.Any(p => p.ImageId.HasValue))
                 {
                     using (var memoryStream = new MemoryStream())
@@ -119,10 +89,10 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
                         {
                             foreach (var page in pages.Where(p => p.ImageId.HasValue))
                             {
-                                var file = await _fileRepository.GetFileById(page.ImageId.Value, cancellationToken);
+                                var file = await fileRepository.GetFileById(page.ImageId.Value, cancellationToken);
                                 if (file != null && file.Contents != null)
                                 {
-                                    var contents = await _fileStorage.GetFile(file.FilePath, cancellationToken);
+                                    var contents = await fileStorage.GetFile(file.FilePath, cancellationToken);
 
                                     var archiveFile = archive.CreateEntry(file.FileName);
                                     using (var entryStream = archiveFile.Open())
@@ -164,7 +134,7 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
 
     private async Task DownloadBook(BookModel book, DownloadRekhtaBookRequest command, CancellationToken cancellationToken)
     {
-        var exporter = new RekhtaDownloader.BookExporter(_logger);
+        var exporter = new RekhtaDownloader.BookExporter(logger);
         var path = $"../data/downloads/{Guid.NewGuid():D}";
         var filePath = await exporter.DownloadBook(command.Url, 10, command.CreatePdf ? RekhtaDownloader.OutputType.Pdf : RekhtaDownloader.OutputType.Images, path, cancellationToken);
         var bookInfo = await exporter.GetBookInformation(command.Url, cancellationToken);
@@ -229,19 +199,19 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
     {
         foreach (var page in pages.OrderByDescending(x => x.SequenceNumber))
         {
-            await _bookPageRepository.DeletePage(_settings.DefaultLibraryId, book.Id, page.SequenceNumber, cancellationToken);
+            await bookPageRepository.DeletePage(_settings.DefaultLibraryId, book.Id, page.SequenceNumber, cancellationToken);
         }
     }
 
     private async Task<BookModel> CreateNewBook(BookInfo bookInfo, string source, CancellationToken cancellationToken)
     {
         var authorName = bookInfo.Authors?.FirstOrDefault() ?? "Unknown";
-        var authors = await _authorRepository.FindAuthors(_settings.DefaultLibraryId, authorName, AuthorTypes.Writer, 1, 1, AuthorSortByType.Name, SortDirection.Ascending, cancellationToken);
+        var authors = await authorRepository.FindAuthors(_settings.DefaultLibraryId, authorName, AuthorTypes.Writer, 1, 1, AuthorSortByType.Name, SortDirection.Ascending, cancellationToken);
         AuthorModel author = null;
 
         if (!authors.Data.Any())
         {
-            author = await _authorRepository.AddAuthor(_settings.DefaultLibraryId,
+            author = await authorRepository.AddAuthor(_settings.DefaultLibraryId,
                 new AuthorModel
                 {
                     Name = authorName,
@@ -253,7 +223,7 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
             author = authors.Data.First();
         }
 
-        var book = await _bookRepository.AddBook(_settings.DefaultLibraryId, new BookModel
+        var book = await bookRepository.AddBook(_settings.DefaultLibraryId, new BookModel
         {
             Title = bookInfo.Title,
             Authors = [author],
@@ -274,7 +244,7 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
                 }
             };
 
-            await _commandProcessor.SendAsync(updateImgRequest, cancellationToken: cancellationToken);
+            await commandProcessor.SendAsync(updateImgRequest, cancellationToken: cancellationToken);
         }
 
         return book;
@@ -291,7 +261,7 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
                 FileName = Path.GetFileName(filePath)
             }
         };
-        await _commandProcessor.SendAsync(cmdAddBookContent, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(cmdAddBookContent, cancellationToken: cancellationToken);
 
         // var amdAddBookPages = new InternalUploadBookPagesRequest(_settings.DefaultLibraryId, book.Id)
         // {
@@ -322,6 +292,6 @@ public class DownloadRekhtaBookRequestHandler : RequestHandlerAsync<DownloadRekh
             Files = files
         };
 
-        await _commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
     }
 }

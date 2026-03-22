@@ -3,19 +3,13 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.InviteUser
 {
     [TestFixture]
-    public class WhenInvitingUserAsLibraryAdminForAnotherLibrary : TestBase
+    public class WhenInvitingUserAsLibraryAdminForAnotherLibrary() : TestBase(Role.LibraryAdmin)
     {
         private HttpResponseMessage _response;
-
-        public WhenInvitingUserAsLibraryAdminForAnotherLibrary() : base(Role.LibraryAdmin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -31,9 +25,6 @@ namespace Inshapardaz.Api.Tests.Accounts.InviteUser
         }
 
         [Test]
-        public void ShouldReturnForbidden()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldReturnForbidden() => _response.ShouldBeForbidden();
     }
 }

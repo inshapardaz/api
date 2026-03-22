@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Extensions;
+﻿using Inshapardaz.Api.Extensions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
@@ -11,15 +9,9 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.User.UpdateUserBookProgress
 {
     [TestFixture]
-    public class WhenUpdatingBookProgressForNonExistingBook
-        : TestBase
+    public class WhenUpdatingBookProgressForNonExistingBook() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
-
-        public WhenUpdatingBookProgressForNonExistingBook()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,15 +25,9 @@ namespace Inshapardaz.Api.Tests.Library.User.UpdateUserBookProgress
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveNotFound()
-        {
-            _response.ShouldBeNotFound();
-        }
+        public void ShouldHaveNotFound() => _response.ShouldBeNotFound();
     }
 }

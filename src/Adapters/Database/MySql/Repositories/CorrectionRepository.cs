@@ -1,24 +1,14 @@
 ﻿using Dapper;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapters.Database.MySql.Repositories;
 
-public class CorrectionRepository : ICorrectionRepository
+public class CorrectionRepository(MySqlConnectionProvider connectionProvider) : ICorrectionRepository
 {
-    private readonly MySqlConnectionProvider _connectionProvider;
-
-    public CorrectionRepository(MySqlConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-
     public async Task<IEnumerable<CorrectionModel>> GetAllCorrections(string language, string profile, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT * FROM Corrections 
                     WHERE `Language` = @Language 
@@ -35,7 +25,7 @@ public class CorrectionRepository : ICorrectionRepository
 
     public async Task<Page<CorrectionModel>> GetCorrectionList(string language, string query, string profile, int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT *
                             FROM Corrections
@@ -73,7 +63,7 @@ public class CorrectionRepository : ICorrectionRepository
 
     public async Task<CorrectionModel> GetCorrection(string language, string profile, long id, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT * FROM Corrections 
                             WHERE Id = @Id
@@ -92,7 +82,7 @@ public class CorrectionRepository : ICorrectionRepository
 
     private async Task<CorrectionModel> GetCorrectionById(long id, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT * FROM Corrections 
                             WHERE Id = @Id";
@@ -108,7 +98,7 @@ public class CorrectionRepository : ICorrectionRepository
     public async Task<CorrectionModel> AddCorrection(CorrectionModel correction, CancellationToken cancellationToken)
     {
         var id = 0;
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"Insert Into Corrections(`Language`, `Profile`, IncorrectText, CorrectText, CompleteWord)  
                             VALUES(@Language, @Profile, @IncorrectText, @CorrectText, @CompleteWord);
@@ -123,7 +113,7 @@ public class CorrectionRepository : ICorrectionRepository
 
     public async Task<CorrectionModel> UpdateCorrection(CorrectionModel correction, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"UPDATE Corrections 
                             SET IncorrectText  = @IncorrectText, 
@@ -145,7 +135,7 @@ public class CorrectionRepository : ICorrectionRepository
 
     public async Task DeleteCorrection(long id, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"DELETE FROM Corrections WHERE Id = @Id";
             var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
@@ -156,7 +146,7 @@ public class CorrectionRepository : ICorrectionRepository
     #region for migration
     public async Task<IEnumerable<CorrectionModel>> GetAllCorrections(CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetConnection())
+        using (var connection = connectionProvider.GetConnection())
         {
             var sql = @"SELECT * FROM Corrections";
             var command = new CommandDefinition(sql, cancellationToken: cancellationToken);

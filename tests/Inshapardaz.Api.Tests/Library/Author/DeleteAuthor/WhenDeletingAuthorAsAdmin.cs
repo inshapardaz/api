@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
@@ -11,17 +9,12 @@ namespace Inshapardaz.Api.Tests.Library.Author.DeleteAuthor
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
-    public class WhenDeletingAuthorAsAdmin : TestBase
+    public class WhenDeletingAuthorAsAdmin(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private AuthorAssert _authorAssert;
         private AuthorDto _expected;
         private string _filePath;
-
-        public WhenDeletingAuthorAsAdmin(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,33 +28,18 @@ namespace Inshapardaz.Api.Tests.Library.Author.DeleteAuthor
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNoContent()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldReturnNoContent() => _response.ShouldBeNoContent();
 
         [Test]
-        public void ShouldHaveDeletedAuthor()
-        {
-            _authorAssert.ShouldHaveDeletedAuthor(_expected.Id);
-        }
+        public void ShouldHaveDeletedAuthor() => _authorAssert.ShouldHaveDeletedAuthor(_expected.Id);
 
         [Test]
-        public void ShouldHaveDeletedTheAuthorImage()
-        {
-            _authorAssert.ShouldHaveDeletedAuthorImage(_expected.Id, _expected.ImageId.Value, _filePath);
-        }
+        public void ShouldHaveDeletedTheAuthorImage() => _authorAssert.ShouldHaveDeletedAuthorImage(_expected.Id, _expected.ImageId.Value, _filePath);
 
         [Test]
-        public void ShouldDeleteAuthorBooks()
-        {
-            Assert.Inconclusive("Define a policy and implement");
-        }
+        public void ShouldDeleteAuthorBooks() => Assert.Inconclusive("Define a policy and implement");
     }
 }

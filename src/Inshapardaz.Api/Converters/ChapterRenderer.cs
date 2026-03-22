@@ -16,23 +16,14 @@ public interface IRenderChapter
     ListView<ChapterView> Render(IEnumerable<ChapterModel> source, int libraryId, int bookId);
 }
 
-public class ChapterRenderer : IRenderChapter
+public class ChapterRenderer(IRenderLink linkRenderer, IUserHelper userHelper) : IRenderChapter
 {
-    private readonly IRenderLink _linkRenderer;
-    private readonly IUserHelper _userHelper;
-
-    public ChapterRenderer(IRenderLink linkRenderer, IUserHelper userHelper)
-    {
-        _linkRenderer = linkRenderer;
-        _userHelper = userHelper;
-    }
-
     public ListView<ChapterView> Render(IEnumerable<ChapterModel> source, int libraryId, int bookId)
     {
         var items = source.Select(c => Render(c, libraryId, bookId)).ToList();
         var view = new ListView<ChapterView> { Data = items };
 
-        view.Links.Add(_linkRenderer.Render(new Link
+        view.Links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(ChapterController.GetChaptersByBook),
             Method = HttpMethod.Get,
@@ -40,9 +31,9 @@ public class ChapterRenderer : IRenderChapter
             Parameters = new { libraryId = libraryId, bookId = bookId }
         }));
 
-        if (_userHelper.IsWriter(libraryId) || _userHelper.IsLibraryAdmin(libraryId) || _userHelper.IsAdmin)
+        if (userHelper.IsWriter(libraryId) || userHelper.IsLibraryAdmin(libraryId) || userHelper.IsAdmin)
         {
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.UpdateChapterSequence),
                 Method = HttpMethod.Post,
@@ -50,7 +41,7 @@ public class ChapterRenderer : IRenderChapter
                 Parameters = new { libraryId = libraryId, bookId = bookId }
             }));
 
-            view.Links.Add(_linkRenderer.Render(new Link
+            view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.CreateChapter),
                 Method = HttpMethod.Post,
@@ -67,14 +58,14 @@ public class ChapterRenderer : IRenderChapter
         var result = source.Map();
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.GetChapterById),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
                 Parameters = new { libraryId = libraryId, bookId = bookId, chapterNumber = source.ChapterNumber }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookController.GetBookById),
                 Method = HttpMethod.Get,
@@ -85,7 +76,7 @@ public class ChapterRenderer : IRenderChapter
 
         if (source.PreviousChapter != null)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.GetChapterById),
                 Method = HttpMethod.Get,
@@ -96,7 +87,7 @@ public class ChapterRenderer : IRenderChapter
 
         if (source.NextChapter != null)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.GetChapterById),
                 Method = HttpMethod.Get,
@@ -105,9 +96,9 @@ public class ChapterRenderer : IRenderChapter
             }));
         }
 
-        if (_userHelper.IsWriter(libraryId) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
+        if (userHelper.IsWriter(libraryId) || userHelper.IsAdmin || userHelper.IsLibraryAdmin(libraryId))
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.UpdateChapter),
                 Method = HttpMethod.Put,
@@ -115,7 +106,7 @@ public class ChapterRenderer : IRenderChapter
                 Parameters = new { libraryId = libraryId, bookId = bookId, chapterNumber = source.ChapterNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.DeleteChapter),
                 Method = HttpMethod.Delete,
@@ -123,7 +114,7 @@ public class ChapterRenderer : IRenderChapter
                 Parameters = new { libraryId = libraryId, bookId = bookId, chapterNumber = source.ChapterNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.CreateChapterContent),
                 Method = HttpMethod.Post,
@@ -131,7 +122,7 @@ public class ChapterRenderer : IRenderChapter
                 Parameters = new { libraryId = libraryId, bookId = bookId, chapterNumber = source.ChapterNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.AssignChapterToUser),
                 Method = HttpMethod.Post,
@@ -140,7 +131,7 @@ public class ChapterRenderer : IRenderChapter
             }));
         }
 
-        if (_userHelper.IsAuthenticated)
+        if (userHelper.IsAuthenticated)
         {
             var contents = new List<ChapterContentView>();
             foreach (var content in source.Contents)
@@ -155,10 +146,7 @@ public class ChapterRenderer : IRenderChapter
         return result;
     }
 
-    public ChapterContentView Render(ChapterContentModel source, int libraryId)
-    {
-        return Render(source, libraryId, true);
-    }
+    public ChapterContentView Render(ChapterContentModel source, int libraryId) => Render(source, libraryId, true);
 
     private ChapterContentView Render(ChapterContentModel source, int libraryId, bool addText = true)
     {
@@ -171,7 +159,7 @@ public class ChapterRenderer : IRenderChapter
 
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.GetChapterContent),
                 Method = HttpMethod.Get,
@@ -179,14 +167,14 @@ public class ChapterRenderer : IRenderChapter
                 Language = source.Language,
                 Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterNumber = source.ChapterNumber }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.GetChapterById),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Chapter,
                 Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterNumber = source.ChapterNumber }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookController.GetBookById),
                 Method = HttpMethod.Get,
@@ -195,7 +183,7 @@ public class ChapterRenderer : IRenderChapter
             })
     };
 
-        links.Add(_linkRenderer.Render(new Link
+        links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(ChapterController.GetChapterContent),
             Method = HttpMethod.Get,
@@ -204,9 +192,9 @@ public class ChapterRenderer : IRenderChapter
             Parameters = new { libraryId = libraryId, bookId = source.BookId, chapterNumber = source.ChapterNumber }
         }));
 
-        if (_userHelper.IsWriter(libraryId) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
+        if (userHelper.IsWriter(libraryId) || userHelper.IsAdmin || userHelper.IsLibraryAdmin(libraryId))
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.UpdateChapterContent),
 
@@ -221,7 +209,7 @@ public class ChapterRenderer : IRenderChapter
                 }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.DeleteChapterContent),
                 Method = HttpMethod.Delete,

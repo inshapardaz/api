@@ -2,24 +2,16 @@
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
-using System.Collections.Generic;
-using System.Linq;
 using Inshapardaz.Api.Views.Tools;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
-    public class CommonWordBuilder
+    public class CommonWordBuilder(ICommonWordsTestRepository commonWordsRepository)
     {
         private List<CommonWordDto> _commonWords = new();
 
-        private readonly ICommonWordsTestRepository _commonWordsRepository;
         private string _language;
         private string _pattern = "Word_";
-
-        public CommonWordBuilder(ICommonWordsTestRepository commonWordsRepository)
-        {
-            _commonWordsRepository = commonWordsRepository;
-        }
 
         public IEnumerable<CommonWordDto> Words => _commonWords;
 
@@ -47,7 +39,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                 .CreateMany(count);
 
             _commonWords.AddRange(words);
-            _commonWordsRepository.AddCommonWords(words);
+            commonWordsRepository.AddCommonWords(words);
 
             return words;
         }
@@ -63,10 +55,6 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                 .Create();
         }
 
-        public void Cleanup()
-        {
-            _commonWordsRepository.DeleteCommonWords(_commonWords);
-        }
-
+        public void Cleanup() => commonWordsRepository.DeleteCommonWords(_commonWords);
     }
 }

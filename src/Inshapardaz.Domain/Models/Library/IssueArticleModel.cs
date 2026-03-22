@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Inshapardaz.Domain.Models.Library;
 
 public class IssueArticleModel

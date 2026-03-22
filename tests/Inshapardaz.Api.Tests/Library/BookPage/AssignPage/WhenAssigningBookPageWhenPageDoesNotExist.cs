@@ -2,20 +2,13 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
 {
     [TestFixture]
-    public class WhenAssigningBookPageWhenPageDoesNotExist : TestBase
+    public class WhenAssigningBookPageWhenPageDoesNotExist() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
-
-        public WhenAssigningBookPageWhenPageDoesNotExist()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -39,9 +32,6 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AssignPage
         }
 
         [Test]
-        public void ShouldHaveBadRequestResponse()
-        {
-            _response.ShouldBeBadRequest();
-        }
+        public void ShouldHaveBadRequestResponse() => _response.ShouldBeBadRequest();
     }
 }

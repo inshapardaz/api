@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace Inshapardaz.Domain.Adapters;
+﻿namespace Inshapardaz.Domain.Adapters;
 
 public interface ISendEmail
 {

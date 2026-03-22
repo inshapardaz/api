@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -12,16 +8,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
 {
     [TestFixture]
-    public class WhenGettingBookPagesAssigned : TestBase
+    public class WhenGettingBookPagesAssigned() : TestBase(Role.Reader)
     {
         private BookDto _book;
         private HttpResponseMessage _response;
         private PagingAssert<BookPageView> _assert;
-
-        public WhenGettingBookPagesAssigned()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,16 +26,10 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -54,10 +39,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
 
         [Test]
         public void ShouldHaveNextLink()
@@ -67,10 +49,7 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPages
         }
 
         [Test]
-        public void ShouldNotHavePreviousLink()
-        {
-            _assert.ShouldNotHavePreviousLink();
-        }
+        public void ShouldNotHavePreviousLink() => _assert.ShouldNotHavePreviousLink();
 
         [Test]
         public void ShouldReturExpectedBookPages()

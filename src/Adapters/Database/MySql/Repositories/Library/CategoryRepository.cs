@@ -1,25 +1,15 @@
 ﻿using Dapper;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library;
 
-public class CategoryRepository : ICategoryRepository
+public class CategoryRepository(MySqlConnectionProvider connectionProvider) : ICategoryRepository
 {
-    private readonly MySqlConnectionProvider _connectionProvider;
-
-    public CategoryRepository(MySqlConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-
     public async Task<CategoryModel> AddCategory(int libraryId, CategoryModel category, CancellationToken cancellationToken)
     {
         int id;
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO Category(`Name`, LibraryId)
                             VALUES (@Name, @LibraryId);
@@ -33,7 +23,7 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task UpdateCategory(int libraryId, CategoryModel category, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE Category
                             SET `Name` = @Name 
@@ -46,7 +36,7 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task DeleteCategory(int libraryId, int categoryId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"DELETE FROM Category 
                             WHERE LibraryId = @LibraryId 
@@ -58,7 +48,7 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<IEnumerable<CategoryModel>> GetCategories(int libraryId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT c.Id, c.Name,
                                 (SELECT Count(*) FROM BookCategory b WHERE b.CategoryId = c.Id) AS BookCount,
@@ -75,7 +65,7 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<CategoryModel> GetCategoryById(int libraryId, int categoryId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT c.Id, c.Name,
                                 (SELECT Count(*) FROM BookCategory b WHERE b.CategoryId = c.Id) AS BookCount,
@@ -93,7 +83,7 @@ public class CategoryRepository : ICategoryRepository
 
     public async Task<IEnumerable<CategoryModel>> GetCategoriesByIds(int libraryId, IEnumerable<int> categoryIds, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT c.Id, c.Name,
                                 (SELECT COUNT(*) FROM BookCategory b WHERE b.CategoryId = c.Id) AS BookCount,

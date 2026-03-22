@@ -17,21 +17,13 @@ public interface IRenderPeriodical
     PeriodicalView Render(PeriodicalModel source, int libraryId);
 }
 
-public class PeriodicalRenderer : IRenderPeriodical
+public class PeriodicalRenderer(
+    IRenderLink linkRenderer,
+    IUserHelper userHelper,
+    IRenderCategory categoryRenderer,
+    IFileStorage fileStorage)
+    : IRenderPeriodical
 {
-    private readonly IRenderLink _linkRenderer;
-    private readonly IUserHelper _userHelper;
-    private readonly IRenderCategory _categoryRenderer;
-    private readonly IFileStorage _fileStorage;
-
-    public PeriodicalRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IRenderCategory categoryRenderer, IFileStorage fileStorage)
-    {
-        _linkRenderer = linkRenderer;
-        _userHelper = userHelper;
-        _fileStorage = fileStorage;
-        _categoryRenderer = categoryRenderer;
-    }
-
     public PageView<PeriodicalView> Render(PageRendererArgs<PeriodicalModel, PeriodicalFilter, PeriodicalSortByType> source, int libraryId)
     {
         var page = new PageView<PeriodicalView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
@@ -43,7 +35,7 @@ public class PeriodicalRenderer : IRenderPeriodical
 
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link {
+            linkRenderer.Render(new Link {
                 ActionName = nameof(PeriodicalController.GetPeriodicals),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
@@ -52,9 +44,9 @@ public class PeriodicalRenderer : IRenderPeriodical
             })
         };
 
-        if (_userHelper.IsWriter(libraryId) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
+        if (userHelper.IsWriter(libraryId) || userHelper.IsAdmin || userHelper.IsLibraryAdmin(libraryId))
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(PeriodicalController.CreatePeriodical),
                 Method = HttpMethod.Post,
@@ -67,7 +59,7 @@ public class PeriodicalRenderer : IRenderPeriodical
         {
             var nextPageQuery = CreateQueryString(source, page, page.CurrentPageIndex + 1);
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(PeriodicalController.GetPeriodicals),
                 Method = HttpMethod.Get,
@@ -81,7 +73,7 @@ public class PeriodicalRenderer : IRenderPeriodical
         {
             var prevPageQuery = CreateQueryString(source, page, page.CurrentPageIndex - 1);
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(PeriodicalController.GetPeriodicals),
                 Method = HttpMethod.Get,
@@ -101,14 +93,14 @@ public class PeriodicalRenderer : IRenderPeriodical
 
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(PeriodicalController.GetPeriodicalById),
                 Method = HttpMethod.Get,
                 Rel = RelTypes.Self,
                 Parameters = new { libraryId = libraryId, periodicalId = source.Id }
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.GetIssues),
                 Method = HttpMethod.Get,
@@ -121,11 +113,11 @@ public class PeriodicalRenderer : IRenderPeriodical
             })
         };
 
-        if (!string.IsNullOrWhiteSpace(source.ImageUrl) && _fileStorage.SupportsPublicLink)
+        if (!string.IsNullOrWhiteSpace(source.ImageUrl) && fileStorage.SupportsPublicLink)
         {
             links.Add(new LinkView
             {
-                Href = _fileStorage.GetPublicUrl(source.ImageUrl),
+                Href = fileStorage.GetPublicUrl(source.ImageUrl),
                 Method = "GET",
                 Rel = RelTypes.Image,
                 Accept = MimeTypes.Jpg
@@ -133,7 +125,7 @@ public class PeriodicalRenderer : IRenderPeriodical
         }
         else if (source.ImageId.HasValue)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(FileController.GetLibraryFile),
                 Method = HttpMethod.Get,
@@ -147,15 +139,15 @@ public class PeriodicalRenderer : IRenderPeriodical
             var categories = new List<CategoryView>();
             foreach (var category in source.Categories)
             {
-                categories.Add(_categoryRenderer.Render(category, source.LibraryId));
+                categories.Add(categoryRenderer.Render(category, source.LibraryId));
             }
 
             result.Categories = categories;
         }
 
-        if (_userHelper.IsWriter(libraryId) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
+        if (userHelper.IsWriter(libraryId) || userHelper.IsAdmin || userHelper.IsLibraryAdmin(libraryId))
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(PeriodicalController.UpdatePeriodical),
                 Method = HttpMethod.Put,
@@ -163,7 +155,7 @@ public class PeriodicalRenderer : IRenderPeriodical
                 Parameters = new { libraryId = libraryId, periodicalId = source.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(PeriodicalController.DeletePeriodical),
                 Method = HttpMethod.Delete,
@@ -171,7 +163,7 @@ public class PeriodicalRenderer : IRenderPeriodical
                 Parameters = new { libraryId = libraryId, periodicalId = source.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(IssueController.CreateIssue),
                 Method = HttpMethod.Post,
@@ -179,7 +171,7 @@ public class PeriodicalRenderer : IRenderPeriodical
                 Parameters = new { libraryId = libraryId, periodicalId = source.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(PeriodicalController.UpdatePeriodicalImage),
                 Method = HttpMethod.Put,

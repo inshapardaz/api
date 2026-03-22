@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -10,13 +7,18 @@ using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
-    public class SeriesDataBuilder
+    public class SeriesDataBuilder(
+        IFileStorage fileStorage,
+        IAuthorTestRepository authorRepository,
+        IFileTestRepository fileRepository,
+        ISeriesTestRepository seriesRepository,
+        IBookTestRepository bookRepository)
     {
         private List<AuthorDto> _authors = new List<AuthorDto>();
         private List<BookDto> _books = new List<BookDto>();
         private List<SeriesDto> _series = new List<SeriesDto>();
         private List<FileDto> _files = new List<FileDto>();
-        private readonly FakeFileStorage _fileStorage;
+        private readonly FakeFileStorage _fileStorage = fileStorage as FakeFileStorage;
         private bool _withImage = true;
         private int _bookCount;
         private int _libraryId;
@@ -24,23 +26,6 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public IEnumerable<BookDto> Books => _books;
         public IEnumerable<SeriesDto> Series => _series;
-        private IAuthorTestRepository _authorRepository;
-        private IFileTestRepository _fileRepository;
-        private ISeriesTestRepository _seriesRepository;
-        private IBookTestRepository _bookRepository;
-
-        public SeriesDataBuilder(IFileStorage fileStorage,
-                IAuthorTestRepository authorRepository,
-                IFileTestRepository fileRepository,
-                ISeriesTestRepository seriesRepository,
-                IBookTestRepository bookRepository)
-        {
-            _fileStorage = fileStorage as FakeFileStorage;
-            _authorRepository = authorRepository;
-            _fileRepository = fileRepository;
-            _seriesRepository = seriesRepository;
-            _bookRepository = bookRepository;
-        }
 
         public SeriesDataBuilder WithBooks(int bookCount)
         {
@@ -80,7 +65,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                      .Without(a => a.ImageId)
                                      .Create();
 
-                _authorRepository.AddAuthor(author);
+                authorRepository.AddAuthor(author);
                 _authors.Add(author);
 
                 FileDto seriesImage = null;
@@ -90,7 +75,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .With(a => a.FilePath, Framework.Helpers.RandomData.FilePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
-                    _fileRepository.AddFile(seriesImage);
+                    fileRepository.AddFile(seriesImage);
 
                     _files.Add(seriesImage);
                     _fileStorage.SetupFileContents(seriesImage.FilePath, Framework.Helpers.RandomData.Bytes);
@@ -102,7 +87,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                 .With(a => a.ImageId, seriesImage?.Id)
                                 .Create();
 
-                _seriesRepository.AddSeries(series);
+                seriesRepository.AddSeries(series);
                 seriesList.Add(series);
 
                 var books = fixture.Build<BookDto>()
@@ -112,8 +97,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                    .With(b => b.SeriesId, series.Id)
                                    .CreateMany(_bookCount);
                 _books.AddRange(books);
-                _bookRepository.AddBooks(books);
-                _bookRepository.AddBooksAuthor(books.Select(b => b.Id), author.Id);
+                bookRepository.AddBooks(books);
+                bookRepository.AddBooksAuthor(books.Select(b => b.Id), author.Id);
             }
 
             _series.AddRange(seriesList);
@@ -122,10 +107,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void CleanUp()
         {
-            _seriesRepository.DeleteSeries(_series);
-            _fileRepository.DeleteFiles(_files);
-            _bookRepository.DeleteBooks(_books);
-            _authorRepository.DeleteAuthors(_authors);
+            seriesRepository.DeleteSeries(_series);
+            fileRepository.DeleteFiles(_files);
+            bookRepository.DeleteBooks(_books);
+            authorRepository.DeleteAuthors(_authors);
         }
     }
 }

@@ -3,35 +3,20 @@ using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Brighter;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Book.Page;
 
-public class UpdateBookPageSequenceRequest : BookRequest
+public class UpdateBookPageSequenceRequest(int libraryId, int bookId, int oldSequenceNumber, int newSequenceNumber)
+    : BookRequest(libraryId, bookId)
 {
-    public UpdateBookPageSequenceRequest(int libraryId, int bookId, int oldSequenceNumber, int newSequenceNumber)
-        : base(libraryId, bookId)
-    {
-        OldSequenceNumber = oldSequenceNumber;
-        NewSequenceNumber = newSequenceNumber;
-    }
-
     public IEnumerable<BookPageModel> BookPages { get; }
-    public int OldSequenceNumber { get; }
-    public int NewSequenceNumber { get; }
+    public int OldSequenceNumber { get; } = oldSequenceNumber;
+    public int NewSequenceNumber { get; } = newSequenceNumber;
 }
 
-public class UpdatePageSequenceRequestHandler : RequestHandlerAsync<UpdateBookPageSequenceRequest>
+public class UpdatePageSequenceRequestHandler(IBookPageRepository bookPageRepository)
+    : RequestHandlerAsync<UpdateBookPageSequenceRequest>
 {
-    private readonly IBookPageRepository _bookPageRepository;
-
-    public UpdatePageSequenceRequestHandler(IBookPageRepository bookPageRepository)
-    {
-        _bookPageRepository = bookPageRepository;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateBookPageSequenceRequest> HandleAsync(UpdateBookPageSequenceRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
@@ -41,7 +26,7 @@ public class UpdatePageSequenceRequestHandler : RequestHandlerAsync<UpdateBookPa
             return await base.HandleAsync(command, cancellationToken);
         }
 
-        var page = await _bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.OldSequenceNumber, cancellationToken);
+        var page = await bookPageRepository.GetPageBySequenceNumber(command.LibraryId, command.BookId, command.OldSequenceNumber, cancellationToken);
 
         // Check if the page exist
         if (page == null)
@@ -49,7 +34,7 @@ public class UpdatePageSequenceRequestHandler : RequestHandlerAsync<UpdateBookPa
             throw new NotFoundException();
         }
 
-        await _bookPageRepository.UpdatePageSequenceNumber(command.LibraryId, command.BookId, command.OldSequenceNumber, command.NewSequenceNumber, cancellationToken);
+        await bookPageRepository.UpdatePageSequenceNumber(command.LibraryId, command.BookId, command.OldSequenceNumber, command.NewSequenceNumber, cancellationToken);
 
         return await base.HandleAsync(command, cancellationToken);
     }

@@ -2,9 +2,7 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -25,18 +23,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         IEnumerable<IssuePageDto> GetIssuePagesByIssue(int issueId);
     }
 
-    public class MySqlIssuePageTestRepository : IIssuePageTestRepository
+    public class MySqlIssuePageTestRepository(IProvideConnection connectionProvider) : IIssuePageTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public MySqlIssuePageTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddIssuePage(IssuePageDto issuePage)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO IssuePage (IssueId, Text, SequenceNumber, ImageId, FileId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
                     VALUES (@IssueId, @Text, @SequenceNumber, @ImageId, @FileId, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp, @Status);
@@ -56,7 +47,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteIssuePages(IEnumerable<IssuePageDto> issuePages)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "Delete From IssuePage Where Id IN @Ids";
                 connection.Execute(sql, new { Ids = issuePages.Select(f => f.Id) });
@@ -65,7 +56,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssuePageDto GetIssuePageByNumber(int issueId, int sequenceNumber)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT *
                         FROM IssuePage
@@ -78,7 +69,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssuePageDto GetIssuePageByNumber(int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT ip.*
                         FROM IssuePage ip
@@ -101,7 +92,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssuePageDto GetIssuePageByIssueId(int issueId, long pageId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT *
                         FROM IssuePage
@@ -114,7 +105,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssuePageDto> GetIssuePagesByIssue(int issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT *
                         FROM IssuePage
@@ -126,18 +117,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         }
     }
 
-    public class SqlServerIssuePageTestRepository : IIssuePageTestRepository
+    public class SqlServerIssuePageTestRepository(IProvideConnection connectionProvider) : IIssuePageTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public SqlServerIssuePageTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddIssuePage(IssuePageDto issuePage)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"INSERT INTO IssuePage (IssueId, Text, SequenceNumber, ImageId, FileId, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp, Status)
                     OUTPUT INSERTED.ID
@@ -157,7 +141,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteIssuePages(IEnumerable<IssuePageDto> issuePages)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "Delete From IssuePage Where Id IN @Ids";
                 connection.Execute(sql, new { Ids = issuePages.Select(f => f.Id) });
@@ -166,7 +150,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssuePageDto GetIssuePageByNumber(int issueId, int sequenceNumber)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT *
                         FROM IssuePage
@@ -179,7 +163,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssuePageDto GetIssuePageByNumber(int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT ip.*
                         FROM IssuePage ip
@@ -202,7 +186,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IssuePageDto GetIssuePageByIssueId(int issueId, long pageId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT *
                         FROM IssuePage
@@ -215,7 +199,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<IssuePageDto> GetIssuePagesByIssue(int issueId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT *
                         FROM IssuePage

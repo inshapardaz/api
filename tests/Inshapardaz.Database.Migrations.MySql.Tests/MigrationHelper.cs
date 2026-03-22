@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.Initialization;
 using Microsoft.Extensions.DependencyInjection;

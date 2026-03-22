@@ -5,25 +5,17 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleContent
 {
     [TestFixture]
-    public class WhenUpdatingArticleContentsWhereContentNotPresent
-        : TestBase
+    public class WhenUpdatingArticleContentsWhereContentNotPresent() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private ArticleDto _article;
         private ArticleContentAssert _assert;
         private string _language = RandomData.Locale;
         private string _newContents, _newLayout;
-
-        public WhenUpdatingArticleContentsWhereContentNotPresent()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -45,40 +37,22 @@ namespace Inshapardaz.Api.Tests.Library.Articles.UpdateArticleContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader(_language);
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader(_language);
 
         [Test]
-        public void ShouldSaveTheArticleContent()
-        {
-            _assert.ShouldHaveSavedArticleContent();
-        }
+        public void ShouldSaveTheArticleContent() => _assert.ShouldHaveSavedArticleContent();
 
         [Test]
-        public void ShouldHaveTextReturened()
-        {
-            _assert.ShouldHaveText(_newContents);
-        }
+        public void ShouldHaveTextReturened() => _assert.ShouldHaveText(_newContents);
 
         [Test]
-        public void ShouldHaveCorrectContentSaved()
-        {
-            _assert.ShouldHaveSavedCorrectText(_newContents);
-        }
+        public void ShouldHaveCorrectContentSaved() => _assert.ShouldHaveSavedCorrectText(_newContents);
 
         [Test]
         public void ShouldHaveLinks()

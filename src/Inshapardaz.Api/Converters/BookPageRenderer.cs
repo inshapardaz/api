@@ -20,19 +20,9 @@ public interface IRenderBookPage
     LinkView RenderImageLink(int libraryId, FileModel file);
 }
 
-public class BookPageRenderer : IRenderBookPage
+public class BookPageRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IFileStorage fileStorage)
+    : IRenderBookPage
 {
-    private readonly IRenderLink _linkRenderer;
-    private readonly IUserHelper _userHelper;
-    private readonly IFileStorage _fileStorage;
-
-    public BookPageRenderer(IRenderLink linkRenderer, IUserHelper userHelper, IFileStorage fileStorage)
-    {
-        _linkRenderer = linkRenderer;
-        _userHelper = userHelper;
-        _fileStorage = fileStorage;
-    }
-
     public PageView<BookPageView> Render(PageRendererArgs<BookPageModel, PageFilter> source, int libraryId, int bookId)
     {
         var page = new PageView<BookPageView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
@@ -45,7 +35,7 @@ public class BookPageRenderer : IRenderBookPage
 
         var links = new List<LinkView>();
 
-        links.Add(_linkRenderer.Render(new Link
+        links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(BookPageController.GetPagesByBook),
             Method = HttpMethod.Get,
@@ -54,9 +44,9 @@ public class BookPageRenderer : IRenderBookPage
             QueryString = query
         }));
 
-        if (_userHelper.IsWriter(libraryId) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
+        if (userHelper.IsWriter(libraryId) || userHelper.IsAdmin || userHelper.IsLibraryAdmin(libraryId))
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookPageController.CreatePage),
                 Method = HttpMethod.Post,
@@ -64,7 +54,7 @@ public class BookPageRenderer : IRenderBookPage
                 Parameters = new { libraryId = libraryId, bookId = bookId }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookPageController.UploadPages),
                 Method = HttpMethod.Post,
@@ -78,7 +68,7 @@ public class BookPageRenderer : IRenderBookPage
             var pageQuery = CreateQueryString(source, page);
             pageQuery.Add("pageNumber", (page.CurrentPageIndex + 1).ToString());
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookPageController.GetPagesByBook),
                 Method = HttpMethod.Get,
@@ -92,7 +82,7 @@ public class BookPageRenderer : IRenderBookPage
         {
             var pageQuery = CreateQueryString(source, page);
             pageQuery.Add("pageNumber", (page.CurrentPageIndex - 1).ToString());
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookPageController.GetPagesByBook),
                 Method = HttpMethod.Get,
@@ -118,7 +108,7 @@ public class BookPageRenderer : IRenderBookPage
 
         var links = new List<LinkView>();
 
-        links.Add(_linkRenderer.Render(new Link
+        links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(UserController.GetBookPagesByUser),
             Method = HttpMethod.Get,
@@ -132,7 +122,7 @@ public class BookPageRenderer : IRenderBookPage
             var pageQuery = CreateQueryString(source, page);
             pageQuery.Add("pageNumber", (page.CurrentPageIndex + 1).ToString());
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(UserController.GetBookPagesByUser),
                 Method = HttpMethod.Get,
@@ -146,7 +136,7 @@ public class BookPageRenderer : IRenderBookPage
         {
             var pageQuery = CreateQueryString(source, page);
             pageQuery.Add("pageNumber", (page.CurrentPageIndex - 1).ToString());
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(UserController.GetBookPagesByUser),
                 Method = HttpMethod.Get,
@@ -165,14 +155,14 @@ public class BookPageRenderer : IRenderBookPage
         var result = source.Map();
         var links = new List<LinkView>
                 {
-                    _linkRenderer.Render(new Link
+                    linkRenderer.Render(new Link
                     {
                         ActionName = nameof(BookPageController.GetPageByIndex),
                         Method = HttpMethod.Get,
                         Rel = RelTypes.Self,
                         Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
                     }),
-                    _linkRenderer.Render(new Link
+                    linkRenderer.Render(new Link
                     {
                         ActionName = nameof(BookController.GetBookById),
                         Method = HttpMethod.Get,
@@ -181,11 +171,11 @@ public class BookPageRenderer : IRenderBookPage
                     })
                 };
 
-        if (!string.IsNullOrWhiteSpace(source.ImageUrl) && _fileStorage.SupportsPublicLink)
+        if (!string.IsNullOrWhiteSpace(source.ImageUrl) && fileStorage.SupportsPublicLink)
         {
             links.Add(new LinkView
             {
-                Href = _fileStorage.GetPublicUrl(source.ImageUrl),
+                Href = fileStorage.GetPublicUrl(source.ImageUrl),
                 Method = "GET",
                 Rel = RelTypes.Image,
                 Accept = MimeTypes.Jpg
@@ -193,7 +183,7 @@ public class BookPageRenderer : IRenderBookPage
         }
         else if (source.ImageId.HasValue)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(FileController.GetLibraryFile),
                 Method = HttpMethod.Get,
@@ -204,7 +194,7 @@ public class BookPageRenderer : IRenderBookPage
 
         if (source.PreviousPage != null)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookPageController.GetPageByIndex),
                 Method = HttpMethod.Get,
@@ -215,7 +205,7 @@ public class BookPageRenderer : IRenderBookPage
 
         if (source.NextPage != null)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookPageController.GetPageByIndex),
                 Method = HttpMethod.Get,
@@ -224,9 +214,9 @@ public class BookPageRenderer : IRenderBookPage
             }));
         }
 
-        if (_userHelper.IsWriter(libraryId) || _userHelper.IsLibraryAdmin(libraryId) || _userHelper.IsAdmin)
+        if (userHelper.IsWriter(libraryId) || userHelper.IsLibraryAdmin(libraryId) || userHelper.IsAdmin)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookPageController.UpdatePage),
                 Method = HttpMethod.Put,
@@ -234,7 +224,7 @@ public class BookPageRenderer : IRenderBookPage
                 Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookPageController.DeletePage),
                 Method = HttpMethod.Delete,
@@ -242,9 +232,9 @@ public class BookPageRenderer : IRenderBookPage
                 Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
             }));
 
-            if (_userHelper.IsLibraryAdmin(libraryId) || _userHelper.IsAdmin)
+            if (userHelper.IsLibraryAdmin(libraryId) || userHelper.IsAdmin)
             {
-                links.Add(_linkRenderer.Render(new Link
+                links.Add(linkRenderer.Render(new Link
                 {
                     ActionName = nameof(BookPageController.AssignPage),
                     Method = HttpMethod.Post,
@@ -253,7 +243,7 @@ public class BookPageRenderer : IRenderBookPage
                 }));
             }
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(BookPageController.UpdatePageSequence),
                 Method = HttpMethod.Post,
@@ -264,13 +254,13 @@ public class BookPageRenderer : IRenderBookPage
             if (
                 ((source.Status == Domain.Models.EditingStatus.Available ||
                     source.Status == Domain.Models.EditingStatus.Typing) &&
-                    source.WriterAccountId != _userHelper.Account.Id) ||
+                    source.WriterAccountId != userHelper.Account.Id) ||
                 ((source.Status == Domain.Models.EditingStatus.Typed ||
                     source.Status == Domain.Models.EditingStatus.InReview) &&
-                    source.ReviewerAccountId != _userHelper.Account.Id)
+                    source.ReviewerAccountId != userHelper.Account.Id)
                 )
             {
-                links.Add(_linkRenderer.Render(new Link
+                links.Add(linkRenderer.Render(new Link
                 {
                     ActionName = nameof(BookPageController.AssignPageToUser),
                     Method = HttpMethod.Post,
@@ -281,21 +271,21 @@ public class BookPageRenderer : IRenderBookPage
 
             if (source.ImageId.HasValue)
             {
-                links.Add(_linkRenderer.Render(new Link
+                links.Add(linkRenderer.Render(new Link
                 {
                     ActionName = nameof(BookPageController.UpdatePageImage),
                     Method = HttpMethod.Put,
                     Rel = RelTypes.ImageUpload,
                     Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
                 }));
-                links.Add(_linkRenderer.Render(new Link
+                links.Add(linkRenderer.Render(new Link
                 {
                     ActionName = nameof(BookPageController.DeletePageImage),
                     Method = HttpMethod.Delete,
                     Rel = RelTypes.ImageDelete,
                     Parameters = new { libraryId = libraryId, bookId = source.BookId, sequenceNumber = source.SequenceNumber }
                 }));
-                links.Add(_linkRenderer.Render(new Link
+                links.Add(linkRenderer.Render(new Link
                 {
                     ActionName = nameof(BookPageController.OcrPage),
                     Method = HttpMethod.Post,
@@ -305,7 +295,7 @@ public class BookPageRenderer : IRenderBookPage
             }
             else
             {
-                links.Add(_linkRenderer.Render(new Link
+                links.Add(linkRenderer.Render(new Link
                 {
                     ActionName = nameof(BookPageController.UpdatePageImage),
                     Method = HttpMethod.Put,
@@ -317,7 +307,7 @@ public class BookPageRenderer : IRenderBookPage
 
         if (source.ChapterId.HasValue)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ChapterController.GetChapterById),
                 Method = HttpMethod.Get,
@@ -331,18 +321,18 @@ public class BookPageRenderer : IRenderBookPage
 
     public LinkView RenderImageLink(int libraryId, FileModel file)
     {
-        if (!string.IsNullOrWhiteSpace(file.FilePath) && _fileStorage.SupportsPublicLink)
+        if (!string.IsNullOrWhiteSpace(file.FilePath) && fileStorage.SupportsPublicLink)
         {
             return new LinkView
             {
-                Href = _fileStorage.GetPublicUrl(file.FilePath),
+                Href = fileStorage.GetPublicUrl(file.FilePath),
                 Method = "GET",
                 Rel = RelTypes.Image,
                 Accept = MimeTypes.Jpg
             };
         }
 
-        return _linkRenderer.Render(new Link
+        return linkRenderer.Render(new Link
         {
             ActionName = nameof(FileController.GetLibraryFile),
             Method = HttpMethod.Get,

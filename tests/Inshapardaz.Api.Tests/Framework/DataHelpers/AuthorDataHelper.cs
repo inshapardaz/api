@@ -1,9 +1,6 @@
 ﻿using Dapper;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Adapters;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -20,18 +17,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         IEnumerable<AuthorDto> GetAuthorsByArticle(long articleId);
         IEnumerable<AuthorDto> GetAuthorsByIssueArticle(long issueArticleId);
     }
-    public class MySqlAuthorTestRepository : IAuthorTestRepository
+    public class MySqlAuthorTestRepository(IProvideConnection connectionProvider) : IAuthorTestRepository
     {
-        private readonly IProvideConnection _connectionProvider;
-
-        public MySqlAuthorTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddAuthor(AuthorDto author)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var id = connection.ExecuteScalar<int>("INSERT INTO Author (`Name`, `ImageId`, LibraryId) VALUES (@Name, @ImageId, @LibraryId); SELECT LAST_INSERT_ID();", author); ;
                 author.Id = id;
@@ -48,7 +38,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteAuthor(int authorId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Author WHERE Id = @Id";
                 connection.Execute(sql, new { Id = authorId });
@@ -57,7 +47,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteAuthors(IEnumerable<AuthorDto> authors)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Author WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = authors.Select(a => a.Id) });
@@ -66,7 +56,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public AuthorDto GetAuthorById(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<AuthorDto>("SELECT * FROM Author WHERE Id = @Id", new { Id = id });
             }
@@ -74,7 +64,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetAuthorImageUrl(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.FilePath from `File` f
                     INNER JOIN Author a ON f.Id = a.ImageId
@@ -85,7 +75,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetAuthorImage(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.* from `File` f
                     INNER JOIN Author a ON f.Id = a.ImageId
@@ -96,7 +86,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<AuthorDto> GetAuthorsByBook(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var query = @"SELECT * From Author
                     INNER JOIN BookAuthor ba ON Id = ba.AuthorId
@@ -107,7 +97,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<AuthorDto> GetAuthorsByArticle(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var query = @"SELECT a.* From ArticleAuthor
                     INNER JOIN Author a ON a.Id = ArticleAuthor.AuthorId
@@ -118,7 +108,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<AuthorDto> GetAuthorsByIssueArticle(long issueArticleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var query = @"SELECT a.* From IssueArticleAuthor
                     INNER JOIN Author a ON a.Id = IssueArticleAuthor.AuthorId
@@ -128,18 +118,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         }
     }
 
-    public class SqlServerAuthorTestRepository : IAuthorTestRepository
+    public class SqlServerAuthorTestRepository(IProvideConnection connectionProvider) : IAuthorTestRepository
     {
-        private readonly IProvideConnection _connectionProvider;
-
-        public SqlServerAuthorTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddAuthor(AuthorDto author)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var id = connection.ExecuteScalar<int>("Insert Into Author (Name, ImageId, LibraryId) OUTPUT Inserted.Id VALUES (@Name, @ImageId, @LibraryId)", author);
                 author.Id = id;
@@ -156,7 +139,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteAuthor(int authorId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Author WHERE Id = @Id";
                 connection.Execute(sql, new { Id = authorId });
@@ -165,7 +148,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteAuthors(IEnumerable<AuthorDto> authors)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "DELETE FROM Author WHERE Id IN @Ids";
                 connection.Execute(sql, new { Ids = authors.Select(a => a.Id) });
@@ -174,7 +157,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public AuthorDto GetAuthorById(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 return connection.QuerySingleOrDefault<AuthorDto>("SELECT * FROM Author WHERE Id = @Id", new { Id = id });
             }
@@ -182,7 +165,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public string GetAuthorImageUrl(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.FilePath from [File] f
                     INNER JOIN Author a ON f.Id = a.ImageId
@@ -193,7 +176,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetAuthorImage(int id)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"SELECT f.* from [File] f
                     INNER JOIN Author a ON f.Id = a.ImageId
@@ -204,7 +187,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<AuthorDto> GetAuthorsByBook(int bookId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var query = @"SELECT * From Author
                     INNER JOIN BookAuthor ba ON Id = ba.AuthorId
@@ -215,7 +198,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public IEnumerable<AuthorDto> GetAuthorsByArticle(long articleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var query = @"SELECT a.* From ArticleAuthor
                     INNER JOIN Author a ON a.Id = ArticleAuthor.AuthorId
@@ -226,7 +209,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         
         public IEnumerable<AuthorDto> GetAuthorsByIssueArticle(long issueArticleId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var query = @"SELECT a.* From IssueArticleAuthor
                     INNER JOIN Author a ON a.Id = IssueArticleAuthor.AuthorId

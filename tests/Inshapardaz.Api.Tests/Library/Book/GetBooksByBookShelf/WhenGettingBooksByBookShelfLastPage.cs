@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -12,19 +8,13 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByBookShelf
 {
     [TestFixture]
-    public class WhenGettingBooksByBookShelfLastPage
-        : TestBase
+    public class WhenGettingBooksByBookShelfLastPage() : TestBase(Role.Reader)
 
     {
         private HttpResponseMessage _response;
         private PagingAssert<BookView> _assert;
         private BookShelfDto _bookShelf;
         private IEnumerable<BookDto> _bookShelfBooks;
-
-        public WhenGettingBooksByBookShelfLastPage()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -39,16 +29,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByBookShelf
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -58,16 +42,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksByBookShelf
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
 
         [Test]
-        public void ShouldNotHaveNextLink()
-        {
-            _assert.ShouldNotHaveNextLink();
-        }
+        public void ShouldNotHaveNextLink() => _assert.ShouldNotHaveNextLink();
 
         [Test]
         public void ShouldHavePreviousLink()

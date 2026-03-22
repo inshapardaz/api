@@ -18,21 +18,13 @@ public interface IRenderArticle
     PageView<ArticleView> Render(PageRendererArgs<ArticleModel, ArticleFilter, ArticleSortByType> source, int libraryId);
 }
 
-public class ArticleRenderer : IRenderArticle
+public class ArticleRenderer(
+    IRenderLink linkRenderer,
+    IRenderAuthor authorRenderer,
+    IRenderCategory categoryRenderer,
+    IUserHelper userHelper)
+    : IRenderArticle
 {
-    private readonly IRenderLink _linkRenderer;
-    private readonly IRenderAuthor _authorRenderer;
-    private readonly IRenderCategory _categoryRenderer;
-    private readonly IUserHelper _userHelper;
-
-    public ArticleRenderer(IRenderLink linkRenderer, IRenderAuthor authorRenderer, IRenderCategory categoryRenderer, IUserHelper userHelper)
-    {
-        _linkRenderer = linkRenderer;
-        _authorRenderer = authorRenderer;
-        _categoryRenderer = categoryRenderer;
-        _userHelper = userHelper;
-    }
-
     public PageView<ArticleView> Render(PageRendererArgs<ArticleModel, ArticleFilter, ArticleSortByType> source, int libraryId)
     {
         var page = new PageView<ArticleView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
@@ -43,7 +35,7 @@ public class ArticleRenderer : IRenderArticle
         Dictionary<string, string> query = CreateQueryString(source, page);
         query.Add("pageNumber", (page.CurrentPageIndex).ToString());
 
-        page.Links.Add(_linkRenderer.Render(new Link
+        page.Links.Add(linkRenderer.Render(new Link
         {
             ActionName = nameof(ArticleController.GetArticles),
             Method = HttpMethod.Get,
@@ -52,9 +44,9 @@ public class ArticleRenderer : IRenderArticle
             QueryString = query
         }));
 
-        if (_userHelper.IsWriter(libraryId) || _userHelper.IsAdmin || _userHelper.IsLibraryAdmin(libraryId))
+        if (userHelper.IsWriter(libraryId) || userHelper.IsAdmin || userHelper.IsLibraryAdmin(libraryId))
         {
-            page.Links.Add(_linkRenderer.Render(new Link
+            page.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.CreateArticle),
                 Method = HttpMethod.Post,
@@ -68,7 +60,7 @@ public class ArticleRenderer : IRenderArticle
             var pageQuery = CreateQueryString(source, page);
             pageQuery.Add("pageNumber", (page.CurrentPageIndex + 1).ToString());
 
-            page.Links.Add(_linkRenderer.Render(new Link
+            page.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.GetArticles),
                 Method = HttpMethod.Get,
@@ -83,7 +75,7 @@ public class ArticleRenderer : IRenderArticle
             var pageQuery = CreateQueryString(source, page);
             pageQuery.Add("pageNumber", (page.CurrentPageIndex - 1).ToString());
 
-            page.Links.Add(_linkRenderer.Render(new Link
+            page.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.GetArticles),
                 Method = HttpMethod.Get,
@@ -101,7 +93,7 @@ public class ArticleRenderer : IRenderArticle
         var result = source.Map();
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.GetArticle),
                 Method = HttpMethod.Get,
@@ -113,7 +105,7 @@ public class ArticleRenderer : IRenderArticle
 
         if (source.ImageId.HasValue)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(FileController.GetLibraryFile),
                 Method = HttpMethod.Get,
@@ -135,7 +127,7 @@ public class ArticleRenderer : IRenderArticle
 
         if (source.PreviousArticle != null)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.GetArticle),
                 Method = HttpMethod.Get,
@@ -146,7 +138,7 @@ public class ArticleRenderer : IRenderArticle
 
         if (source.NextArticle != null)
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.GetArticle),
                 Method = HttpMethod.Get,
@@ -155,9 +147,9 @@ public class ArticleRenderer : IRenderArticle
             }));
         }
 
-        if (_userHelper.IsWriter(libraryId))
+        if (userHelper.IsWriter(libraryId))
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.UpdateArticle),
                 Method = HttpMethod.Put,
@@ -165,7 +157,7 @@ public class ArticleRenderer : IRenderArticle
                 Parameters = new { libraryId = libraryId, articleId = source.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.DeleteArticle),
                 Method = HttpMethod.Delete,
@@ -173,7 +165,7 @@ public class ArticleRenderer : IRenderArticle
                 Parameters = new { libraryId = libraryId, articleId = source.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.UpdateArticleContent),
                 Method = HttpMethod.Put,
@@ -181,7 +173,7 @@ public class ArticleRenderer : IRenderArticle
                 Parameters = new { libraryId = libraryId, articleId = source.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.UpdateArticleImage),
                 Method = HttpMethod.Put,
@@ -189,7 +181,7 @@ public class ArticleRenderer : IRenderArticle
                 Parameters = new { libraryId = libraryId, articleId = source.Id }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.AssignArticleToUser),
                 Method = HttpMethod.Post,
@@ -198,7 +190,7 @@ public class ArticleRenderer : IRenderArticle
             }));
         }
 
-        if (_userHelper.IsAuthenticated)
+        if (userHelper.IsAuthenticated)
         {
             if (source.Contents != null && source.Contents.Any())
             {
@@ -213,7 +205,7 @@ public class ArticleRenderer : IRenderArticle
 
             if (source.IsFavorite)
             {
-                links.Add(_linkRenderer.Render(new Link
+                links.Add(linkRenderer.Render(new Link
                 {
                     ActionName = nameof(ArticleController.RemoveArticleFromFavorites),
                     Method = HttpMethod.Delete,
@@ -223,7 +215,7 @@ public class ArticleRenderer : IRenderArticle
             }
             else
             {
-                links.Add(_linkRenderer.Render(new Link
+                links.Add(linkRenderer.Render(new Link
                 {
                     ActionName = nameof(ArticleController.AddArticleToFavorites),
                     Method = HttpMethod.Post,
@@ -238,7 +230,7 @@ public class ArticleRenderer : IRenderArticle
             var authors = new List<AuthorView>();
             foreach (var author in source.Authors)
             {
-                authors.Add(_authorRenderer.Render(author, libraryId));
+                authors.Add(authorRenderer.Render(author, libraryId));
             }
 
             result.Authors = authors;
@@ -249,7 +241,7 @@ public class ArticleRenderer : IRenderArticle
             var categories = new List<CategoryView>();
             foreach (var category in source.Categories)
             {
-                categories.Add(_categoryRenderer.Render(category, libraryId));
+                categories.Add(categoryRenderer.Render(category, libraryId));
             }
 
             result.Categories = categories;
@@ -265,7 +257,7 @@ public class ArticleRenderer : IRenderArticle
 
         var links = new List<LinkView>
         {
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.GetArticleContent),
                 Method = HttpMethod.Get,
@@ -274,7 +266,7 @@ public class ArticleRenderer : IRenderArticle
                 Parameters = new { libraryId = libraryId, articleId = articleId },
                 QueryString = new Dictionary<string, string>{{ "language",  source.Language}}
             }),
-            _linkRenderer.Render(new Link
+            linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.GetArticle),
                 Method = HttpMethod.Get,
@@ -283,9 +275,9 @@ public class ArticleRenderer : IRenderArticle
             })
         };
 
-        if (_userHelper.IsWriter(libraryId))
+        if (userHelper.IsWriter(libraryId))
         {
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.UpdateArticleContent),
                 Method = HttpMethod.Put,
@@ -295,7 +287,7 @@ public class ArticleRenderer : IRenderArticle
                 QueryString = new Dictionary<string, string> { { "language", source.Language } }
             }));
 
-            links.Add(_linkRenderer.Render(new Link
+            links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(ArticleController.DeleteArticleContent),
                 Method = HttpMethod.Delete,

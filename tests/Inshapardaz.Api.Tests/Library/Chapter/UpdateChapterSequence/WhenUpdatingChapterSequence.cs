@@ -6,27 +6,16 @@ using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapterSequence
 {
     [TestFixture]
-    public class WhenUpdatingChapterSequence
-        : TestBase
+    public class WhenUpdatingChapterSequence() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private ListView<ChapterView> _view;
         private IEnumerable<ChapterDto> _chapters;
         private int _bookId;
-
-        public WhenUpdatingChapterSequence()
-            : base(Role.Writer)
-        {
-
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -48,16 +37,10 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.UpdateChapterSequence
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveChangedTheOrderOfChapters()

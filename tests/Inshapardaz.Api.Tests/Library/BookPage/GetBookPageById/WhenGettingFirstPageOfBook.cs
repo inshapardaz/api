@@ -3,25 +3,17 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPageById
 {
     [TestFixture]
-    public class WhenGettingFirstPageOfBook
-        : TestBase
+    public class WhenGettingFirstPageOfBook() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
 
         private BookPageDto _expected;
 
         private BookPageAssert _assert;
-
-        public WhenGettingFirstPageOfBook() : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -34,22 +26,13 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPageById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveCorrectObjectReturned()
-        {
-            _assert.ShouldMatch(_expected);
-        }
+        public void ShouldHaveCorrectObjectReturned() => _assert.ShouldMatch(_expected);
 
         [Test]
         public void ShouldHaveLinks()
@@ -60,15 +43,9 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.GetBookPageById
         }
 
         [Test]
-        public void ShouldHaveNextLinks()
-        {
-            _assert.ShouldHaveNextLinkForPageNumber(2);
-        }
+        public void ShouldHaveNextLinks() => _assert.ShouldHaveNextLinkForPageNumber(2);
 
         [Test]
-        public void ShouldNotHavePreviousLinks()
-        {
-            _assert.ShouldHaveNoPreviousLink();
-        }
+        public void ShouldNotHavePreviousLinks() => _assert.ShouldHaveNoPreviousLink();
     }
 }

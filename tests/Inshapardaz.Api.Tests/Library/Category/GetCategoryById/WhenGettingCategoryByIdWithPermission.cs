@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,16 +8,12 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
-    public class WhenGettingCategoryWithWritePermissions : TestBase
+    public class WhenGettingCategoryWithWritePermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IEnumerable<CategoryDto> _categories;
         private CategoryDto _selectedCategory;
         private CategoryAssert _assert;
-
-        public WhenGettingCategoryWithWritePermissions(Role role) : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,22 +27,13 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
         public void ShouldNotEditLinks()
@@ -60,15 +43,9 @@ namespace Inshapardaz.Api.Tests.Library.Categories.GetCategoryById
         }
 
         [Test]
-        public void ShouldHaveBooksLink()
-        {
-            _assert.ShouldHaveBooksLink();
-        }
+        public void ShouldHaveBooksLink() => _assert.ShouldHaveBooksLink();
 
         [Test]
-        public void ShouldReturnCorrectCategoryData()
-        {
-            _assert.ShouldBeSameAs(_selectedCategory);
-        }
+        public void ShouldReturnCorrectCategoryData() => _assert.ShouldBeSameAs(_selectedCategory);
     }
 }

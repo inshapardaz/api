@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.IO;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -14,14 +12,10 @@ public interface IWriteWordDocument
     byte[] ConvertMarkdownToWord(IEnumerable<string> chapters);
 }
 
-public class WordDocumentWriter : IWriteWordDocument
+public class WordDocumentWriter(ILogger<WordDocumentWriter> logger) : IWriteWordDocument
 {
-    private readonly ILogger<WordDocumentWriter> _logger;
+    private readonly ILogger<WordDocumentWriter> _logger = logger;
 
-    public WordDocumentWriter(ILogger<WordDocumentWriter> logger)
-    {
-        _logger = logger;
-    }
     public byte[] ConvertMarkdownToWord(IEnumerable<string> chapters)
     {
         using (MemoryStream stream = new MemoryStream())

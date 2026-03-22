@@ -3,19 +3,13 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.InviteUser
 {
     [TestFixture]
-    public class WhenRegisteringASuperUserWhoIsAlreadyRegistered : TestBase
+    public class WhenRegisteringASuperUserWhoIsAlreadyRegistered() : TestBase(Role.Admin)
     {
         private HttpResponseMessage _response;
-
-        public WhenRegisteringASuperUserWhoIsAlreadyRegistered() : base(Role.Admin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -36,9 +30,6 @@ namespace Inshapardaz.Api.Tests.Accounts.InviteUser
         }
 
         [Test]
-        public void ShouldReturnConflict()
-        {
-            _response.ShouldBeConflict();
-        }
+        public void ShouldReturnConflict() => _response.ShouldBeConflict();
     }
 }

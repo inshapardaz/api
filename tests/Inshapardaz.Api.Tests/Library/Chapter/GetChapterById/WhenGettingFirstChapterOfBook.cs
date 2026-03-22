@@ -3,24 +3,15 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
 {
     [TestFixture]
-    public class WhenGettingFirstChapterOfBook
-        : TestBase
+    public class WhenGettingFirstChapterOfBook() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private ChapterDto _expected;
         private ChapterAssert _assert;
-
-        public WhenGettingFirstChapterOfBook()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -32,22 +23,13 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveCorrectObjectReturned()
-        {
-            _assert.ShouldMatch(_expected);
-        }
+        public void ShouldHaveCorrectObjectReturned() => _assert.ShouldMatch(_expected);
 
         [Test]
         public void ShouldHaveLinks()
@@ -58,15 +40,9 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChapterById
         }
 
         [Test]
-        public void ShouldNotHavePreviousLink()
-        {
-            _assert.ShouldHaveNotPreviousLink();
-        }
+        public void ShouldNotHavePreviousLink() => _assert.ShouldHaveNotPreviousLink();
 
         [Test]
-        public void ShouldHaveNextLink()
-        {
-            _assert.ShouldHaveNextLink(_expected.ChapterNumber + 1);
-        }
+        public void ShouldHaveNextLink() => _assert.ShouldHaveNextLink(_expected.ChapterNumber + 1);
     }
 }

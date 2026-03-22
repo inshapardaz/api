@@ -3,27 +3,17 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Fakes;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePageById
 {
     [TestFixture]
-    public class WhenGettingFirstPageOfIssue
-        : TestBase
+    public class WhenGettingFirstPageOfIssue() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
 
         private IssuePageDto _expected;
 
         private IssuePageAssert _assert;
-
-        public WhenGettingFirstPageOfIssue() : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -36,22 +26,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePageById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveCorrectObjectReturned()
-        {
-            _assert.ShouldMatch(_expected);
-        }
+        public void ShouldHaveCorrectObjectReturned() => _assert.ShouldMatch(_expected);
 
         [Test]
         public void ShouldHaveLinks()
@@ -63,15 +44,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePageById
         }
 
         [Test]
-        public void ShouldHaveNextLinks()
-        {
-            _assert.ShouldHaveNextLinkForPageNumber(2);
-        }
+        public void ShouldHaveNextLinks() => _assert.ShouldHaveNextLinkForPageNumber(2);
 
         [Test]
-        public void ShouldNotHavePreviousLinks()
-        {
-            _assert.ShouldHaveNoPreviousLink();
-        }
+        public void ShouldNotHavePreviousLinks() => _assert.ShouldHaveNoPreviousLink();
     }
 }

@@ -6,10 +6,6 @@ using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
 {
@@ -33,16 +29,10 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -53,16 +43,10 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.GetChaptersByBook
         }
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _view.CreateLink().Should().BeNull();
-        }
+        public void ShouldNotHaveCreateLink() => _view.CreateLink().Should().BeNull();
 
         [Test]
-        public void ShouldHaveCorrectNumberOfChapters()
-        {
-            Assert.That(_view.Data.Count(), Is.EqualTo(4));
-        }
+        public void ShouldHaveCorrectNumberOfChapters() => Assert.That(_view.Data.Count(), Is.EqualTo(4));
 
         [Test]
         public void ShouldHaveCorrectChaptersData()

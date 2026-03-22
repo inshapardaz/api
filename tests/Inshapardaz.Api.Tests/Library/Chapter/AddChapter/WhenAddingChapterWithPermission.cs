@@ -5,25 +5,17 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenAddingChapterWithPermission
-        : TestBase
+    public class WhenAddingChapterWithPermission(Role role) : TestBase(role)
     {
         private ChapterView _chapter;
         private HttpResponseMessage _response;
         private ChapterAssert _assert;
-
-        public WhenAddingChapterWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -49,34 +41,19 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.AddChapter
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldSaveTheChapter()
-        {
-            _assert.ShouldHaveSavedChapter();
-        }
+        public void ShouldSaveTheChapter() => _assert.ShouldHaveSavedChapter();
 
         [Test]
-        public void ShouldHaveCorrectObjectReturned()
-        {
-            _assert.ShouldMatch(_chapter);
-        }
+        public void ShouldHaveCorrectObjectReturned() => _assert.ShouldMatch(_chapter);
 
         [Test]
         public void ShouldHaveLinks()

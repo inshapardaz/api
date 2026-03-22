@@ -1,29 +1,18 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue;
 
-public class UpdateIssueImageRequest : LibraryBaseCommand
+public class UpdateIssueImageRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber)
+    : LibraryBaseCommand(libraryId)
 {
-    public UpdateIssueImageRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber)
-        : base(libraryId)
-    {
-        PeriodicalId = periodicalId;
-        VolumeNumber = volumeNumber;
-        IssueNumber = issueNumber;
-    }
-
-    public int PeriodicalId { get; private set; }
-    public int VolumeNumber { get; }
-    public int IssueNumber { get; }
+    public int PeriodicalId { get; private set; } = periodicalId;
+    public int VolumeNumber { get; } = volumeNumber;
+    public int IssueNumber { get; } = issueNumber;
 
     public FileModel Image { get; set; }
 
@@ -37,21 +26,13 @@ public class UpdateIssueImageRequest : LibraryBaseCommand
     }
 }
 
-public class UpdateIssueImageRequestHandler : RequestHandlerAsync<UpdateIssueImageRequest>
+public class UpdateIssueImageRequestHandler(IIssueRepository issueRepository, IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<UpdateIssueImageRequest>
 {
-    private readonly IIssueRepository _issueRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public UpdateIssueImageRequestHandler(IIssueRepository issueRepository, IAmACommandProcessor commandProcessor)
-    {
-        _issueRepository = issueRepository;
-        _commandProcessor = commandProcessor;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateIssueImageRequest> HandleAsync(UpdateIssueImageRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+        var issue = await issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
 
         if (issue == null)
         {
@@ -68,7 +49,7 @@ public class UpdateIssueImageRequestHandler : RequestHandlerAsync<UpdateIssueIma
             IsPublic = true
         };
 
-        await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
 
 
         command.Result.File = saveContentCommand.Result;
@@ -76,7 +57,7 @@ public class UpdateIssueImageRequestHandler : RequestHandlerAsync<UpdateIssueIma
         if (!issue.ImageId.HasValue)
         {
             issue.ImageId = saveContentCommand.Result.Id;
-            await _issueRepository.UpdateIssue(command.LibraryId, command.PeriodicalId, issue, cancellationToken);
+            await issueRepository.UpdateIssue(command.LibraryId, command.PeriodicalId, issue, cancellationToken);
             command.Result.HasAddedNew = true;
 
         }

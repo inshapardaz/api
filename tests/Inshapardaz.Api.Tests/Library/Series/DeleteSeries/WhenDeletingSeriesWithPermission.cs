@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
@@ -14,18 +11,13 @@ namespace Inshapardaz.Api.Tests.Library.Series.DeleteSeries
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingSeriesWithPermission : TestBase
+    public class WhenDeletingSeriesWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private SeriesAssert _assert;
         private SeriesDto _expected;
 
         private string _filePath;
-
-        public WhenDeletingSeriesWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -39,28 +31,16 @@ namespace Inshapardaz.Api.Tests.Library.Series.DeleteSeries
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNoContent()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldReturnNoContent() => _response.ShouldBeNoContent();
 
         [Test]
-        public void ShouldHaveDeletedSeries()
-        {
-            _assert.ShouldHaveDeletedSeries(_expected.Id);
-        }
+        public void ShouldHaveDeletedSeries() => _assert.ShouldHaveDeletedSeries(_expected.Id);
 
         [Test]
-        public void ShouldHaveDeletedTheSeriesImage()
-        {
-            _assert.ShouldHaveDeletedSeriesImage(_expected.Id, _expected.ImageId.Value, _filePath);
-        }
+        public void ShouldHaveDeletedTheSeriesImage() => _assert.ShouldHaveDeletedSeriesImage(_expected.Id, _expected.ImageId.Value, _filePath);
 
         [Test]
         public void ShouldNotDeleteSeriesBooks()

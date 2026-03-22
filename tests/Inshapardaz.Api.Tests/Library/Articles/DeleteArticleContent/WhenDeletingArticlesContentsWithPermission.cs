@@ -3,26 +3,17 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Articles.DeleteArticleContent
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenDeletingArticlesContentsWithPermission
-        : TestBase
+    public class WhenDeletingArticlesContentsWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private ArticleContentAssert _assert;
         private ArticleContentDto _content;
-
-        public WhenDeletingArticlesContentsWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,22 +26,13 @@ namespace Inshapardaz.Api.Tests.Library.Articles.DeleteArticleContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveNoContentResult()
-        {
-            _response.ShouldBeNoContent();
-        }
+        public void ShouldHaveNoContentResult() => _response.ShouldBeNoContent();
 
         [Test]
-        public void ShouldHaveDeletedArticleContent()
-        {
-            _assert.ShouldHaveDeletedContent(_content);
-        }
+        public void ShouldHaveDeletedArticleContent() => _assert.ShouldHaveDeletedContent(_content);
 
         [Test]
         public void ShouldHaveDeletedArticleContentFiles()

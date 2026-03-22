@@ -1,8 +1,6 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.Contents.GetBookContent
 {
@@ -21,15 +19,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.GetBookContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnUnauthorised()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldReturnUnauthorised() => _response.ShouldBeUnauthorized();
     }
 }

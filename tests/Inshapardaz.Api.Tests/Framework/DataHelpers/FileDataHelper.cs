@@ -3,9 +3,7 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 
 namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 {
@@ -18,21 +16,14 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
     }
 
-    public class MySqlFileTestRepository : IFileTestRepository
+    public class MySqlFileTestRepository(IProvideConnection connectionProvider) : IFileTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public MySqlFileTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddFiles(IEnumerable<FileDto> files) =>
             files.ForEach(f => AddFile(f));
 
         public void AddFile(FileDto file)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var mySql = @"INSERT INTO `File` (DateCreated, `FileName`, MimeType, FilePath, IsPublic)
                         Values (@DateCreated, @FileName, @MimeType, @FilePath, @IsPublic);
@@ -46,7 +37,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             if (files != null && files.Any())
             {
-                using (var connection = _connectionProvider.GetConnection())
+                using (var connection = connectionProvider.GetConnection())
                 {
                     var mySql = "Delete From `File` Where Id IN @Ids";
                     connection.Execute(mySql, new { Ids = files.Select(f => f.Id) });
@@ -56,28 +47,21 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetFileById(long fileId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var mySql = "Select * From `File` Where Id = @Id";
                 return connection.QuerySingleOrDefault<FileDto>(mySql, new { Id = fileId });
             }
         }
     }
-    public class SqlServerFileTestRepository : IFileTestRepository
+    public class SqlServerFileTestRepository(IProvideConnection connectionProvider) : IFileTestRepository
     {
-        private IProvideConnection _connectionProvider;
-
-        public SqlServerFileTestRepository(IProvideConnection connectionProvider)
-        {
-            _connectionProvider = connectionProvider;
-        }
-
         public void AddFiles(IEnumerable<FileDto> files) =>
             files.ForEach(f => AddFile(f));
 
         public void AddFile(FileDto file)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = @"Insert Into [File] (DateCreated, [FileName], MimeType, FilePath, IsPublic)
                         Output Inserted.Id
@@ -89,7 +73,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public void DeleteFiles(IEnumerable<FileDto> files)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "Delete From [File] Where Id IN @Ids";
                 connection.Execute(sql, new { Ids = files.Select(f => f.Id) });
@@ -98,7 +82,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public FileDto GetFileById(long fileId)
         {
-            using (var connection = _connectionProvider.GetConnection())
+            using (var connection = connectionProvider.GetConnection())
             {
                 var sql = "Select * From [File] Where Id = @Id";
                 return connection.QuerySingleOrDefault<FileDto>(sql, new { Id = fileId });

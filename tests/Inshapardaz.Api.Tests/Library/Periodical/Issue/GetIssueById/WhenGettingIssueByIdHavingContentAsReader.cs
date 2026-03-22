@@ -3,24 +3,15 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
 {
     [TestFixture]
-    public class WhenGettingIssueByIdHavingContentAsReader
-        : TestBase
+    public class WhenGettingIssueByIdHavingContentAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private IssueDto _expected;
         private IssueAssert _assert;
-
-        public WhenGettingIssueByIdHavingContentAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -32,22 +23,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveCorrectObjectReturned()
-        {
-            _assert.ShouldBeSameAs(_expected);
-        }
+        public void ShouldHaveCorrectObjectReturned() => _assert.ShouldBeSameAs(_expected);
 
         [Test]
         public void ShouldHaveLinks()
@@ -68,9 +50,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
         }
 
         [Test]
-        public void ShouldHaveContentsLink()
-        {
-            _assert.ShouldHaveCorrectContentsLink();
-        }
+        public void ShouldHaveContentsLink() => _assert.ShouldHaveCorrectContentsLink();
     }
 }

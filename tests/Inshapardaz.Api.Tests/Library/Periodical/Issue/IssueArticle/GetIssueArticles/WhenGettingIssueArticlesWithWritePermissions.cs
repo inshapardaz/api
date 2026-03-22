@@ -1,6 +1,3 @@
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -16,17 +13,11 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenGettingIssueArticlesWithWritePermissions
-        : TestBase
+    public class WhenGettingIssueArticlesWithWritePermissions(Role role) : TestBase(role)
     {
         private IssueDto _issue;
         private HttpResponseMessage _response;
         private ListView<IssueArticleView> _view;
-
-        public WhenGettingIssueArticlesWithWritePermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -39,16 +30,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -66,10 +51,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.IssueArticle.GetIssueAr
                 .EndingWith($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/articles");
         }
 
-        public void ShouldHaveCorrectNumberOfArticles()
-        {
-            Assert.That(_view.Data.Count(), Is.EqualTo(5));
-        }
+        public void ShouldHaveCorrectNumberOfArticles() => Assert.That(_view.Data.Count(), Is.EqualTo(5));
 
         [Test]
         public void ShouldHaveCorrectArticlesData()

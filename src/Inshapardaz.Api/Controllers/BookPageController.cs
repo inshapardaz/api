@@ -14,26 +14,15 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Controllers;
 
-public class BookPageController : Controller
+public class BookPageController(
+    IAmACommandProcessor commandProcessor,
+    IQueryProcessor queryProcessor,
+    IRenderBookPage bookPageRenderer,
+    IRenderFile fileRenderer,
+    IUserHelper userHelper)
+    : Controller
 {
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRenderBookPage _bookPageRenderer;
-    private readonly IRenderFile _fileRenderer;
-    private readonly IUserHelper _userHelper;
-
-    public BookPageController(IAmACommandProcessor commandProcessor,
-        IQueryProcessor queryProcessor,
-        IRenderBookPage bookPageRenderer,
-        IRenderFile fileRenderer,
-        IUserHelper userHelper)
-    {
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-        _bookPageRenderer = bookPageRenderer;
-        _fileRenderer = fileRenderer;
-        _userHelper = userHelper;
-    }
+    private readonly IRenderFile _fileRenderer = fileRenderer;
 
     [HttpGet("libraries/{libraryId}/books/{bookId}/pages", Name = nameof(BookPageController.GetPagesByBook))]
     [Produces(typeof(PageView<BookPageView>))]
@@ -54,9 +43,9 @@ public class BookPageController : Controller
             AssignmentFilter = assignmentFilter,
             ReviewerAssignmentFilter = reviewerAssignmentFilter,
             SortDirection = sortDirection,
-            AccountId = assignmentFilter == AssignmentFilter.AssignedToMe || reviewerAssignmentFilter == AssignmentFilter.AssignedToMe ? _userHelper.AccountId : assignmentTo
+            AccountId = assignmentFilter == AssignmentFilter.AssignedToMe || reviewerAssignmentFilter == AssignmentFilter.AssignedToMe ? userHelper.AccountId : assignmentTo
         };
-        var result = await _queryProcessor.ExecuteAsync(getBookPagesQuery, token);
+        var result = await queryProcessor.ExecuteAsync(getBookPagesQuery, token);
 
         var args = new PageRendererArgs<BookPageModel, PageFilter>
         {
@@ -65,7 +54,7 @@ public class BookPageController : Controller
             Filters = new PageFilter { Status = status, AssignmentFilter = assignmentFilter, ReviewerAssignmentFilter = reviewerAssignmentFilter, AccountId = assignmentTo }
         };
 
-        return new OkObjectResult(_bookPageRenderer.Render(args, libraryId, bookId));
+        return new OkObjectResult(bookPageRenderer.Render(args, libraryId, bookId));
     }
 
     [HttpGet("libraries/{libraryId}/books/{bookId}/pages/{sequenceNumber}", Name = nameof(BookPageController.GetPageByIndex))]
@@ -74,14 +63,14 @@ public class BookPageController : Controller
     {
         var request = new GetBookPageByNumberQuery(libraryId, bookId, sequenceNumber);
 
-        var result = await _queryProcessor.ExecuteAsync(request, cancellationToken: token);
+        var result = await queryProcessor.ExecuteAsync(request, cancellationToken: token);
 
         if (result == null)
         {
             return NotFound();
         }
 
-        var renderResult = _bookPageRenderer.Render(result, libraryId);
+        var renderResult = bookPageRenderer.Render(result, libraryId);
         return Ok(renderResult);
     }
 
@@ -96,11 +85,11 @@ public class BookPageController : Controller
 
         var model = page.Map();
 
-        var request = new AddBookPageRequest(libraryId, bookId, _userHelper.AccountId, model);
+        var request = new AddBookPageRequest(libraryId, bookId, userHelper.AccountId, model);
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _bookPageRenderer.Render(request.Result, libraryId);
+        var renderResult = bookPageRenderer.Render(request.Result, libraryId);
 
         //TODO: Remove updation
         if (request.IsAdded)
@@ -120,7 +109,7 @@ public class BookPageController : Controller
         }
 
         var request = new UpdateBookPageSequenceRequest(libraryId, bookId, sequenceNumber, page.SequenceNumber);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         return Ok();
     }
@@ -152,7 +141,7 @@ public class BookPageController : Controller
             Files = fileModels
         };
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         return new OkResult();
     }
@@ -168,11 +157,11 @@ public class BookPageController : Controller
 
         var model = page.Map();
 
-        var request = new UpdateBookPageRequest(libraryId, bookId, sequenceNumber, _userHelper.AccountId, model);
+        var request = new UpdateBookPageRequest(libraryId, bookId, sequenceNumber, userHelper.AccountId, model);
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _bookPageRenderer.Render(request.Result.BookPage, libraryId);
+        var renderResult = bookPageRenderer.Render(request.Result.BookPage, libraryId);
 
         if (request.Result.HasAddedNew)
         {
@@ -186,7 +175,7 @@ public class BookPageController : Controller
     public async Task<IActionResult> DeletePage(int libraryId, int bookId, int sequenceNumber, CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteBookPageRequest(libraryId, bookId, sequenceNumber);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         return Ok();
     }
@@ -195,7 +184,7 @@ public class BookPageController : Controller
     public async Task<IActionResult> OcrPage(int libraryId, int bookId, int sequenceNumber, [FromBody] OcrRequest ocrRequest, CancellationToken token = default(CancellationToken))
     {
         var request = new BookPageOcrRequest(libraryId, bookId, sequenceNumber, ocrRequest.Key);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         return Ok();
     }
@@ -220,9 +209,9 @@ public class BookPageController : Controller
             }
         };
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var imageLink = _bookPageRenderer.RenderImageLink(libraryId, request.Result.File);
+        var imageLink = bookPageRenderer.RenderImageLink(libraryId, request.Result.File);
 
         if (request.Result.HasAddedNew)
         {
@@ -236,7 +225,7 @@ public class BookPageController : Controller
     public async Task<IActionResult> DeletePageImage(int libraryId, int bookId, int sequenceNumber, CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteBookPageImageRequest(libraryId, bookId, sequenceNumber);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         return Ok();
     }
@@ -250,11 +239,11 @@ public class BookPageController : Controller
             return new BadRequestObjectResult(ModelState);
         }
 
-        var request = new AssignBookPageToUserRequest(libraryId, bookId, sequenceNumber, _userHelper.Account.Id);
+        var request = new AssignBookPageToUserRequest(libraryId, bookId, sequenceNumber, userHelper.Account.Id);
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _bookPageRenderer.Render(request.Result, libraryId);
+        var renderResult = bookPageRenderer.Render(request.Result, libraryId);
 
         return Ok(renderResult);
     }
@@ -270,9 +259,9 @@ public class BookPageController : Controller
 
         var request = new AssignBookPageRequest(libraryId, bookId, sequenceNumber, assignment.AccountId);
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _bookPageRenderer.Render(request.Result, libraryId);
+        var renderResult = bookPageRenderer.Render(request.Result, libraryId);
 
         return Ok(renderResult);
     }

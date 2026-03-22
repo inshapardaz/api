@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,15 +7,10 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.GetLibraries
 {
     [TestFixture]
-    public class WhenGettingLibrariesPageInMiddle : TestBase
+    public class WhenGettingLibrariesPageInMiddle() : TestBase(Role.Writer, createLibrary: false)
     {
         private HttpResponseMessage _response;
         private PagingAssert<LibraryView> _assert;
-
-        public WhenGettingLibrariesPageInMiddle()
-            : base(Role.Writer, createLibrary: false)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -30,40 +22,22 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink("/libraries", 2, 5);
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink("/libraries", 2, 5);
 
         [Test]
-        public void ShouldHaveCreateLink()
-        {
-            _assert.ShouldNotHaveCreateLink();
-        }
+        public void ShouldHaveCreateLink() => _assert.ShouldNotHaveCreateLink();
 
         [Test]
-        public void ShouldHavePreviousLink()
-        {
-            _assert.ShouldHavePreviousLink("/libraries", 1, 5);
-        }
+        public void ShouldHavePreviousLink() => _assert.ShouldHavePreviousLink("/libraries", 1, 5);
 
         [Test]
-        public void ShouldNotHaveNextLink()
-        {
-            _assert.ShouldHaveNextLink("/libraries", 3, 5);
-        }
+        public void ShouldNotHaveNextLink() => _assert.ShouldHaveNextLink("/libraries", 3, 5);
 
         [Test]
         public void ShouldReturnExpectedLibraries()

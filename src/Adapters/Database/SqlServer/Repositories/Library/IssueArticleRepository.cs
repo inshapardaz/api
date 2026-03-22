@@ -1,28 +1,15 @@
 ﻿using Dapper;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models.Library;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapters.Database.SqlServer.Repositories.Library;
 
-public class IssueArticleRepository : IIssueArticleRepository
+public class IssueArticleRepository(SqlServerConnectionProvider connectionProvider) : IIssueArticleRepository
 {
-    private readonly SqlServerConnectionProvider _connectionProvider;
-
-    public IssueArticleRepository(SqlServerConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-
     public async Task<IssueArticleModel> AddIssueArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IssueArticleModel issueArticle, CancellationToken cancellationToken)
     {
         int id;
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO IssueArticle (Title, IssueId, Status, SequenceNumber, SeriesName, SeriesIndex, WriterAccountId, WriterAssignTimeStamp, ReviewerAccountId, ReviewerAssignTimeStamp) 
                             OUTPUT Inserted.Id VALUES (@Title, (SELECT Id FROM Issue WHERE PeriodicalId = @PeriodicalId AND VolumeNumber = @VolumeNumber AND IssueNumber = @IssueNumber), @Status, @SequenceNumber, @SeriesName, @SeriesIndex, @WriterAccountId, @WriterAssignTimeStamp, @ReviewerAccountId, @ReviewerAssignTimeStamp)";
@@ -59,7 +46,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     public async Task<IssueArticleModel> UpdateIssueArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IssueArticleModel issueArticle, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE a SET a.Title = @Title, 
                             a.SequenceNumber = @SequenceNumber,
@@ -105,7 +92,7 @@ public class IssueArticleRepository : IIssueArticleRepository
     public async Task DeleteIssueArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
     {
         await DeleteIssueArticleContent(libraryId, periodicalId, volumeNumber, issueNumber, sequenceNumber, cancellationToken);
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"DELETE a 
                             FROM IssueArticle a
@@ -129,7 +116,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     public async Task<IssueArticleModel> GetIssueArticle(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             IssueArticleModel article = null;
             var sql = @"SELECT a.*, ac.*, au.*
@@ -185,7 +172,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     public async Task<IssueArticleContentModel> GetIssueArticleContentById(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string language, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             IssueArticleContentModel articleContent = null;
             var sql = @"SELECT a.*, ac.*, i.*
@@ -225,7 +212,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     public async Task<IEnumerable<IssueArticleModel>> GetIssueArticlesByIssue(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var articles = new Dictionary<long, IssueArticleModel>();
 
@@ -290,7 +277,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     public async Task<IssueArticleContentModel> GetIssueArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT ac.*, a.sequenceNumber, p.Id AS PeriodicalId 
                             FROM IssueArticle a
@@ -317,7 +304,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     public async Task<IEnumerable<IssueArticleContentModel>> GetIssueArticleContents(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT ac.*, a.SequenceNumber AS SequenceNumber, p.Id AS PeriodicalId 
                             FROM IssueArticle a
@@ -344,7 +331,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     public async Task<IssueArticleContentModel> AddIssueArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO  IssueArticleContent (ArticleId, [Language], fileId, Text)
                             (SELECT TOP 1 a.Id, @Language, @FileId,  @Text FROM IssueArticle a
@@ -374,7 +361,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     public async Task<IssueArticleContentModel> UpdateIssueArticleContent(int libraryId, IssueArticleContentModel content, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update ac SET FileId = @FileId, Language = @Language
                             FROM IssueArticleContent ac
@@ -401,7 +388,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     public async Task DeleteIssueArticleContent(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Delete ac
                             FROM IssueArticle a
@@ -428,7 +415,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     public async Task<IssueArticleModel> UpdateWriterAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE IssueArticle a
                                 INNER JOIN Issue i ON i.Id = a.IssueId
@@ -457,7 +444,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     public async Task<IssueArticleModel> UpdateReviewerAssignment(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, int? accountId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE IssueArticle a
                                 INNER JOIN Issue i ON i.Id = a.IssueId
@@ -486,7 +473,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     private async Task<IssueArticleModel> GetIssueArticleById(long articleId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             IssueArticleModel article = null;
             var sql = @"SELECT a.*, ac.*, au.*,
@@ -543,7 +530,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     public async Task ReorderArticles(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT a.Id, row_number() OVER (ORDER BY a.SequenceNumber) as 'SequenceNumber'
                             From IssueArticle a
@@ -573,7 +560,7 @@ public class IssueArticleRepository : IIssueArticleRepository
 
     public async Task UpdateArticleSequence(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IEnumerable<IssueArticleModel> articles, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update a Set a.SequenceNumber = @SequenceNumber
                             From IssueArticle a

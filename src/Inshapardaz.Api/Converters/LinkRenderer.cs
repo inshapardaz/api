@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.AspNetCore.Hosting;
 
 namespace Inshapardaz.Api.Converters;
 
@@ -31,23 +30,17 @@ public interface IRenderLink
     //LinkView Render(string methodName, string rel, string type, object data);
 }
 
-public class LinkRenderer : IRenderLink
+public class LinkRenderer(
+    IUrlHelperFactory urlHelperFactory,
+    IWebHostEnvironment hostingEnvironment,
+    IActionContextAccessor actionContextAccessor,
+    ILogger<LinkRenderer> log)
+    : IRenderLink
 {
-    private readonly string _environment;
-    private readonly IActionContextAccessor _actionContextAccessor;
-    private readonly ILogger<LinkRenderer> _log;
-    private readonly IUrlHelper _urlHelper;
-
-    public LinkRenderer(IUrlHelperFactory urlHelperFactory, 
-        IWebHostEnvironment hostingEnvironment,
-        IActionContextAccessor actionContextAccessor, 
-        ILogger<LinkRenderer> log)
-    {
-        _environment = hostingEnvironment.EnvironmentName;
-        _actionContextAccessor = actionContextAccessor;
-        _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
-        _log = log;
-    }
+    private readonly string _environment = hostingEnvironment.EnvironmentName;
+    private readonly IActionContextAccessor _actionContextAccessor = actionContextAccessor;
+    private readonly ILogger<LinkRenderer> _log = log;
+    private readonly IUrlHelper _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
 
     public LinkView Render(Link link)
     {

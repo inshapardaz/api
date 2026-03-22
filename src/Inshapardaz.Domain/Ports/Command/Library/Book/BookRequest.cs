@@ -1,12 +1,6 @@
 ﻿namespace Inshapardaz.Domain.Ports.Command.Library.Book;
 
-public abstract class BookRequest : LibraryBaseCommand
+public abstract class BookRequest(int libraryId, int bookId) : LibraryBaseCommand(libraryId)
 {
-    protected BookRequest(int libraryId, int bookId)
-        : base(libraryId)
-    {
-        BookId = bookId;
-    }
-
-    public int BookId { get; set; }
+    public int BookId { get; set; } = bookId;
 }

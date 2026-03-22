@@ -1,35 +1,29 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue;
 
-public class UpdateIssueContentRequest : LibraryBaseCommand
+public class UpdateIssueContentRequest(
+    int libraryId,
+    int periodicalId,
+    int volumeNumber,
+    int issueNumber,
+    long contentId,
+    string language,
+    string mimeType)
+    : LibraryBaseCommand(libraryId)
 {
-    public UpdateIssueContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, long contentId, string language, string mimeType)
-        : base(libraryId)
-    {
-        PeriodicalId = periodicalId;
-        VolumeNumber = volumeNumber;
-        IssueNumber = issueNumber;
-        ContentId = contentId;
-        Language = language;
-        MimeType = mimeType;
-    }
+    public int PeriodicalId { get; } = periodicalId;
+    public int VolumeNumber { get; } = volumeNumber;
+    public int IssueNumber { get; } = issueNumber;
+    public long ContentId { get; } = contentId;
+    public string Language { get; } = language;
+    public string MimeType { get; } = mimeType;
 
-    public int PeriodicalId { get; }
-    public int VolumeNumber { get; }
-    public int IssueNumber { get; }
-    public long ContentId { get; }
-    public string Language { get; }
-    public string MimeType { get; }
-    
     public FileModel Content { get; set; }
 
     public RequestResult Result { get; set; } = new RequestResult();
@@ -42,26 +36,18 @@ public class UpdateIssueContentRequest : LibraryBaseCommand
     }
 }
 
-public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueContentRequest>
+public class UpdateIssueContentRequestHandler(
+    IIssueRepository issueRepository,
+    IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<UpdateIssueContentRequest>
 {
-    private readonly IIssueRepository _issueRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-
-    public UpdateIssueContentRequestHandler(IIssueRepository issueRepository, 
-        IAmACommandProcessor commandProcessor)
-    {
-        _issueRepository = issueRepository;
-        _commandProcessor = commandProcessor;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateIssueContentRequest> HandleAsync(UpdateIssueContentRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var issue = await _issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
+        var issue = await issueRepository.GetIssue(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, cancellationToken);
         if (issue != null)
         {
-            var issueContent = await _issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ContentId, cancellationToken);
+            var issueContent = await issueRepository.GetIssueContent(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.ContentId, cancellationToken);
 
             var fileName = FilePathHelper.GetIssueContentFileName(command.Content.FileName);
             var filePath = FilePathHelper.GetIssueContentPath(command.PeriodicalId, command.VolumeNumber, command.IssueNumber, fileName);
@@ -73,11 +59,11 @@ public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueC
                 FileName = command.Content.FileName
             };
 
-            await _commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
+            await commandProcessor.SendAsync(saveContentCommand, cancellationToken: cancellationToken);
 
             if (issueContent == null)
             {
-                command.Result.Content = await _issueRepository.AddIssueContent(command.LibraryId,
+                command.Result.Content = await issueRepository.AddIssueContent(command.LibraryId,
                     new IssueContentModel
                     {
                         PeriodicalId = issue.PeriodicalId,
@@ -97,7 +83,7 @@ public class UpdateIssueContentRequestHandler : RequestHandlerAsync<UpdateIssueC
                 issueContent.MimeType = command.MimeType;
                 issueContent.FileId = saveContentCommand.Result.Id;
                 issueContent.FileName = saveContentCommand.Result.FileName;
-                command.Result.Content = await _issueRepository.UpdateIssueContent(command.LibraryId, issueContent, cancellationToken);
+                command.Result.Content = await issueRepository.UpdateIssueContent(command.LibraryId, issueContent, cancellationToken);
             }
         }
 

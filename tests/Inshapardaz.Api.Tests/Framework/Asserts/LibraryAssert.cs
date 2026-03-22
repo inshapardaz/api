@@ -6,37 +6,25 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Adapters;
-using System.Net.Http;
-using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class LibraryAssert
+    public class LibraryAssert(
+        ILibraryTestRepository libraryRepository,
+        IFileTestRepository fileRepository,
+        IAuthorTestRepository authorRepository,
+        ICategoryTestRepository categoryRepository,
+        FakeFileStorage fileStorage,
+        ISeriesTestRepository seriesRepository)
     {
         private HttpResponseMessage _response;
         private LibraryView _view;
         private int _libraryId;
-        private readonly ILibraryTestRepository _libraryRepository;
-        private readonly IFileTestRepository _fileRepository;
-        private readonly IAuthorTestRepository _authorRepository;
-        private readonly ICategoryTestRepository _categoryRepository;
-        private readonly ISeriesTestRepository _seriesRepository;
-        private readonly FakeFileStorage _fileStorage;
+        private readonly IFileTestRepository _fileRepository = fileRepository;
+        private readonly IAuthorTestRepository _authorRepository = authorRepository;
+        private readonly ICategoryTestRepository _categoryRepository = categoryRepository;
+        private readonly ISeriesTestRepository _seriesRepository = seriesRepository;
 
-        public LibraryAssert(ILibraryTestRepository libraryRepository,
-            IFileTestRepository fileRepository,
-            IAuthorTestRepository authorRepository,
-            ICategoryTestRepository categoryRepository,
-            FakeFileStorage fileStorage,
-            ISeriesTestRepository seriesRepository)
-        {
-            _libraryRepository = libraryRepository;
-            _fileRepository = fileRepository;
-            _authorRepository = authorRepository;
-            _categoryRepository = categoryRepository;
-            _fileStorage = fileStorage;
-            _seriesRepository = seriesRepository;
-        }
         public LibraryAssert ForResponse(HttpResponseMessage response)
         {
             _response = response;
@@ -59,7 +47,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public LibraryAssert ShouldHaveDeletedLibrary(int libraryId)
         {
-            var dbLibrary = _libraryRepository.GetLibraryById(libraryId);
+            var dbLibrary = libraryRepository.GetLibraryById(libraryId);
             dbLibrary.Should().BeNull();
             return this;
         }
@@ -74,7 +62,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public LibraryAssert ShouldHaveCreatedLibrary()
         {
-            var library = _libraryRepository.GetLibrary(_view);
+            var library = libraryRepository.GetLibrary(_view);
             library.Name.Should().Be(_view.Name);
             library.Language.Should().Be(_view.Language);
             library.SupportsPeriodicals.Should().Be(_view.SupportsPeriodicals);
@@ -89,7 +77,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public LibraryAssert ShouldHaveCreatedLibraryWithConfiguration()
         {
-            var library = _libraryRepository.GetLibrary(_view);
+            var library = libraryRepository.GetLibrary(_view);
             library.Name.Should().Be(_view.Name);
             library.Language.Should().Be(_view.Language);
             library.SupportsPeriodicals.Should().Be(_view.SupportsPeriodicals);
@@ -110,7 +98,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public LibraryAssert ShouldHaveUpdatedLibrary()
         {
-            var dbLibrary = _libraryRepository.GetLibraryById(_libraryId);
+            var dbLibrary = libraryRepository.GetLibraryById(_libraryId);
             _view.Name.Should().Be(dbLibrary.Name);
             _view.Language.Should().Be(dbLibrary.Language);
             _view.SupportsPeriodicals.Should().Be(dbLibrary.SupportsPeriodicals);
@@ -123,7 +111,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public LibraryAssert ShouldHaveUpdatedLibraryWithoutConfiguration()
         {
-            var dbLibrary = _libraryRepository.GetLibraryById(_libraryId);
+            var dbLibrary = libraryRepository.GetLibraryById(_libraryId);
             _view.Name.Should().Be(dbLibrary.Name);
             _view.Language.Should().Be(dbLibrary.Language);
             _view.SupportsPeriodicals.Should().Be(dbLibrary.SupportsPeriodicals);
@@ -358,9 +346,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public LibraryAssert ShouldNotHaveUpdatedLibraryImage(int libraryId, byte[] newImage)
         {
-            var imageUrl = _libraryRepository.GetLibraryImageUrl(libraryId);
+            var imageUrl = libraryRepository.GetLibraryImageUrl(libraryId);
             imageUrl.Should().NotBeNull();
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotEqual(newImage);
             return this;
         }
@@ -373,16 +361,16 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public LibraryAssert ShouldHaveAddedLibraryImage(int libraryId, byte[] newImage)
         {
-            var imageUrl = _libraryRepository.GetLibraryImageUrl(libraryId);
+            var imageUrl = libraryRepository.GetLibraryImageUrl(libraryId);
             imageUrl.Should().NotBeNull();
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNullOrEmpty().And.Equal(newImage);
             return this;
         }
 
         public LibraryAssert ShouldHavePublicImage(int libraryId)
         {
-            var image = _libraryRepository.GetLibraryImage(libraryId);
+            var image = libraryRepository.GetLibraryImage(libraryId);
             image.Should().NotBeNull();
             image.IsPublic.Should().BeTrue();
             return this;
@@ -390,9 +378,9 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public LibraryAssert ShouldHaveUpdatedImage(int libraryId, byte[] newImage)
         {
-            var imageUrl = _libraryRepository.GetLibraryImageUrl(libraryId);
+            var imageUrl = libraryRepository.GetLibraryImageUrl(libraryId);
             imageUrl.Should().NotBeNull();
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.Equal(newImage);
             return this;
         }

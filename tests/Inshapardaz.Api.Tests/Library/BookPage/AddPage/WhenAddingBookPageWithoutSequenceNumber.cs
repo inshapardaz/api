@@ -5,23 +5,15 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
 {
-    public class WhenAddingBookPageWithoutSequenceNumber
-        : TestBase
+    public class WhenAddingBookPageWithoutSequenceNumber() : TestBase(Role.Writer)
     {
         private BookDto _book;
         private BookPageView _page;
         private HttpResponseMessage _response;
         private BookPageAssert _assert;
-
-        public WhenAddingBookPageWithoutSequenceNumber()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,16 +27,11 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
+
         [Test]
         public void ShouldSavedThePageWithLastPageOfBook()
         {
@@ -54,10 +41,6 @@ namespace Inshapardaz.Api.Tests.Library.BookPage.AddPage
 
 
         [Test]
-        public void ShouldHaveSavedTheContentFile()
-        {
-            _assert.ShouldHaveBookPageContent(_page.Text);
-        }
-
+        public void ShouldHaveSavedTheContentFile() => _assert.ShouldHaveBookPageContent(_page.Text);
     }
 }

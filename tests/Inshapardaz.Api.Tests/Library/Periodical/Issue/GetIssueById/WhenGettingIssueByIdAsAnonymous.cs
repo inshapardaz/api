@@ -2,9 +2,6 @@
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
 {
@@ -22,7 +19,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
         public async Task Setup()
         {
             _expected = IssueBuilder.WithLibrary(LibraryId)
-                                    .WithPages(10)
+                                    .WithPages()
                                     .WithArticles(3)
                                     .WithContents(2)
                                     .Build(4)
@@ -33,22 +30,13 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOkResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveCorrectObjectReturned()
-        {
-            _assert.ShouldBeSameAs(_expected, 3, 10);
-        }
+        public void ShouldHaveCorrectObjectReturned() => _assert.ShouldBeSameAs(_expected, 3, 10);
 
         [Test]
         public void ShouldHaveLinks()
@@ -69,9 +57,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueById
         }
 
         [Test]
-        public void ShouldHaveNoContentsLink()
-        {
-            _assert.ShouldNotHaveContentsLink();
-        }
+        public void ShouldHaveNoContentsLink() => _assert.ShouldNotHaveContentsLink();
     }
 }

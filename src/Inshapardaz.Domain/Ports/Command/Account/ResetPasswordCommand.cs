@@ -2,9 +2,6 @@
 using Inshapardaz.Domain.Common;
 using Inshapardaz.Domain.Exception;
 using Paramore.Brighter;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Account;
 
@@ -15,19 +12,13 @@ public class ResetPasswordCommand : RequestBase
     public string Password { get; set; }
 }
 
-public class ResetPasswordCommandHandler : RequestHandlerAsync<ResetPasswordCommand>
+public class ResetPasswordCommandHandler(IAccountRepository accountRepository)
+    : RequestHandlerAsync<ResetPasswordCommand>
 
 {
-    private readonly IAccountRepository _accountRepository;
-
-    public ResetPasswordCommandHandler(IAccountRepository accountRepository)
-    {
-        _accountRepository = accountRepository;
-    }
-
     public override async Task<ResetPasswordCommand> HandleAsync(ResetPasswordCommand command, CancellationToken cancellationToken = default)
     {
-        var account = await _accountRepository.GetAccountByResetToken(command.Token, cancellationToken);
+        var account = await accountRepository.GetAccountByResetToken(command.Token, cancellationToken);
 
         if (account == null || account.ResetTokenExpires < DateTime.UtcNow)
         {
@@ -39,7 +30,7 @@ public class ResetPasswordCommandHandler : RequestHandlerAsync<ResetPasswordComm
         account.ResetToken = null;
         account.ResetTokenExpires = null;
 
-        await _accountRepository.UpdateAccount(account, cancellationToken);
+        await accountRepository.UpdateAccount(account, cancellationToken);
 
         return await base.HandleAsync(command, cancellationToken);
     }

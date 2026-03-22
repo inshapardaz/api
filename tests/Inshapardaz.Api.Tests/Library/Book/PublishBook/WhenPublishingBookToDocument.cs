@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -16,16 +12,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Book.PublishBook
 {
     [TestFixture]
-    public class WhenPublishingBookToDocument : TestBase
+    public class WhenPublishingBookToDocument() : TestBase(Role.LibraryAdmin)
     {
         private BookDto _book;
         private HttpResponseMessage _response;
         private PagingAssert<BookPageView> _assert;
-
-        public WhenPublishingBookToDocument()
-            : base(Role.LibraryAdmin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -38,16 +29,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.PublishBook
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveUpdatedChapters()

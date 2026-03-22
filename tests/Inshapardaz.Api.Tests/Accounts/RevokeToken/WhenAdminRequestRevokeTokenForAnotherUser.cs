@@ -2,20 +2,13 @@
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.RevokeToken
 {
     [TestFixture]
-    public class WhenAdminRequestRevokeTokenForAnotherUser : TestBase
+    public class WhenAdminRequestRevokeTokenForAnotherUser() : TestBase(Domain.Models.Role.Admin)
     {
         private HttpResponseMessage _response;
-
-        public WhenAdminRequestRevokeTokenForAnotherUser()
-            : base(Domain.Models.Role.Admin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,9 +20,6 @@ namespace Inshapardaz.Api.Tests.Accounts.RevokeToken
         }
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
     }
 }

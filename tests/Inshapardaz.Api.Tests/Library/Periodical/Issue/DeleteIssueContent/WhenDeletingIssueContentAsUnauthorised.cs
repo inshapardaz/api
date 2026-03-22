@@ -3,8 +3,6 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.issue.DeleteIssueContent
 {
@@ -27,21 +25,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.issue.DeleteIssueContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnUnauthorised()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldReturnUnauthorised() => _response.ShouldBeUnauthorized();
 
         [Test]
-        public void ShouldNotDeletedContent()
-        {
-            _assert.ShouldHaveIssueContent(_expected.Id, _expected.Language, _expected.MimeType);
-        }
+        public void ShouldNotDeletedContent() => _assert.ShouldHaveIssueContent(_expected.Id, _expected.Language, _expected.MimeType);
     }
 }

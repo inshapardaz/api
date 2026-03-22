@@ -4,8 +4,6 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Inshapardaz.Api.Extensions;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
@@ -13,18 +11,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingIssueWithPermission
-        : TestBase
+    public class WhenUpdatingIssueWithPermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IssueView _newIssue;
         private IssueAssert _assert;
         private TagView[] _newTags;
-
-        public WhenUpdatingIssueWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -50,34 +42,19 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.UpdateIssue
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOKResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOKResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveReturnedUpdatedIssue()
-        {
-            _assert.ShouldMatch(_newIssue);
-        }
+        public void ShouldHaveReturnedUpdatedIssue() => _assert.ShouldMatch(_newIssue);
 
         [Test]
-        public void ShouldHaveUpdatedIssue()
-        {
-            _assert.ShouldHaveSavedIssue();
-        }
-        
-        
+        public void ShouldHaveUpdatedIssue() => _assert.ShouldHaveSavedIssue();
+
+
         [Test]
-        public void ShouldReturnCorrectTags()
-        {
-            _assert.ShouldBeSameTags(_newTags);
-        }
+        public void ShouldReturnCorrectTags() => _assert.ShouldBeSameTags(_newTags);
     }
 }

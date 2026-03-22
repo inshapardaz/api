@@ -4,23 +4,16 @@ using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.DeletePage
 {
     [TestFixture]
-    public class WhenDeletingIssuePageWhenNoExistingImage : TestBase
+    public class WhenDeletingIssuePageWhenNoExistingImage() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
         private IssuePageAssert _assert;
         private IssuePageDto _page;
         private int _issueId;
-
-        public WhenDeletingIssuePageWhenNoExistingImage()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -40,15 +33,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.DeletePage
         }
 
         [Test]
-        public void ShouldHaveOkResponse()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOkResponse() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldDeletePage()
-        {
-            _assert.IssuePageShouldExist(_issueId, _page.SequenceNumber);
-        }
+        public void ShouldDeletePage() => _assert.IssuePageShouldExist(_issueId, _page.SequenceNumber);
     }
 }

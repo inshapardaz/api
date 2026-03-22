@@ -5,8 +5,6 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Inshapardaz.Api.Extensions;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.UpdatePage
@@ -14,7 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.UpdatePage
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenUpdatingIssuePageWithPermissions : TestBase
+    public class WhenUpdatingIssuePageWithPermissions(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private IssuePageAssert _assert;
@@ -24,11 +22,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.UpdatePage
         private int _issueId;
         private AccountDto _newWriter;
         private AccountDto _newReviewer;
-
-        public WhenUpdatingIssuePageWithPermissions(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -54,16 +47,10 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.UpdatePage
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            BookBuilder.CleanUp();
-        }
+        public void Teardown() => BookBuilder.CleanUp();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveReturnCorrectObject()
@@ -86,9 +73,6 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.UpdatePage
         }
 
         [Test]
-        public void ShouldHaveSavedBookPage()
-        {
-            _assert.ShouldHaveSavedPage();
-        }
+        public void ShouldHaveSavedBookPage() => _assert.ShouldHaveSavedPage();
     }
 }

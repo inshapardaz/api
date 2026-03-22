@@ -4,28 +4,18 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.GetBooksBySeries
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenGettingBooksBySeriesWithWritePermission
-        : TestBase
+    public class WhenGettingBooksBySeriesWithWritePermission(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private PagingAssert<BookView> _assert;
         private SeriesDto _series;
         private IEnumerable<BookDto> _seriesBooks;
-
-        public WhenGettingBooksBySeriesWithWritePermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -39,16 +29,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksBySeries
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public void ShouldHaveSelfLink()
@@ -58,22 +42,13 @@ namespace Inshapardaz.Api.Tests.Library.Book.GetBooksBySeries
         }
 
         [Test]
-        public void ShouldNotHaveNextLink()
-        {
-            _assert.ShouldNotHaveNextLink();
-        }
+        public void ShouldNotHaveNextLink() => _assert.ShouldNotHaveNextLink();
 
         [Test]
-        public void ShouldNotHavePreviousLink()
-        {
-            _assert.ShouldNotHavePreviousLink();
-        }
+        public void ShouldNotHavePreviousLink() => _assert.ShouldNotHavePreviousLink();
 
         [Test]
-        public void ShouldNotHaveCreateLink()
-        {
-            _assert.ShouldHaveCreateLink($"/libraries/{LibraryId}/books");
-        }
+        public void ShouldNotHaveCreateLink() => _assert.ShouldHaveCreateLink($"/libraries/{LibraryId}/books");
 
         [Test]
         public void ShouldReturnCorrectPage()

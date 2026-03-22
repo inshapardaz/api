@@ -5,31 +5,20 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
-using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class ArticleContentAssert
+    public class ArticleContentAssert(
+        IArticleTestRepository articleRepository,
+        IFileTestRepository fileRepository,
+        FakeFileStorage fileStorage)
     {
         private HttpResponseMessage _response;
         private int _libraryId;
         private ArticleContentView _articleContent;
         private LibraryDto _library;
 
-        private readonly IArticleTestRepository _articleRepository;
-        private readonly IFileTestRepository _fileRepository;
-        private readonly FakeFileStorage _fileStorage;
         private ArticleView _article;
-
-        public ArticleContentAssert(IArticleTestRepository articleRepository,
-            IFileTestRepository fileRepository,            
-            FakeFileStorage fileStorage)
-        {
-            _articleRepository = articleRepository;
-            _fileRepository = fileRepository;
-            _fileStorage = fileStorage;
-        }
 
         public ArticleContentAssert ForArticleView(ArticleView view)
         {
@@ -100,8 +89,8 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ArticleContentAssert ShouldHaveText(ArticleContentDto contents)
         {
-            var file = _fileRepository.GetFileById(contents.FileId.Value);
-            var fileContents = _fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            var file = fileRepository.GetFileById(contents.FileId.Value);
+            var fileContents = fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
             _articleContent.Text.Should().Be(fileContents);
             return this;
         }
@@ -128,16 +117,16 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ArticleContentAssert ShouldHaveSavedCorrectText(string expected)
         {
-            var content = _articleRepository.GetArticleContent(_articleContent.ArticleId, _articleContent.Language);
-            var file = _fileRepository.GetFileById(content.FileId.Value);
-            var fileContents = _fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            var content = articleRepository.GetArticleContent(_articleContent.ArticleId, _articleContent.Language);
+            var file = fileRepository.GetFileById(content.FileId.Value);
+            var fileContents = fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
             fileContents.Should().Be(expected);
             return this;
         }
 
         public ArticleContentAssert ShouldHaveMatechingTextForLanguage(string expected, string language, string newLayout)
         {
-            var content = _articleRepository.GetArticleContent(_articleContent.ArticleId, _articleContent.Language);
+            var content = articleRepository.GetArticleContent(_articleContent.ArticleId, _articleContent.Language);
             //TODO: Assert text from file
             //content.Text.Should().NotBeNull().Should().NotBe(expected);
             content.Language.Should().Be(language);
@@ -147,18 +136,18 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ArticleContentAssert ShouldHaveSavedArticleContent()
         {
-            var dbContent = _articleRepository.GetArticleContent(_articleContent.ArticleId, _articleContent.Language);
+            var dbContent = articleRepository.GetArticleContent(_articleContent.ArticleId, _articleContent.Language);
             dbContent.Should().NotBeNull();
-            var dbArticle = _articleRepository.GetArticleById(dbContent.ArticleId);
+            var dbArticle = articleRepository.GetArticleById(dbContent.ArticleId);
             dbArticle.Should().NotBeNull();
             _articleContent.ArticleId.Should().Be(dbContent.ArticleId);
             _articleContent.Language.Should().Be(dbContent.Language);
             _articleContent.Layout.Should().Be(dbContent.Layout);
 
-            var file = _fileRepository.GetFileById(dbContent.FileId.Value);
+            var file = fileRepository.GetFileById(dbContent.FileId.Value);
             file.Should().NotBeNull();
             file.FilePath.Should().Be($"articles/{dbContent.ArticleId}/article-{dbContent.Language}.md");
-            var text = _fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
+            var text = fileStorage.GetTextFile(file.FilePath, CancellationToken.None).Result;
             text.Should().Be(text);
             return this;
         }
@@ -198,14 +187,14 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ArticleContentAssert ShouldHaveDeletedContent(ArticleContentDto content)
         {
-            var dbContent = _articleRepository.GetArticleContent(content.ArticleId, content.Language);
+            var dbContent = articleRepository.GetArticleContent(content.ArticleId, content.Language);
             dbContent.Should().BeNull("Article content should be deleted");
             return this;
         }
 
         public ArticleContentAssert ShouldHaveContent(long articleId, string language)
         {
-            var dbContent = _articleRepository.GetArticleContent(articleId, language);
+            var dbContent = articleRepository.GetArticleContent(articleId, language);
             dbContent.Should().NotBeNull("Article content should exist.");
             return this;
         }

@@ -2,26 +2,15 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapters.Database.SqlServer.Repositories.Library;
 
-public class PeriodicalRepository : IPeriodicalRepository
+public class PeriodicalRepository(SqlServerConnectionProvider connectionProvider) : IPeriodicalRepository
 {
-    private readonly SqlServerConnectionProvider _connectionProvider;
-
-    public PeriodicalRepository(SqlServerConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-
     public async Task<Page<PeriodicalModel>> GetPeriodicals(int libraryId, string query, int pageNumber, int pageSize, PeriodicalFilter filter, PeriodicalSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sortByQuery = $"p.{GetSortByQuery(sortBy)}";
             var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
@@ -77,7 +66,7 @@ public class PeriodicalRepository : IPeriodicalRepository
 
     public async Task<PeriodicalModel> GetPeriodicalById(int libraryId, int periodicalId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"SELECT p.*, 
                             f.FilePath as ImageUrl, 
@@ -114,7 +103,7 @@ public class PeriodicalRepository : IPeriodicalRepository
     public async Task<PeriodicalModel> AddPeriodical(int libraryId, PeriodicalModel periodical, CancellationToken cancellationToken)
     {
         int id;
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"INSERT INTO Periodical (Title, [Description], Language, ImageId, LibraryId, Frequency) 
                             OUTPUT Inserted.Id 
@@ -146,7 +135,7 @@ public class PeriodicalRepository : IPeriodicalRepository
 
     public async Task<PeriodicalModel> UpdatePeriodical(int libraryId, PeriodicalModel periodical, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update Periodical
                             Set Title = @Title, Description = @Description, Language = @Language, Frequency = @Frequency
@@ -183,7 +172,7 @@ public class PeriodicalRepository : IPeriodicalRepository
 
     public async Task UpdatePeriodicalImage(int libraryId, int periodicalId, long imageId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Update Periodical
                             Set Imageid = @ImageId
@@ -201,7 +190,7 @@ public class PeriodicalRepository : IPeriodicalRepository
 
     public async Task DeletePeriodical(int libraryId, int periodicalId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Delete From Periodical Where LibraryId = @LibraryId AND Id = @Id";
             var command = new CommandDefinition(sql, new { LibraryId = libraryId, Id = periodicalId }, cancellationToken: cancellationToken);

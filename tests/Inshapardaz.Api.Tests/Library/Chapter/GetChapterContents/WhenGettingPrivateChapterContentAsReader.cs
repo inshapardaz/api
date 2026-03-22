@@ -1,28 +1,18 @@
 ﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using NUnit.Framework;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Inshapardaz.Domain.Models;
-using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
 {
     [TestFixture]
-    public class WhenGettingPrivateChapterContentAsReader
-        : TestBase
+    public class WhenGettingPrivateChapterContentAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private ChapterContentAssert _assert;
         private ChapterDto _chapter;
         private ChapterContentDto _content;
-
-        public WhenGettingPrivateChapterContentAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -35,34 +25,19 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
-        public void ShouldHaveBookLink()
-        {
-            _assert.ShouldHaveBookLink();
-        }
+        public void ShouldHaveBookLink() => _assert.ShouldHaveBookLink();
 
         [Test]
-        public void ShouldHaveChapterLink()
-        {
-            _assert.ShouldHaveChapterLink();
-        }
+        public void ShouldHaveChapterLink() => _assert.ShouldHaveChapterLink();
 
         [Test]
         public void ShouldHaveTextReturened()
@@ -74,9 +49,6 @@ namespace Inshapardaz.Api.Tests.Library.Chapter.Contents.GetChapterContents
         }
 
         [Test]
-        public void ShouldReturnCorrectChapterData()
-        {
-            _assert.ShouldMatch(_content, _chapter.BookId);
-        }
+        public void ShouldReturnCorrectChapterData() => _assert.ShouldMatch(_content, _chapter.BookId);
     }
 }

@@ -2,20 +2,13 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
 {
     [TestFixture]
-    public class WhenAddingPeriodicalAsAnonymousUser : TestBase
+    public class WhenAddingPeriodicalAsAnonymousUser() : TestBase(periodicalsEnabled: true)
     {
         private HttpResponseMessage _response;
-
-        public WhenAddingPeriodicalAsAnonymousUser()
-            : base(periodicalsEnabled: true)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -26,15 +19,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.AddPeriodical
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveUnauthorizedResult()
-        {
-            _response.ShouldBeUnauthorized();
-        }
+        public void ShouldHaveUnauthorizedResult() => _response.ShouldBeUnauthorized();
     }
 }

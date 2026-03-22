@@ -4,23 +4,16 @@ using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.AddLibrary
 {
     [TestFixture]
-    public class WhenAddingLibraryForUserAlreadyExisting : TestBase
+    public class WhenAddingLibraryForUserAlreadyExisting() : TestBase(Role.Admin)
     {
         private LibraryView _library;
         private HttpResponseMessage _response;
         private LibraryView _returnedView;
         private LibraryAssert _assert;
-
-        public WhenAddingLibraryForUserAlreadyExisting()
-            : base(Role.Admin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -45,52 +38,28 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         }
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldHaveCreatedLibraryInDataStore()
-        {
-            _assert.ShouldHaveCreatedLibrary();
-        }
+        public void ShouldHaveCreatedLibraryInDataStore() => _assert.ShouldHaveCreatedLibrary();
 
         [Test]
-        public void ShouldHaveSelfLink()
-        {
-            _assert.ShouldHaveSelfLink();
-        }
+        public void ShouldHaveSelfLink() => _assert.ShouldHaveSelfLink();
 
         [Test]
-        public void ShouldHaveBooksLink()
-        {
-            _assert.ShouldHaveBooksLink();
-        }
+        public void ShouldHaveBooksLink() => _assert.ShouldHaveBooksLink();
 
         [Test]
-        public void ShouldHaveAuthorsLink()
-        {
-            _assert.ShouldHaveAuthorsLink();
-        }
+        public void ShouldHaveAuthorsLink() => _assert.ShouldHaveAuthorsLink();
 
         [Test]
-        public void ShouldHaveCategoriesLink()
-        {
-            _assert.ShouldHaveCategoriesLink();
-        }
+        public void ShouldHaveCategoriesLink() => _assert.ShouldHaveCategoriesLink();
 
         [Test]
-        public void ShouldHaveSeriesLink()
-        {
-            _assert.ShouldHaveSeriesLink();
-        }
+        public void ShouldHaveSeriesLink() => _assert.ShouldHaveSeriesLink();
 
         [Test]
         public void ShouldHaveCorrectPeriodicalLink()
@@ -106,10 +75,7 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         }
 
         [Test]
-        public void ShouldHaveRecentLinks()
-        {
-            _assert.ShouldHaveRecentLinks();
-        }
+        public void ShouldHaveRecentLinks() => _assert.ShouldHaveRecentLinks();
 
         [Test]
         public void ShouldHaveEditLinks()
@@ -129,9 +95,6 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
         }
 
         [Test]
-        public void ShouldNotSentEmailToAdministrator()
-        {
-            SmtpClient.AssertNoEmailSent();
-        }
+        public void ShouldNotSentEmailToAdministrator() => SmtpClient.AssertNoEmailSent();
     }
 }

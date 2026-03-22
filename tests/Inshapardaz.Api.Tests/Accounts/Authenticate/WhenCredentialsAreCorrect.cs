@@ -3,8 +3,6 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Inshapardaz.Api.Views.Accounts;
 
 namespace Inshapardaz.Api.Tests.Accounts.Authenticate
@@ -27,33 +25,18 @@ namespace Inshapardaz.Api.Tests.Accounts.Authenticate
         }
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldContainRefreshToken()
-        {
-            _authenticateResponse.RefreshToken.Should().NotBeNullOrEmpty();
-        }
+        public void ShouldContainRefreshToken() => _authenticateResponse.RefreshToken.Should().NotBeNullOrEmpty();
 
         [Test]
-        public void ShouldContainAccessToken()
-        {
-            _authenticateResponse.AccessToken.Should().NotBeNullOrEmpty();
-        }
+        public void ShouldContainAccessToken() => _authenticateResponse.AccessToken.Should().NotBeNullOrEmpty();
 
         [Test]
-        public void ShouldContainCorrectEmail()
-        {
-            _authenticateResponse.Email.Should().Be(_account.Email);
-        }
+        public void ShouldContainCorrectEmail() => _authenticateResponse.Email.Should().Be(_account.Email);
 
         [Test]
-        public void ShouldContainName()
-        {
-            _authenticateResponse.Name.Should().Be(_account.Name);
-        }
+        public void ShouldContainName() => _authenticateResponse.Name.Should().Be(_account.Name);
     }
 }

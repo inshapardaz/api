@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
@@ -10,16 +8,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
 {
     [TestFixture]
-    public class WhenUpdatingCategoryThatDoesNotExist : TestBase
+    public class WhenUpdatingCategoryThatDoesNotExist() : TestBase(Role.LibraryAdmin)
     {
         private HttpResponseMessage _response;
         private CategoryView _expectedCategory;
         private CategoryAssert _assert;
-
-        public WhenUpdatingCategoryThatDoesNotExist()
-            : base(Role.LibraryAdmin)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -31,28 +24,16 @@ namespace Inshapardaz.Api.Tests.Library.Categories.UpdateCategory
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldHaveCreatedCategoryInDataStore()
-        {
-            _assert.ShouldHaveCreatedCategory();
-        }
+        public void ShouldHaveCreatedCategoryInDataStore() => _assert.ShouldHaveCreatedCategory();
 
         [Test]
         public void ShouldHaveLinks()

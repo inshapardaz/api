@@ -5,55 +5,37 @@ using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Book.Chapter;
 
-public class AssignChapterToUserRequest : LibraryBaseCommand
+public class AssignChapterToUserRequest(int libraryId, int bookId, int chapterNumber, int? accountId)
+    : LibraryBaseCommand(libraryId)
 {
-    public AssignChapterToUserRequest(int libraryId, int bookId, int chapterNumber, int? accountId)
-    : base(libraryId)
-    {
-        BookId = bookId;
-        ChapterNumber = chapterNumber;
-        AccountId = accountId;
-    }
-
     public ChapterModel Result { get; set; }
-    public int BookId { get; set; }
-    public int ChapterNumber { get; set; }
-    public int? AccountId { get; private set; }
+    public int BookId { get; set; } = bookId;
+    public int ChapterNumber { get; set; } = chapterNumber;
+    public int? AccountId { get; private set; } = accountId;
 }
 
-public class AssignChapterToUserRequestHandler : RequestHandlerAsync<AssignChapterToUserRequest>
+public class AssignChapterToUserRequestHandler(
+    IAccountRepository accountRepository,
+    IChapterRepository chapterRepository,
+    IUserHelper userHelper)
+    : RequestHandlerAsync<AssignChapterToUserRequest>
 {
-    private readonly IAccountRepository _accountRepository;
-    private readonly IChapterRepository _chapterRepository;
-    private readonly IUserHelper _userHelper;
-
-    public AssignChapterToUserRequestHandler(IAccountRepository accountRepository,
-                                     IChapterRepository chapterRepository,
-                                     IUserHelper userHelper)
-    {
-        _accountRepository = accountRepository;
-        _chapterRepository = chapterRepository;
-        _userHelper = userHelper;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<AssignChapterToUserRequest> HandleAsync(AssignChapterToUserRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        if (!_userHelper.IsAdmin && command.AccountId.HasValue)
+        if (!userHelper.IsAdmin && command.AccountId.HasValue)
         {
-            var account = await _accountRepository.GetLibraryAccountById(command.LibraryId, command.AccountId.Value, cancellationToken);
+            var account = await accountRepository.GetLibraryAccountById(command.LibraryId, command.AccountId.Value, cancellationToken);
             if (account.Role != Role.LibraryAdmin && account.Role != Role.Writer)
             {
                 throw new BadRequestException("user cannot be assigned chapter");
             }
         }
 
-        var chapter = await _chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
+        var chapter = await chapterRepository.GetChapterById(command.LibraryId, command.BookId, command.ChapterNumber, cancellationToken);
         if (chapter == null)
         {
             throw new BadRequestException();
@@ -61,11 +43,11 @@ public class AssignChapterToUserRequestHandler : RequestHandlerAsync<AssignChapt
 
         if (chapter.Status == EditingStatus.Available || chapter.Status == EditingStatus.Typing)
         {
-            command.Result = await _chapterRepository.UpdateWriterAssignment(command.LibraryId, command.BookId, command.ChapterNumber, command.AccountId, cancellationToken);
+            command.Result = await chapterRepository.UpdateWriterAssignment(command.LibraryId, command.BookId, command.ChapterNumber, command.AccountId, cancellationToken);
         }
         else if (chapter.Status == EditingStatus.Typed || chapter.Status == EditingStatus.InReview)
         {
-            command.Result = await _chapterRepository.UpdateReviewerAssignment(command.LibraryId, command.BookId, command.ChapterNumber, command.AccountId, cancellationToken);
+            command.Result = await chapterRepository.UpdateReviewerAssignment(command.LibraryId, command.BookId, command.ChapterNumber, command.AccountId, cancellationToken);
         }
         else
         {

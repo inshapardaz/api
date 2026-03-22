@@ -12,24 +12,13 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Controllers;
 
-public class AuthorController : Controller
+public class AuthorController(
+    IAmACommandProcessor commandProcessor,
+    IQueryProcessor queryProcessor,
+    IRenderAuthor bookRenderer,
+    IRenderFile fileRenderer)
+    : Controller
 {
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRenderAuthor _authorRenderer;
-    private readonly IRenderFile _fileRenderer;
-
-    public AuthorController(IAmACommandProcessor commandProcessor,
-                            IQueryProcessor queryProcessor,
-                            IRenderAuthor bookRenderer,
-                            IRenderFile fileRenderer)
-    {
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-        _authorRenderer = bookRenderer;
-        _fileRenderer = fileRenderer;
-    }
-
     // TODO : Add sorting
     [HttpGet("libraries/{libraryId}/authors", Name = nameof(AuthorController.GetAuthors))]
     public async Task<IActionResult> GetAuthors(int libraryId, 
@@ -48,7 +37,7 @@ public class AuthorController : Controller
             SortBy = sortBy,
             SortDirection = sortDirection
         };
-        var result = await _queryProcessor.ExecuteAsync(authorsQuery, token);
+        var result = await queryProcessor.ExecuteAsync(authorsQuery, token);
 
         var args = new PageRendererArgs<AuthorModel>
         {
@@ -56,18 +45,18 @@ public class AuthorController : Controller
             RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize, Query = query },
         };
 
-        return new OkObjectResult(_authorRenderer.Render(args, libraryId));
+        return new OkObjectResult(bookRenderer.Render(args, libraryId));
     }
 
     [HttpGet("libraries/{libraryId}/authors/{authorId}", Name = nameof(AuthorController.GetAuthorById))]
     public async Task<IActionResult> GetAuthorById(int libraryId, int authorId, CancellationToken token = default(CancellationToken))
     {
         var query = new GetAuthorByIdQuery(libraryId, authorId);
-        var author = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
+        var author = await queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
         if (author != null)
         {
-            return new OkObjectResult(_authorRenderer.Render(author, libraryId));
+            return new OkObjectResult(bookRenderer.Render(author, libraryId));
         }
 
         return new NotFoundResult();
@@ -82,9 +71,9 @@ public class AuthorController : Controller
         }
 
         var request = new AddAuthorRequest(libraryId, author.Map());
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _authorRenderer.Render(request.Result, libraryId);
+        var renderResult = bookRenderer.Render(request.Result, libraryId);
         return new CreatedResult(renderResult.Links.Self(), renderResult);
     }
 
@@ -99,9 +88,9 @@ public class AuthorController : Controller
         var authorModel = author.Map();
         authorModel.Id = authorId;
         var request = new UpdateAuthorRequest(libraryId, authorModel);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _authorRenderer.Render(request.Result.Author, libraryId);
+        var renderResult = bookRenderer.Render(request.Result.Author, libraryId);
         if (request.Result.HasAddedNew)
         {
             return new CreatedResult(renderResult.Links.Self(), renderResult);
@@ -116,7 +105,7 @@ public class AuthorController : Controller
     public async Task<IActionResult> DeleteAuthor(int libraryId, int authorId, CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteAuthorRequest(libraryId, authorId);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
 
@@ -139,11 +128,11 @@ public class AuthorController : Controller
             }
         };
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         if (request.Result.HasAddedNew)
         {
-            var response = _fileRenderer.Render(libraryId, request.Result.File);
+            var response = fileRenderer.Render(libraryId, request.Result.File);
             return new CreatedResult(response.Links.Self(), response);
         }
 

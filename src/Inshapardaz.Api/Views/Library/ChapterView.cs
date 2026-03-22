@@ -1,6 +1,4 @@
-﻿using Inshapardaz.Domain.Models.Library;
-
-namespace Inshapardaz.Api.Views.Library;
+﻿namespace Inshapardaz.Api.Views.Library;
 
 public class ChapterView : ViewWithLinks
 {

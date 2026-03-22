@@ -1,35 +1,29 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories;
-using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.File;
 using Paramore.Brighter;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue.Article;
 
-public class UpdateIssueArticleContentRequest : LibraryBaseCommand
+public class UpdateIssueArticleContentRequest(
+    int libraryId,
+    int periodicalId,
+    int volumeNumber,
+    int issueNumber,
+    int sequenceNumber,
+    string content,
+    string language)
+    : LibraryBaseCommand(libraryId)
 {
-    public UpdateIssueArticleContentRequest(int libraryId, int periodicalId, int volumeNumber, int issueNumber, int sequenceNumber, string content, string language)
-        : base(libraryId)
-    {
-        PeriodicalId = periodicalId;
-        VolumeNumber = volumeNumber;
-        IssueNumber = issueNumber;
-        SequenceNumber = sequenceNumber;
-        Content = content;
-        Language = language;
-    }
-
-    public string Language { get; set; }
-    public int PeriodicalId { get; }
-    public int VolumeNumber { get; }
-    public int IssueNumber { get; }
-    public int SequenceNumber { get; }
-    public string Content { get; set; }
+    public string Language { get; set; } = language;
+    public int PeriodicalId { get; } = periodicalId;
+    public int VolumeNumber { get; } = volumeNumber;
+    public int IssueNumber { get; } = issueNumber;
+    public int SequenceNumber { get; } = sequenceNumber;
+    public string Content { get; set; } = content;
 
     public RequestResult Result { get; set; } = new RequestResult();
 
@@ -41,28 +35,19 @@ public class UpdateIssueArticleContentRequest : LibraryBaseCommand
     }
 }
 
-public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateIssueArticleContentRequest>
+public class UpdateArticleContentRequestHandler(
+    IIssueArticleRepository articleRepository,
+    IIssueRepository issueRepository,
+    ILibraryRepository libraryRepository,
+    IAmACommandProcessor commandProcessor)
+    : RequestHandlerAsync<UpdateIssueArticleContentRequest>
 {
-    private readonly IIssueArticleRepository _articleRepository;
-    private readonly IIssueRepository _issueRepository;
-    private readonly ILibraryRepository _libraryRepository;
-    private readonly IAmACommandProcessor _commandProcessor;
-
-    public UpdateArticleContentRequestHandler(IIssueArticleRepository articleRepository,
-        IIssueRepository issueRepository, 
-        ILibraryRepository libraryRepository, 
-        IAmACommandProcessor commandProcessor)
-    {
-        _articleRepository = articleRepository;
-        _issueRepository = issueRepository;
-        _libraryRepository = libraryRepository;
-        _commandProcessor = commandProcessor;
-    }
+    private readonly IIssueRepository _issueRepository = issueRepository;
 
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateIssueArticleContentRequest> HandleAsync(UpdateIssueArticleContentRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
-        var article = await _articleRepository.GetIssueArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
+        var article = await articleRepository.GetIssueArticle(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
 
         if (article == null)
         {
@@ -71,7 +56,7 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateIssu
 
         if (string.IsNullOrWhiteSpace(command.Language))
         {
-            var library = await _libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
+            var library = await libraryRepository.GetLibraryById(command.LibraryId, cancellationToken);
             if (library == null)
             {
                 throw new BadRequestException();
@@ -80,7 +65,7 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateIssu
             command.Language = library.Language;
         }
 
-        var content = await _articleRepository.GetIssueArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, cancellationToken);
+        var content = await articleRepository.GetIssueArticleContentById(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Language, cancellationToken);
 
         var fileName = FilePathHelper.GetIssueArticleContentFileName(command.Language);
         var saveFileCommand = new SaveTextFileCommand(
@@ -91,12 +76,12 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateIssu
             MimeType = MimeTypes.Markdown,
             ExistingFileId = content?.FileId
         };
-        await _commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
+        await commandProcessor.SendAsync(saveFileCommand, cancellationToken: cancellationToken);
 
 
         if (content == null)
         {
-            command.Result.Content = await _articleRepository.AddIssueArticleContent(
+            command.Result.Content = await articleRepository.AddIssueArticleContent(
                 command.LibraryId,
                 new IssueArticleContentModel
                 {
@@ -112,7 +97,7 @@ public class UpdateArticleContentRequestHandler : RequestHandlerAsync<UpdateIssu
         }
         else
         {
-            command.Result.Content = await _articleRepository.UpdateIssueArticleContent(command.LibraryId,
+            command.Result.Content = await articleRepository.UpdateIssueArticleContent(command.LibraryId,
                                                     new IssueArticleContentModel
                                                     {
                                                         Id = content.Id,

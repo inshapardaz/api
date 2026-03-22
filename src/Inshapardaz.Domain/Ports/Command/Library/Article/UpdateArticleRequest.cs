@@ -3,23 +3,13 @@ using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Paramore.Brighter;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Article;
 
-public class UpdateArticleRequest : LibraryBaseCommand
+public class UpdateArticleRequest(int libraryId, ArticleModel article) : LibraryBaseCommand(libraryId)
 {
-    public UpdateArticleRequest(int libraryId, ArticleModel article)
-        : base(libraryId)
-    {
-        Article = article;
-    }
-
     public RequestResult Result { get; set; } = new RequestResult();
-    public ArticleModel Article { get; }
+    public ArticleModel Article { get; } = article;
     public int? AccountId { get; set; }
 
     public class RequestResult
@@ -30,26 +20,19 @@ public class UpdateArticleRequest : LibraryBaseCommand
     }
 }
 
-public class UpdateArticleRequestHandler : RequestHandlerAsync<UpdateArticleRequest>
+public class UpdateArticleRequestHandler(
+    IArticleRepository articleRepository,
+    IAuthorRepository authorRepository,
+    ICategoryRepository categoryRepository)
+    : RequestHandlerAsync<UpdateArticleRequest>
 {
-    private readonly IArticleRepository _articleRepository;
-    private readonly IAuthorRepository _authorRepository;
-    private readonly ICategoryRepository _categoryRepository;
-
-    public UpdateArticleRequestHandler(IArticleRepository articleRepository, IAuthorRepository authorRepository, ICategoryRepository categoryRepository)
-    {
-        _articleRepository = articleRepository;
-        _authorRepository = authorRepository;
-        _categoryRepository = categoryRepository;
-    }
-
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
     public override async Task<UpdateArticleRequest> HandleAsync(UpdateArticleRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         IEnumerable<AuthorModel> authors = null;
         if (command.Article.Authors != null && command.Article.Authors.Any())
         {
-            authors = await _authorRepository.GetAuthorByIds(command.LibraryId, command.Article.Authors.Select(a => a.Id), cancellationToken);
+            authors = await authorRepository.GetAuthorByIds(command.LibraryId, command.Article.Authors.Select(a => a.Id), cancellationToken);
             if (authors.Count() != command.Article.Authors.Count())
             {
                 throw new BadRequestException();
@@ -64,7 +47,7 @@ public class UpdateArticleRequestHandler : RequestHandlerAsync<UpdateArticleRequ
         IEnumerable<CategoryModel> categories = null;
         if (command.Article.Categories != null && command.Article.Categories.Any())
         {
-            categories = await _categoryRepository.GetCategoriesByIds(command.LibraryId, command.Article.Categories.Select(c => c.Id), cancellationToken);
+            categories = await categoryRepository.GetCategoriesByIds(command.LibraryId, command.Article.Categories.Select(c => c.Id), cancellationToken);
             if (categories.Count() != command.Article.Categories.Count())
             {
                 throw new BadRequestException();
@@ -72,18 +55,18 @@ public class UpdateArticleRequestHandler : RequestHandlerAsync<UpdateArticleRequ
         }
 
 
-        var result = await _articleRepository.GetArticle(command.LibraryId, command.Article.Id, cancellationToken);
+        var result = await articleRepository.GetArticle(command.LibraryId, command.Article.Id, cancellationToken);
 
         if (result == null)
         {
             var article = command.Article;
             article.Id = default;
-            command.Result.Article = await _articleRepository.AddArticle(command.LibraryId, article, command.AccountId, cancellationToken);
+            command.Result.Article = await articleRepository.AddArticle(command.LibraryId, article, command.AccountId, cancellationToken);
             command.Result.HasAddedNew = true;
         }
         else
         {
-            command.Result.Article = await _articleRepository.UpdateArticle(command.LibraryId, command.Article, cancellationToken);
+            command.Result.Article = await articleRepository.UpdateArticle(command.LibraryId, command.Article, cancellationToken);
         }
 
         return await base.HandleAsync(command, cancellationToken);

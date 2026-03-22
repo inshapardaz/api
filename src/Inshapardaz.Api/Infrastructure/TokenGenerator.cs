@@ -11,14 +11,9 @@ using System.Text;
 namespace Inshapardaz.Api.Infrastructure;
 
 
-public class TokenGenerator : IGenerateToken
+public class TokenGenerator(IOptions<Settings> settings) : IGenerateToken
 {
-    private readonly Settings _settings;
-
-    public TokenGenerator(IOptions<Settings> settings)
-    {
-        _settings = settings.Value;
-    }
+    private readonly Settings _settings = settings.Value;
 
     public string GenerateAccessToken(AccountModel account)
     {
@@ -49,8 +44,5 @@ public class TokenGenerator : IGenerateToken
         };
     }
 
-    public string GenerateResetToken()
-    {
-        return RandomGenerator.GenerateRandomString();
-    }
+    public string GenerateResetToken() => RandomGenerator.GenerateRandomString();
 }

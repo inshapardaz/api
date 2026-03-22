@@ -1,24 +1,26 @@
-using System.Collections.Generic;
-using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
-using System;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
-    public class ChapterDataBuilder
+    public class ChapterDataBuilder(
+        BooksDataBuilder booksBuilder,
+        IFileStorage fileStorage,
+        IBookTestRepository bookRepository,
+        IChapterTestRepository chapterRepository,
+        IFileTestRepository fileRepository,
+        IBookPageTestRepository bookPageRepository)
     {
         private readonly List<ChapterDto> _chapters = new List<ChapterDto>();
         private readonly List<ChapterContentDto> _contents = new List<ChapterContentDto>();
         private readonly List<BookPageDto> _pages = new List<BookPageDto>();
         private readonly List<FileDto> _files = new List<FileDto>();
-        private readonly BooksDataBuilder _booksBuilder;
-        private readonly FakeFileStorage _fileStorage;
+        private readonly FakeFileStorage _fileStorage = fileStorage as FakeFileStorage;
         private int _contentCount;
         private int _libraryId;
         private bool _public;
@@ -29,25 +31,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public IEnumerable<ChapterContentDto> Contents => _contents;
         public IEnumerable<ChapterDto> Chapters => _chapters;
-        private IFileTestRepository _fileRepository;
-        private IBookTestRepository _bookRepository;
-        private IChapterTestRepository _chapterRepository;
-        private IBookPageTestRepository _bookPageRepository;
-
-        public ChapterDataBuilder(BooksDataBuilder booksBuilder,
-                                     IFileStorage fileStorage,
-                                     IBookTestRepository bookRepository,
-                                     IChapterTestRepository chapterRepository,
-                                     IFileTestRepository fileRepository,
-                                     IBookPageTestRepository bookPageRepository)
-        {
-            _booksBuilder = booksBuilder;
-            _fileStorage = fileStorage as FakeFileStorage;
-            _chapterRepository = chapterRepository;
-            _fileRepository = fileRepository;
-            _bookRepository = bookRepository;
-            _bookPageRepository = bookPageRepository;
-        }
+        private IBookTestRepository _bookRepository = bookRepository;
 
         internal ChapterDataBuilder Public()
         {
@@ -108,7 +92,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public IEnumerable<ChapterDto> Build(int count)
         {
             var fixture = new Fixture();
-            var book = _booksBuilder.WithLibrary(_libraryId).IsPublic(_public).Build();
+            var book = booksBuilder.WithLibrary(_libraryId).IsPublic(_public).Build();
 
             for (int i = 0; i < count; i++)
             {
@@ -122,7 +106,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                      .With(c => c.Status, _status ?? RandomData.AssignableEditingStatus)
                                      .Create();
 
-                _chapterRepository.AddChapter(chapter);
+                chapterRepository.AddChapter(chapter);
                 _chapters.Add(chapter);
 
                 for (int j = 0; j < _contentCount; j++)
@@ -131,7 +115,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                     .With(a => a.FilePath, RandomData.FilePath)
                                     .With(a => a.IsPublic, false)
                                     .Create();
-                    _fileRepository.AddFile(chapterContentFile);
+                    fileRepository.AddFile(chapterContentFile);
                     _files.Add(chapterContentFile);
 
                     var chapterContentData = RandomData.Text;
@@ -145,7 +129,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
                     _contents.Add(chapterContent);
 
-                    _chapterRepository.AddChapterContent(chapterContent);
+                    chapterRepository.AddChapterContent(chapterContent);
                 }
 
                 if (_addPages)
@@ -166,7 +150,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                     .With(a => a.FilePath, RandomData.FilePath)
                                     .With(a => a.IsPublic, false)
                                     .Create();
-                        _fileRepository.AddFile(bookPageContent);
+                        fileRepository.AddFile(bookPageContent);
 
                         _files.Add(bookPageContent);
 
@@ -175,7 +159,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         page.ContentId = bookPageContent.Id;
                     }
                     _pages.AddRange(pages);
-                    _bookPageRepository.AddBookPages(pages);
+                    bookPageRepository.AddBookPages(pages);
                 }
             }
 
@@ -184,12 +168,12 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void CleanUp()
         {
-            _fileRepository.DeleteFiles(_files);
-            _chapterRepository.DeleteChapterContents(_contents);
-            _bookPageRepository.DeleteBookPages(_pages);
-            _chapterRepository.DeleteChapterContents(_contents);
-            _chapterRepository.DeleteChapters(_chapters);
-            _booksBuilder.CleanUp();
+            fileRepository.DeleteFiles(_files);
+            chapterRepository.DeleteChapterContents(_contents);
+            bookPageRepository.DeleteBookPages(_pages);
+            chapterRepository.DeleteChapterContents(_contents);
+            chapterRepository.DeleteChapters(_chapters);
+            booksBuilder.CleanUp();
         }
     }
 }

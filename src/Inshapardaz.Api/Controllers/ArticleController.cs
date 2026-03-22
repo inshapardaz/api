@@ -13,28 +13,14 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Controllers;
 
-public class ArticleController : Controller
+public class ArticleController(
+    IAmACommandProcessor commandProcessor,
+    IQueryProcessor queryProcessor,
+    IRenderArticle articleRenderer,
+    IUserHelper userHelper,
+    IRenderFile fileRenderer)
+    : Controller
 {
-    private readonly IAmACommandProcessor _commandProcessor;
-    private readonly IQueryProcessor _queryProcessor;
-    private readonly IRenderArticle _articleRenderer;
-    private readonly IUserHelper _userHelper;
-    private readonly IRenderFile _fileRenderer;
-
-    public ArticleController(IAmACommandProcessor commandProcessor,
-        IQueryProcessor queryProcessor,
-        IRenderArticle articleRenderer,
-        IUserHelper userHelper,
-        IRenderFile fileRenderer)
-    {
-        _commandProcessor = commandProcessor;
-        _queryProcessor = queryProcessor;
-        _articleRenderer = articleRenderer;
-        _userHelper = userHelper;
-        _fileRenderer = fileRenderer;
-
-    }
-
     [HttpGet("libraries/{libraryId}/articles", Name = nameof(ArticleController.GetArticles))]
     public async Task<IActionResult> GetArticles(int libraryId, string query,
         int pageNumber = 1,
@@ -62,14 +48,14 @@ public class ArticleController : Controller
             Type = type,
             AssignmentStatus = assignedFor
         };
-        var articlesQuery = new GetArticlesQuery(libraryId, pageNumber, pageSize, _userHelper.AccountId)
+        var articlesQuery = new GetArticlesQuery(libraryId, pageNumber, pageSize, userHelper.AccountId)
         {
             Query = query,
             Filter = filter,
             SortBy = sortBy,
             SortDirection = sortDirection
         };
-        var articles = await _queryProcessor.ExecuteAsync(articlesQuery, cancellationToken: token);
+        var articles = await queryProcessor.ExecuteAsync(articlesQuery, cancellationToken: token);
 
         var args = new PageRendererArgs<ArticleModel, ArticleFilter, ArticleSortByType>
         {
@@ -85,18 +71,18 @@ public class ArticleController : Controller
             Filters = filter,
         };
 
-        return new OkObjectResult(_articleRenderer.Render(args, libraryId));
+        return new OkObjectResult(articleRenderer.Render(args, libraryId));
     }
 
     [HttpGet("libraries/{libraryId}/articles/{articleId}", Name = nameof(ArticleController.GetArticle))]
     public async Task<IActionResult> GetArticle(int libraryId, int articleId, CancellationToken token = default(CancellationToken))
     {
         var query = new GetArticleByIdQuery(libraryId, articleId);
-        var article = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
+        var article = await queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
         if (article != null)
         {
-            return new OkObjectResult(_articleRenderer.Render(article, libraryId));
+            return new OkObjectResult(articleRenderer.Render(article, libraryId));
         }
 
         return new NotFoundResult();
@@ -112,14 +98,14 @@ public class ArticleController : Controller
 
         var request = new AddArticleRequest(libraryId, article.Map())
         {
-            AccountId = _userHelper.AccountId
+            AccountId = userHelper.AccountId
         };
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         if (request.Result != null)
         {
-            var renderResult = _articleRenderer.Render(request.Result, libraryId);
+            var renderResult = articleRenderer.Render(request.Result, libraryId);
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 
@@ -138,11 +124,11 @@ public class ArticleController : Controller
         articleToUpdate.Id = articleId;
         var request = new UpdateArticleRequest(libraryId, articleToUpdate)
         {
-            AccountId = _userHelper.AccountId
+            AccountId = userHelper.AccountId
         };
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _articleRenderer.Render(request.Result.Article, libraryId);
+        var renderResult = articleRenderer.Render(request.Result.Article, libraryId);
 
         if (request.Result.HasAddedNew)
         {
@@ -156,7 +142,7 @@ public class ArticleController : Controller
     public async Task<IActionResult> DeleteArticle(int libraryId, int articleId, CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteArticleRequest(libraryId, articleId);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
 
@@ -169,7 +155,7 @@ public class ArticleController : Controller
             await file.CopyToAsync(stream);
         }
 
-        var request = new UpdateArticleImageRequest(libraryId, articleId, _userHelper.AccountId)
+        var request = new UpdateArticleImageRequest(libraryId, articleId, userHelper.AccountId)
         {
             Image = new FileModel
             {
@@ -179,11 +165,11 @@ public class ArticleController : Controller
             }
         };
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         if (request.Result.HasAddedNew)
         {
-            var response = _fileRenderer.Render(libraryId, request.Result.File);
+            var response = fileRenderer.Render(libraryId, request.Result.File);
 
             return new CreatedResult(response.Links.Self(), response);
         }
@@ -196,11 +182,11 @@ public class ArticleController : Controller
     {
         var query = new GetArticleContentQuery(libraryId, articleId, language);
 
-        var articleContents = await _queryProcessor.ExecuteAsync(query, cancellationToken: token);
+        var articleContents = await queryProcessor.ExecuteAsync(query, cancellationToken: token);
 
         if (articleContents != null)
         {
-            return new OkObjectResult(_articleRenderer.Render(articleContents, libraryId, articleId));
+            return new OkObjectResult(articleRenderer.Render(articleContents, libraryId, articleId));
         }
 
         return new NotFoundResult();
@@ -216,11 +202,11 @@ public class ArticleController : Controller
         {
             Content = contentPayload
         };
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         if (request.Result != null)
         {
-            var renderResult = _articleRenderer.Render(request.Result, libraryId, articleId);
+            var renderResult = articleRenderer.Render(request.Result, libraryId, articleId);
             return new CreatedResult(renderResult.Links.Self(), renderResult);
         }
 
@@ -237,9 +223,9 @@ public class ArticleController : Controller
         {
             Content = contentPayload
         };
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _articleRenderer.Render(request.Result.Content, libraryId, articleId);
+        var renderResult = articleRenderer.Render(request.Result.Content, libraryId, articleId);
         if (request.Result != null && request.Result.HasAddedNew)
         {
             return new CreatedResult(renderResult.Links.Self(), renderResult);
@@ -252,7 +238,7 @@ public class ArticleController : Controller
     public async Task<IActionResult> DeleteArticleContent(int libraryId, int articleId, [FromQuery] string language, CancellationToken token = default(CancellationToken))
     {
         var request = new DeleteArticleContentRequest(libraryId, articleId, language);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
         return new NoContentResult();
     }
 
@@ -267,9 +253,9 @@ public class ArticleController : Controller
 
         var request = new AssignArticleToUserRequest(libraryId, articleId, assignment.AccountId);
 
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        var renderResult = _articleRenderer.Render(request.Result, libraryId);
+        var renderResult = articleRenderer.Render(request.Result, libraryId);
 
         return Ok(renderResult);
     }
@@ -277,8 +263,8 @@ public class ArticleController : Controller
     [HttpPost("libraries/{libraryId}/favorites/articles/{articleId}", Name = nameof(ArticleController.AddArticleToFavorites))]
     public async Task<IActionResult> AddArticleToFavorites(int libraryId, int articleId, CancellationToken token)
     {
-        var request = new AddArticleToFavoriteRequest(libraryId, articleId, _userHelper.AccountId);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        var request = new AddArticleToFavoriteRequest(libraryId, articleId, userHelper.AccountId);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         return new OkResult();
     }
@@ -286,8 +272,8 @@ public class ArticleController : Controller
     [HttpDelete("libraries/{libraryId}/favorites/articles/{articleId}", Name = nameof(ArticleController.RemoveArticleFromFavorites))]
     public async Task<IActionResult> RemoveArticleFromFavorites(int libraryId, int articleId, CancellationToken token)
     {
-        var request = new RemoveArticleFromFavoriteRequest(libraryId, articleId, _userHelper.AccountId);
-        await _commandProcessor.SendAsync(request, cancellationToken: token);
+        var request = new RemoveArticleFromFavoriteRequest(libraryId, articleId, userHelper.AccountId);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
 
         return new OkResult();
     }

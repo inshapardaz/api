@@ -3,22 +3,16 @@ using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
-using System.Net.Http;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    internal class CorrectionAssert
+    internal class CorrectionAssert(ICorrectionTestRepository correctionRepository)
     {
         private CorrectionView _correction;
         public HttpResponseMessage _response;
         public CorrectionView View => _correction;
 
-        public readonly ICorrectionTestRepository _correctionRepository;
-
-        public CorrectionAssert(ICorrectionTestRepository correctionRepository)
-        {
-            _correctionRepository = correctionRepository;
-        }
+        public readonly ICorrectionTestRepository _correctionRepository = correctionRepository;
 
 
         public CorrectionAssert ForResponse(HttpResponseMessage response)

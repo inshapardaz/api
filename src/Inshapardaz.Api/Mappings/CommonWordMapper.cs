@@ -1,6 +1,4 @@
-﻿using Inshapardaz.Domain.Models.Library;
-using Inshapardaz.Api.Views.Library;
-using Inshapardaz.Api.Views.Tools;
+﻿using Inshapardaz.Api.Views.Tools;
 using Inshapardaz.Domain.Models;
 
 namespace Inshapardaz.Api.Mappings;

@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using NUnit.Framework;
 
 namespace Inshapardaz.Database.Migrations.SqlServer.Tests
@@ -7,12 +5,8 @@ namespace Inshapardaz.Database.Migrations.SqlServer.Tests
     [TestFixture]
     public class MigrationUpAndDownTests
     {
-        private MigrationHelper _helper;
+        private MigrationHelper _helper = new(_connectionString);
         private const string _connectionString = "data source=.;Database=nawishta_test;integrated security=True;TrustServerCertificate=True;";
-        public MigrationUpAndDownTests()
-        {
-            _helper = new MigrationHelper(_connectionString);
-        }
 
         [Test]
         public void LatestMigrations_CanRunUpAndDown()

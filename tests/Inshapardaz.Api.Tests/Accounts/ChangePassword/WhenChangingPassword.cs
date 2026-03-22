@@ -3,22 +3,16 @@ using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Accounts.ChangePassword
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Reader)]
-    public class WhenChangingPassword : TestBase
+    public class WhenChangingPassword(Role role) : TestBase(role)
     {
         private HttpResponseMessage _response;
         private string _password = RandomData.String;
-
-        public WhenChangingPassword(Role role) : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -32,10 +26,7 @@ namespace Inshapardaz.Api.Tests.Accounts.ChangePassword
         }
 
         [Test]
-        public void ShouldReturnOk()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
         public async Task ShouldBeAbleToAuthenticateWithNewPassword()

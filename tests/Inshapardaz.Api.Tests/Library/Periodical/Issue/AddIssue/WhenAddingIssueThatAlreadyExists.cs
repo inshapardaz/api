@@ -2,21 +2,13 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.AddIssue
 {
     [TestFixture]
-    public class WhenAddingIssueThatAlreadyExists
-        : TestBase
+    public class WhenAddingIssueThatAlreadyExists() : TestBase(Role.Writer)
     {
         private HttpResponseMessage _response;
-
-        public WhenAddingIssueThatAlreadyExists()
-            : base(Role.Writer)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -27,15 +19,9 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.AddIssue
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveConflictResult()
-        {
-            _response.ShouldBeConflict();
-        }
+        public void ShouldHaveConflictResult() => _response.ShouldBeConflict();
     }
 }

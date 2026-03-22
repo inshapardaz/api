@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.DataBuilders;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -18,13 +14,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
     public class WhenUpdatingBookWithInvalidData
     {
         [TestFixture]
-        public class AndUsingNonExistingLibrary : TestBase
+        public class AndUsingNonExistingLibrary() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
-
-            public AndUsingNonExistingLibrary() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -37,28 +29,18 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             }
 
             [OneTimeTearDown]
-            public void Teardown()
-            {
-                Cleanup();
-            }
+            public void Teardown() => Cleanup();
 
             [Test]
-            public void ShouldHaveBadRequestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadRequestResult() => _response.ShouldBeBadRequest();
         }
 
         [TestFixture]
-        public class AndUpdatingWithNonExistingAuthor : TestBase
+        public class AndUpdatingWithNonExistingAuthor() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
             private BookDto _bookToUpdate;
             private AuthorDto _author;
-
-            public AndUpdatingWithNonExistingAuthor() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -74,16 +56,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             }
 
             [OneTimeTearDown]
-            public void Teardown()
-            {
-                Cleanup();
-            }
+            public void Teardown() => Cleanup();
 
             [Test]
-            public void ShouldHaveBadReqestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadReqestResult() => _response.ShouldBeBadRequest();
 
             [Test]
             public void ShouldNotUpdateTheAuthor()
@@ -94,16 +70,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         }
 
         [TestFixture]
-        public class AndUpdatingWithAuthorFromOtherLibrary : TestBase
+        public class AndUpdatingWithAuthorFromOtherLibrary() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
             private BookDto _bookToUpdate;
             private AuthorDto _author;
             private LibraryDataBuilder _library2Builder;
-
-            public AndUpdatingWithAuthorFromOtherLibrary() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -130,10 +102,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             }
 
             [Test]
-            public void ShouldHaveBadReqestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadReqestResult() => _response.ShouldBeBadRequest();
 
             [Test]
             public void ShouldNotUpdateTheAuthor()
@@ -144,15 +113,11 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         }
 
         [TestFixture]
-        public class AndUpdatingWithNonExistingSeries : TestBase
+        public class AndUpdatingWithNonExistingSeries() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
             private BookDto _bookToUpdate;
             private SeriesDto _series;
-
-            public AndUpdatingWithNonExistingSeries() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -168,16 +133,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             }
 
             [OneTimeTearDown]
-            public void Teardown()
-            {
-                Cleanup();
-            }
+            public void Teardown() => Cleanup();
 
             [Test]
-            public void ShouldHaveBadReqestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadReqestResult() => _response.ShouldBeBadRequest();
 
             [Test]
             public void ShouldNotUpdateTheAuthor()
@@ -188,16 +147,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         }
 
         [TestFixture]
-        public class AndUpdatingWithSeriesFromOtherLibrary : TestBase
+        public class AndUpdatingWithSeriesFromOtherLibrary() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
             private BookDto _bookToUpdate;
             private SeriesDto _series;
             private LibraryDataBuilder _library2Builder;
-
-            public AndUpdatingWithSeriesFromOtherLibrary() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -223,10 +178,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             }
 
             [Test]
-            public void ShouldHaveBadReqestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadReqestResult() => _response.ShouldBeBadRequest();
 
             [Test]
             public void ShouldNotUpdateTheAuthor()
@@ -237,15 +189,11 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         }
 
         [TestFixture]
-        public class AndUpdatingWithNonExistingCategory : TestBase
+        public class AndUpdatingWithNonExistingCategory() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
             private BookDto _bookToUpdate;
             private CategoryDto _category;
-
-            public AndUpdatingWithNonExistingCategory() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -261,16 +209,10 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             }
 
             [OneTimeTearDown]
-            public void Teardown()
-            {
-                Cleanup();
-            }
+            public void Teardown() => Cleanup();
 
             [Test]
-            public void ShouldHaveBadReqestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadReqestResult() => _response.ShouldBeBadRequest();
 
             [Test]
             public void ShouldNotUpdateTheAuthor()
@@ -282,16 +224,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
         }
 
         [TestFixture]
-        public class AndUpdatingWithCategoryFromOtherLibrary : TestBase
+        public class AndUpdatingWithCategoryFromOtherLibrary() : TestBase(Role.Writer)
         {
             private HttpResponseMessage _response;
             private BookDto _bookToUpdate;
             private CategoryDto _category;
             private LibraryDataBuilder _library2Builder;
-
-            public AndUpdatingWithCategoryFromOtherLibrary() : base(Role.Writer)
-            {
-            }
 
             [OneTimeSetUp]
             public async Task Setup()
@@ -318,10 +256,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UpdateBook
             }
 
             [Test]
-            public void ShouldHaveBadReqestResult()
-            {
-                _response.ShouldBeBadRequest();
-            }
+            public void ShouldHaveBadReqestResult() => _response.ShouldBeBadRequest();
 
             [Test]
             public void ShouldNotUpdateTheAuthor()

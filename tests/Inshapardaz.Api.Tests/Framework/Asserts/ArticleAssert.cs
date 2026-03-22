@@ -5,40 +5,20 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
 
 namespace Inshapardaz.Api.Tests.Framework.Asserts
 {
-    public class ArticleAssert
+    public class ArticleAssert(
+        IArticleTestRepository articleRepository,
+        IFileTestRepository fileRepository,
+        IAuthorTestRepository authorRepository,
+        ICategoryTestRepository categoryRepository,
+        ITagTestRepository tagsRepository,
+        FakeFileStorage fileStorage)
     {
         private HttpResponseMessage _response;
         private int _libraryId;
-        private readonly IArticleTestRepository _articleRepository;
-        private readonly IFileTestRepository _fileRepository;
-        private readonly IAuthorTestRepository _authorRepository;
-        private readonly ICategoryTestRepository _categoryRepository;
-        private readonly ITagTestRepository _tagsRepository;
-        private readonly FakeFileStorage _fileStorage;
         private ArticleView _article;
-
-        public ArticleAssert(IArticleTestRepository articleRepository, 
-            IFileTestRepository fileRepository,
-            IAuthorTestRepository authorRepository,
-            ICategoryTestRepository categoryRepository,
-            ITagTestRepository tagsRepository, 
-            FakeFileStorage fileStorage)
-        {
-            _articleRepository = articleRepository;
-            _fileRepository = fileRepository;
-            _authorRepository = authorRepository;
-            _categoryRepository = categoryRepository;
-            _fileStorage = fileStorage;
-            _tagsRepository = tagsRepository;
-        }
 
         public ArticleAssert ForArticleView(ArticleView view)
         {
@@ -85,7 +65,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ArticleAssert ShouldBeSavedAssignmentForWriting(AccountDto account)
         {
-            var dbArticle = _articleRepository.GetArticleById(_article.Id);
+            var dbArticle = articleRepository.GetArticleById(_article.Id);
             dbArticle.WriterAccountId.Should().Be(account.Id);
             dbArticle.WriterAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
@@ -93,7 +73,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ArticleAssert ShouldBeSavedNoAssignmentForWriting()
         {
-            var dbArticle = _articleRepository.GetArticleById(_article.Id);
+            var dbArticle = articleRepository.GetArticleById(_article.Id);
             dbArticle.WriterAccountId.Should().BeNull();
             dbArticle.WriterAssignTimeStamp.Should().BeNull();
             return this;
@@ -117,7 +97,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ArticleAssert ShouldBeSavedAssignmentForReviewing(AccountDto account)
         {
-            var dbArticle = _articleRepository.GetArticleById(_article.Id);
+            var dbArticle = articleRepository.GetArticleById(_article.Id);
             dbArticle.ReviewerAccountId.Should().Be(account.Id);
             dbArticle.ReviewerAssignTimeStamp.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(2));
             return this;
@@ -125,7 +105,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ArticleAssert ShouldBeSavedNoAssignmentForReviewing()
         {
-            var dbArticle = _articleRepository.GetArticleById(_article.Id);
+            var dbArticle = articleRepository.GetArticleById(_article.Id);
             dbArticle.ReviewerAccountId.Should().BeNull();
             dbArticle.ReviewerAssignTimeStamp.Should().BeNull();
             return this;
@@ -133,7 +113,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ArticleAssert ShouldHaveSavedArticle()
         {
-            var dbArticle = _articleRepository.GetArticleById(_article.Id);
+            var dbArticle = articleRepository.GetArticleById(_article.Id);
             dbArticle.Should().NotBeNull();
             _article.Title.Should().Be(dbArticle.Title);
             return this;
@@ -141,74 +121,74 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ArticleAssert ShouldHaveDeletedArticle(long articleId)
         {
-            var article = _articleRepository.GetArticleById(articleId);
+            var article = articleRepository.GetArticleById(articleId);
             article.Should().BeNull();
             return this;
         }
 
         public ArticleAssert ThatContentsAreDeletedForArticle(long articleId)
         {
-            var contents = _articleRepository.GetContentByArticle(articleId);
+            var contents = articleRepository.GetContentByArticle(articleId);
             contents.Should().BeNullOrEmpty();
             return this;
         }
 
         public ArticleAssert ShouldBeAddedToFavorite(long articleId, int accountId)
         {
-            _articleRepository.DoesArticleExistsInFavorites(articleId, accountId).Should().BeTrue();
+            articleRepository.DoesArticleExistsInFavorites(articleId, accountId).Should().BeTrue();
             return this;
         }
 
         public ArticleAssert ShouldNotBeInFavorites(long articleId, int accountId)
         {
-            _articleRepository.DoesArticleExistsInFavorites(articleId, accountId).Should().BeFalse();
+            articleRepository.DoesArticleExistsInFavorites(articleId, accountId).Should().BeFalse();
             return this;
         }
 
         public ArticleAssert ShouldHaveDeletedArticleFromRecentReads(long articleId)
         {
-            _articleRepository.DoesArticleExistsInRecent(articleId).Should().BeFalse();
+            articleRepository.DoesArticleExistsInRecent(articleId).Should().BeFalse();
             return this;
         }
 
         public ArticleAssert ShouldHaveDeletedArticleImage(long articleId, long imageId, string filename)
         {
-            var file = _fileRepository.GetFileById(imageId);
+            var file = fileRepository.GetFileById(imageId);
             file.Should().BeNull();
-            _fileStorage.DoesFileExists(filename);
+            fileStorage.DoesFileExists(filename);
             return this;
         }
 
         public ArticleAssert ShouldHaveDeletedArticleContents(long articleId)
         {
-            var savedContents = _articleRepository.GetContentByArticle(articleId);
+            var savedContents = articleRepository.GetContentByArticle(articleId);
             savedContents.Should().BeNullOrEmpty();
             return this;
         }
 
         public ArticleAssert ShouldNotHaveUpdatedArticleImage(long articleId, byte[] oldImage)
         {
-            var imageUrl = _articleRepository.GetArticleImageUrl(articleId);
+            var imageUrl = articleRepository.GetArticleImageUrl(articleId);
             imageUrl.Should().NotBeNull();
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().Equal(oldImage);
             return this;
         }
 
         public ArticleAssert ShouldHaveAddedArticleImage(long articleId)
         {
-            var imageUrl = _articleRepository.GetArticleImageUrl(articleId);
+            var imageUrl = articleRepository.GetArticleImageUrl(articleId);
             imageUrl.Should().NotBeNull();
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNullOrEmpty();
             return this;
         }
 
         public ArticleAssert ShouldHaveUpdatedArticleImage(long articleId, byte[] newImage)
         {
-            var imageUrl = _articleRepository.GetArticleImageUrl(articleId);
+            var imageUrl = articleRepository.GetArticleImageUrl(articleId);
             imageUrl.Should().NotBeNull();
-            var image = _fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
+            var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.Equal(newImage);
             return this;
         }
@@ -241,10 +221,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public void ShouldHaveNoCorrectContents()
-        {
-            _article.Link("content").Should().BeNull();
-        }
+        public void ShouldHaveNoCorrectContents() => _article.Link("content").Should().BeNull();
 
         public ArticleAssert ShouldHaveAssignmentLink()
         {
@@ -386,7 +363,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ArticleAssert ShouldHavePublicImage(long articleId)
         {
-            var image = _articleRepository.GetArticleImage(articleId);
+            var image = articleRepository.GetArticleImage(articleId);
             image.Should().NotBeNull();
             image.IsPublic.Should().BeTrue();
             return this;
@@ -518,7 +495,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             }
             _article.Status.Should().Be(_expected.Status.ToString());
 
-            var authors = _authorRepository.GetAuthorsByArticle(_expected.Id);
+            var authors = authorRepository.GetAuthorsByArticle(_expected.Id);
             _article.Authors.Should().HaveSameCount(authors);
             foreach (var author in authors)
             {
@@ -532,7 +509,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
                 return this;
             }
 
-            var categories = _categoryRepository.GetCategoriesByArticle(_expected.Id);
+            var categories = categoryRepository.GetCategoriesByArticle(_expected.Id);
             _article.Authors.Should().HaveSameCount(categories);
             foreach (var category in categories)
             {
@@ -575,7 +552,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
                 _article.ReviewerAssignTimeStamp.Should().BeNull();
             }
 
-            var authors = _authorRepository.GetAuthorsByArticle(_expected.Id);
+            var authors = authorRepository.GetAuthorsByArticle(_expected.Id);
             _article.Authors.Should().HaveSameCount(authors);
             foreach (var author in authors)
             {
@@ -589,7 +566,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
                 return this;
             }
 
-            var categories = _categoryRepository.GetCategoriesByArticle(_expected.Id);
+            var categories = categoryRepository.GetCategoriesByArticle(_expected.Id);
             _article.Categories.Should().HaveSameCount(categories);
             foreach (var category in categories)
             {
@@ -603,7 +580,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
                 return this;
             }
             
-            var tags = _tagsRepository.GetTagsByArticle(_expected.Id);
+            var tags = tagsRepository.GetTagsByArticle(_expected.Id);
             _article.Tags.Should().HaveSameCount(tags);
             foreach (var tag in tags)
             {
@@ -635,7 +612,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
         public ArticleAssert ShouldHaveCategories(List<CategoryDto> categoriesToUpdate)
         {
-            var dbCategories = _categoryRepository.GetCategoriesByArticle(_article.Id);
+            var dbCategories = categoryRepository.GetCategoriesByArticle(_article.Id);
             dbCategories.Should().HaveSameCount(categoriesToUpdate);
             foreach (var category in categoriesToUpdate)
             {

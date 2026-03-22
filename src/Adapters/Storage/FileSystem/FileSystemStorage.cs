@@ -1,23 +1,13 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Helpers;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Storage.FileSystem;
 
-public class FileSystemStorage : IFileStorage
-{ 
-    private readonly string _basePath;
-
-    public FileSystemStorage(string basePath)
-    {
-        _basePath = basePath;
-    }
-
+public class FileSystemStorage(string basePath) : IFileStorage
+{
     public bool SupportsPublicLink => false;
 
-    private string GetFullPath(string filePath) => Path.Combine(_basePath, filePath);
+    private string GetFullPath(string filePath) => Path.Combine(basePath, filePath);
 
     public async Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken)
     {
@@ -96,8 +86,5 @@ public class FileSystemStorage : IFileStorage
         return Task.CompletedTask;
     }
 
-    public string GetPublicUrl(string filePath)
-    {
-        return filePath;
-    }
+    public string GetPublicUrl(string filePath) => filePath;
 }

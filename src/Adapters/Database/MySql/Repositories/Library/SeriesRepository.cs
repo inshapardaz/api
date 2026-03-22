@@ -2,24 +2,15 @@
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Adapters.Database.MySql.Repositories.Library;
 
-public class SeriesRepository : ISeriesRepository
+public class SeriesRepository(MySqlConnectionProvider connectionProvider) : ISeriesRepository
 {
-    private readonly MySqlConnectionProvider _connectionProvider;
-
-    public SeriesRepository(MySqlConnectionProvider connectionProvider)
-    {
-        _connectionProvider = connectionProvider;
-    }
-
     public async Task<SeriesModel> AddSeries(int libraryId, SeriesModel series, CancellationToken cancellationToken)
     {
         int id;
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Insert Into Series (`Name`, `Description`, ImageId, LibraryId) 
                             VALUES (@Name, @Description, @ImageId, @LibraryId);
@@ -34,7 +25,7 @@ public class SeriesRepository : ISeriesRepository
 
     public async Task UpdateSeries(int libraryId, SeriesModel series, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE Series 
                             SET `Name` = @Name, 
@@ -51,7 +42,7 @@ public class SeriesRepository : ISeriesRepository
 
     public async Task DeleteSeries(int libraryId, int seriesId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql1 = @"UPDATE Book SET 
                                 SeriesIndex = NULL 
@@ -68,7 +59,7 @@ public class SeriesRepository : ISeriesRepository
 
     public async Task<Page<SeriesModel>> GetSeries(int libraryId, int pageNumber, int pageSize, SeriesSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sortByQuery = $"{GetSortByQuery(sortBy)}";
             var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
@@ -106,7 +97,7 @@ public class SeriesRepository : ISeriesRepository
 
     public async Task<Page<SeriesModel>> FindSeries(int libraryId, string query, int pageNumber, int pageSize, SeriesSortByType sortBy, SortDirection direction, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sortByQuery = $"{GetSortByQuery(sortBy)}";
             var sortDirection = direction == SortDirection.Descending ? "DESC" : "ASC";
@@ -146,7 +137,7 @@ public class SeriesRepository : ISeriesRepository
 
     public async Task<SeriesModel> GetSeriesById(int libraryId, int seriesId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"Select s.Id, s.`Name`, s.Description, s.ImageId,
                             (SELECT Count(*) FROM Book b WHERE b.SeriesId = s.Id) AS BookCount
@@ -160,7 +151,7 @@ public class SeriesRepository : ISeriesRepository
 
     public async Task UpdateSeriesImage(int libraryId, int seriesId, long imageId, CancellationToken cancellationToken)
     {
-        using (var connection = _connectionProvider.GetLibraryConnection())
+        using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = @"UPDATE Series SET ImageId = @ImageId WHERE Id = @Id AND LibraryId = @LibraryId ";
             var command = new CommandDefinition(sql, new { Id = seriesId, LibraryId = libraryId, ImageId = imageId }, cancellationToken: cancellationToken);

@@ -1,6 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using Inshapardaz.Api.Tests.Framework.Asserts;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
@@ -10,16 +8,11 @@ using NUnit.Framework;
 namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
 {
     [TestFixture]
-    public class WhenRemoveNonFavoriteBookFromFavorite : TestBase
+    public class WhenRemoveNonFavoriteBookFromFavorite() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private BookAssert _assert;
         private BookDto _book;
-
-        public WhenRemoveNonFavoriteBookFromFavorite()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -36,21 +29,12 @@ namespace Inshapardaz.Api.Tests.Library.Book.RemoveBookFromFavorite
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveOKResult()
-        {
-            _response.ShouldBeOk();
-        }
+        public void ShouldHaveOKResult() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldBeRemovedFromFavorites()
-        {
-            _assert.ShouldNotBeInFavorites(_book.Id, AccountId);
-        }
+        public void ShouldBeRemovedFromFavorites() => _assert.ShouldNotBeInFavorites(_book.Id, AccountId);
     }
 }

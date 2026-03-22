@@ -5,25 +5,17 @@ using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.AddIssue
 {
     [TestFixture(Role.Admin)]
     [TestFixture(Role.LibraryAdmin)]
     [TestFixture(Role.Writer)]
-    public class WhenAddingIssueWithPermission
-        : TestBase
+    public class WhenAddingIssueWithPermission(Role role) : TestBase(role)
     {
         private IssueView _issue;
         private HttpResponseMessage _response;
         private IssueAssert _assert;
-
-        public WhenAddingIssueWithPermission(Role role)
-            : base(role)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -43,28 +35,16 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.AddIssue
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldHaveCreatedResult()
-        {
-            _response.ShouldBeCreated();
-        }
+        public void ShouldHaveCreatedResult() => _response.ShouldBeCreated();
 
         [Test]
-        public void ShouldHaveLocationHeader()
-        {
-            _assert.ShouldHaveCorrectLocationHeader();
-        }
+        public void ShouldHaveLocationHeader() => _assert.ShouldHaveCorrectLocationHeader();
 
         [Test]
-        public void ShouldSaveTheIssue()
-        {
-            _assert.ShouldHaveSavedIssue();
-        }
+        public void ShouldSaveTheIssue() => _assert.ShouldHaveSavedIssue();
 
         [Test]
         public void ShouldHaveCorrectObjectReturned()

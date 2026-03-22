@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -15,7 +12,16 @@ using Inshapardaz.Domain.Helpers;
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
 
-    public class IssueDataBuilder
+    public class IssueDataBuilder(
+        IFileStorage fileStorage,
+        AuthorsDataBuilder authorBuilder,
+        TagsDataBuilder tagsBuilder,
+        IPeriodicalTestRepository periodicalRepository,
+        IFileTestRepository fileRepository,
+        IIssueTestRepository issueRepository,
+        IIssuePageTestRepository issuePageRepository,
+        IIssueArticleTestRepository issueArticleRepository,
+        ITagTestRepository tagRepository)
     {
         private class AccountItemCountSpec
         {
@@ -23,7 +29,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             public int? Count { get; set; }
         }
 
-        private readonly FakeFileStorage _fileStorage;
+        private readonly FakeFileStorage _fileStorage = fileStorage as FakeFileStorage;
 
         private List<IssueDto> _issues;
         private readonly List<FileDto> _files = new List<FileDto>();
@@ -71,37 +77,6 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public Dictionary<long, List<TagDto>> IssueTags => _issueTags;
         
         private Dictionary<long, IEnumerable<AuthorDto>> _issueArticleAuthors = new ();
-
-        private readonly AuthorsDataBuilder _authorBuilder;
-        private readonly TagsDataBuilder _tagsBuilder;
-
-        private readonly ITagTestRepository _tagRepository;
-        private IPeriodicalTestRepository _periodicalRepository;
-        private IIssueTestRepository _issueRepository;
-        private IIssuePageTestRepository _issuePageRepository;
-        private IIssueArticleTestRepository _issueArticleRepository;
-        private IFileTestRepository _fileRepository;
-
-        public IssueDataBuilder(IFileStorage fileStorage,
-               AuthorsDataBuilder authorBuilder,
-               TagsDataBuilder tagsBuilder,
-               IPeriodicalTestRepository periodicalRepository,
-               IFileTestRepository fileRepository,
-               IIssueTestRepository issueRepository,
-               IIssuePageTestRepository issuePageRepository, 
-               IIssueArticleTestRepository issueArticleRepository, 
-               ITagTestRepository tagRepository)
-        {
-            _fileStorage = fileStorage as FakeFileStorage;
-            _authorBuilder = authorBuilder;
-            _tagsBuilder = tagsBuilder;
-            _periodicalRepository = periodicalRepository;
-            _fileRepository = fileRepository;
-            _issueRepository = issueRepository;
-            _issuePageRepository = issuePageRepository;
-            _issueArticleRepository = issueArticleRepository;
-            _tagRepository = tagRepository;
-        }
 
         internal IssueDataBuilder IsPublic(bool isPublic = true)
         {
@@ -266,10 +241,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                 .Create();
         }
 
-        public IssueDto Build()
-        {
-            return Build(1).Single();
-        }
+        public IssueDto Build() => Build(1).Single();
 
         public IEnumerable<IssueDto> Build(int numberOfIssues)
         {
@@ -285,7 +257,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                     .With(b => b.Language, RandomData.Locale)
                     .Create();
 
-                _periodicalRepository.AddPeriodical(periodical);
+                periodicalRepository.AddPeriodical(periodical);
                 _periodicalId = periodical.Id;
             }
 
@@ -302,7 +274,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             
             if (_tagsCount > 0 && !_tags.Any())
             {
-                tags = _tagsBuilder.WithLibrary(_libraryId).Build(_tagsCount);
+                tags = tagsBuilder.WithLibrary(_libraryId).Build(_tagsCount);
             }
             
             else
@@ -327,7 +299,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         .With(a => a.FilePath, RandomData.FilePath)
                         .With(a => a.IsPublic, true)
                         .Create();
-                    _fileRepository.AddFile(issueImage);
+                    fileRepository.AddFile(issueImage);
 
                     _files.Add(issueImage);
                     _fileStorage.SetupFileContents(issueImage.FilePath, RandomData.Bytes);
@@ -339,12 +311,12 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                     issue.ImageId = null;
                 }
                 
-                _issueRepository.AddIssue(issue);
+                issueRepository.AddIssue(issue);
 
 
                 if (tags != null && tags.Any())
                 {
-                    _tagRepository.AddIssueToTags(issue.Id, tags);
+                    tagRepository.AddIssueToTags(issue.Id, tags);
                     _issueTags.Add(issue.Id, tags.ToList());
                 }
                 
@@ -362,7 +334,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .ToList();
                     _files.AddRange(files);
                     files.ForEach(f => _fileStorage.SetupFileContents(f.FilePath, RandomData.Bytes));
-                    _fileRepository.AddFiles(files);
+                    fileRepository.AddFiles(files);
                 }
                 
                 if (files != null)
@@ -375,7 +347,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         MimeType = f.MimeType,
                         FilePath = f.FilePath
                     }).ToList();
-                    _issueRepository.AddIssueFiles(issue.Id, contents);
+                    issueRepository.AddIssueFiles(issue.Id, contents);
                     _contents.AddRange(contents);
                 }
 
@@ -397,7 +369,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .With(a => a.MimeType, mimeType)
                                          .With(a => a.IsPublic, true)
                                          .Create();
-                            _fileRepository.AddFile(pageImage);
+                            fileRepository.AddFile(pageImage);
 
                             _files.Add(pageImage);
                             _fileStorage.SetupFileContents(pageImage.FilePath, RandomData.Bytes);
@@ -412,7 +384,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                             .With(a => a.MimeType, contentMimeType)
                             .With(a => a.IsPublic, true)
                             .Create();
-                        _fileRepository.AddFile(contentFile);
+                        fileRepository.AddFile(contentFile);
 
                         _files.Add(contentFile);
                         _fileStorage.SetupFileContents(contentFile.FilePath, RandomData.String);
@@ -466,7 +438,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                         }
                     }
 
-                    _issuePageRepository.AddIssuePages(pages);
+                    issuePageRepository.AddIssuePages(pages);
                     _pages.AddRange(pages);
                 }
 
@@ -475,7 +447,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
                     if (Author == null && !_authors.Any())
                     {
-                        _authors = _authorBuilder.WithLibrary(_libraryId).Build(_numberOfAuthors > 0 ? _numberOfAuthors : 1).ToList();
+                        _authors = authorBuilder.WithLibrary(_libraryId).Build(_numberOfAuthors > 0 ? _numberOfAuthors : 1).ToList();
                     }
 
                     var articles = new List<IssueArticleDto>();
@@ -507,18 +479,18 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                             .Create();
                         
                         articles.Add(article);
-                        _issueArticleRepository.AddIssueArticle(article);
+                        issueArticleRepository.AddIssueArticle(article);
 
                         if (Author != null)
                         {
-                            _issueArticleRepository.AddIssueArticleAuthor(article.Id, Author.Id);
+                            issueArticleRepository.AddIssueArticleAuthor(article.Id, Author.Id);
                             _issueArticleAuthors.Add(article.Id, new [] { Author });
                         }
                         else
                         {
                             foreach (var author in _authors)
                             {
-                                _issueArticleRepository.AddIssueArticleAuthor(article.Id, author.Id);
+                                issueArticleRepository.AddIssueArticleAuthor(article.Id, author.Id);
                             }
 
                             _issueArticleAuthors.Add(article.Id, _authors);
@@ -541,7 +513,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .With(a => a.IsPublic, false)
                                          .With(a => a.MimeType, MimeTypes.Markdown)
                                          .Create();
-                                _fileRepository.AddFile(articleContentFile);
+                                fileRepository.AddFile(articleContentFile);
                                 _files.Add(articleContentFile);
 
                                 var articleContentData = RandomData.Text;
@@ -549,7 +521,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                 articleContent.FileId = articleContentFile.Id;
                             }   
 
-                            _issueArticleRepository.AddIssueArticleContents(articleContents);
+                            issueArticleRepository.AddIssueArticleContents(articleContents);
                             _articleContents.AddRange(articleContents);
                         }
                     }
@@ -563,16 +535,13 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void CleanUp()
         {
-            _issueArticleRepository.DeleteIssueArticles(_articles);
-            _issuePageRepository.DeleteIssuePages(_pages);
-            _issueRepository.DeleteIssues(_issues);
-            _fileRepository.DeleteFiles(_files);
-            if (_periodicalId.HasValue) _periodicalRepository.DeletePeriodical(_periodicalId.Value);
+            issueArticleRepository.DeleteIssueArticles(_articles);
+            issuePageRepository.DeleteIssuePages(_pages);
+            issueRepository.DeleteIssues(_issues);
+            fileRepository.DeleteFiles(_files);
+            if (_periodicalId.HasValue) periodicalRepository.DeletePeriodical(_periodicalId.Value);
         }
 
-        public IEnumerable<AuthorDto> GetAuthorsForIssue(long issueId)
-        {
-            return _issueArticleAuthors[issueId];
-        }
+        public IEnumerable<AuthorDto> GetAuthorsForIssue(long issueId) => _issueArticleAuthors[issueId];
     }
 }

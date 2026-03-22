@@ -4,23 +4,15 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
 using NUnit.Framework;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
 {
     [TestFixture]
-    public class WhenUpdatingBookContentAsReader
-        : TestBase
+    public class WhenUpdatingBookContentAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private BookDto _book;
         private byte[] _expected;
-
-        public WhenUpdatingBookContentAsReader()
-            : base(Role.Reader)
-        {
-        }
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -33,15 +25,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.Contents.UpdateBookContent
         }
 
         [OneTimeTearDown]
-        public void Teardown()
-        {
-            Cleanup();
-        }
+        public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnForbidResult()
-        {
-            _response.ShouldBeForbidden();
-        }
+        public void ShouldReturnForbidResult() => _response.ShouldBeForbidden();
     }
 }

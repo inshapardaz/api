@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using AutoFixture;
 using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
@@ -11,17 +8,18 @@ using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 {
-    public class AuthorsDataBuilder
+    public class AuthorsDataBuilder(
+        IFileStorage fileStorage,
+        IFileTestRepository fileRepository,
+        IBookTestRepository bookTestRepository,
+        IAuthorTestRepository authorTestRepository,
+        IArticleTestRepository articleTestRepository)
     {
         private List<AuthorDto> _authors = new();
         private List<BookDto> _books = new();
         private List<FileDto> _files = new();
         private List<ArticleDto> _articles = new();
-        private readonly FakeFileStorage _fileStorage;
-        private readonly IFileTestRepository _fileRepository;
-        private readonly IBookTestRepository _bookTestRepository;
-        private readonly IAuthorTestRepository _authorTestRepository;
-        private readonly IArticleTestRepository _articleTestRepository;
+        private readonly FakeFileStorage _fileStorage = fileStorage as FakeFileStorage;
         private int _libraryId;
         private int _bookCount;
         private bool _withImage = true;
@@ -31,19 +29,6 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         internal IEnumerable<BookDto> Books => _books;
 
         public IEnumerable<AuthorDto> Authors => _authors;
-
-        public AuthorsDataBuilder(IFileStorage fileStorage,
-            IFileTestRepository fileRepository,
-            IBookTestRepository bookTestRepository,
-            IAuthorTestRepository authorTestRepository,
-            IArticleTestRepository articleTestRepository)
-        {
-            _fileStorage = fileStorage as FakeFileStorage;
-            _fileRepository = fileRepository;
-            _bookTestRepository = bookTestRepository;
-            _authorTestRepository = authorTestRepository;
-            _articleTestRepository = articleTestRepository;
-        }
 
         public AuthorsDataBuilder WithNamePattern(string pattern)
         {
@@ -76,10 +61,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             return this;
         }
 
-        public AuthorDto Build()
-        {
-            return Build(1).Single();
-        }
+        public AuthorDto Build() => Build(1).Single();
 
         public IEnumerable<AuthorDto> Build(int count)
         {
@@ -96,7 +78,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                          .With(a => a.FilePath, RandomData.FilePath)
                                          .With(a => a.IsPublic, true)
                                          .Create();
-                    _fileRepository.AddFile(authorImage);
+                    fileRepository.AddFile(authorImage);
                     _files.Add(authorImage);
                     _fileStorage.SetupFileContents(authorImage.FilePath, Framework.Helpers.RandomData.Bytes);
                 }
@@ -107,7 +89,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                      .With(a => a.ImageId, authorImage?.Id)
                                      .Create();
 
-                _authorTestRepository.AddAuthor(author);
+                authorTestRepository.AddAuthor(author);
                 _authors.Add(author);
 
                 var books = fixture.Build<BookDto>()
@@ -117,9 +99,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                    .Without(b => b.ImageId)
                                    .Without(b => b.SeriesId)
                                    .CreateMany(_bookCount);
-                _bookTestRepository.AddBooks(books);
+                bookTestRepository.AddBooks(books);
 
-                _bookTestRepository.AddBooksAuthor(books.Select(b => b.Id), author.Id);
+                bookTestRepository.AddBooksAuthor(books.Select(b => b.Id), author.Id);
 
                 _books.AddRange(books);
 
@@ -135,13 +117,13 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                 .Without(b => b.ReviewerAssignTimeStamp)
                                 .CreateMany(_articleCount);
 
-                _articleTestRepository.AddArticles(articles);
+                articleTestRepository.AddArticles(articles);
 
                 _articles.AddRange(articles);
 
                 foreach (var article in articles)
                 {
-                    _articleTestRepository.AddArticleAuthor(article.Id, author.Id);
+                    articleTestRepository.AddArticleAuthor(article.Id, author.Id);
                 }
 
                 authors.Add(author);
@@ -152,8 +134,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public void CleanUp()
         {
-            _authorTestRepository.DeleteAuthors(_authors);
-            _fileRepository.DeleteFiles(_files);
+            authorTestRepository.DeleteAuthors(_authors);
+            fileRepository.DeleteFiles(_files);
         }
 
     }

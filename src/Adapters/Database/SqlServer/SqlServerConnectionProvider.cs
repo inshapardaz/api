@@ -2,7 +2,7 @@
 using Inshapardaz.Domain.Adapters.Configuration;
 using Microsoft.Extensions.Options;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace Inshapardaz.Adapters.Database.SqlServer;
 

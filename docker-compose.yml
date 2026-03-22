@@ -1,13 +1,17 @@
 services:
   smtp:
-    image: mailhog/mailhog
-    command: ["-smtp-bind-addr", "0.0.0.0:1025"]
-    user: root
+    image: axllent/mailpit
     ports:
       - 8025:8025
       - 1025:1025
+    environment:
+      - MP_SMTP_AUTH_ACCEPT_ANY=true
+      - MP_SMTP_AUTH_ALLOW_INSECURE=true
     healthcheck:
-      test: echo | telnet 127.0.0.1 1025
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8025/api/v1/info"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
   api:
     build: 
       dockerfile: dockerfile

@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>Inshapardaz.Domain</AssemblyName>
     <RootNamespace>Inshapardaz.Domain</RootNamespace>
-    <DebugType>Full</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Database\**" />

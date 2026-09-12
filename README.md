@@ -2,9 +2,11 @@
 
 API for Inshapardaz
 
-# Build Status
+# Build & Deploy Status
 
 [![Docker Image CI](https://github.com/inshapardaz/api/actions/workflows/docker-image.yml/badge.svg)](https://github.com/inshapardaz/api/actions/workflows/docker-image.yml)
+
+Build, image push, and production deploy (gated behind manual approval) all run as part of this workflow.
 
 # Components
 

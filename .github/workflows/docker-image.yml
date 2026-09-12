@@ -59,3 +59,23 @@ jobs:
           cd ~/code/environment/production
           docker compose pull api
           docker compose up -d api
+
+      - name: Verify deployment
+        run: |
+          check() {
+            local url="$1"
+            local label="$2"
+            for i in $(seq 1 10); do
+              if curl -fsS -o /dev/null -w '%{http_code}' "$url" | grep -q '^200$'; then
+                echo "$label OK"
+                return 0
+              fi
+              echo "$label not ready yet, retrying ($i/10)..."
+              sleep 3
+            done
+            echo "::error::$label failed at $url"
+            return 1
+          }
+
+          check "https://api.nawishta.co.uk/health/check" "health/check"
+          check "https://api.nawishta.co.uk/libraries?pageNumber=1&pageSize=1" "libraries (DB access)"

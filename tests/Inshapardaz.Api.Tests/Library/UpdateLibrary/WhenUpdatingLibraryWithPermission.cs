@@ -32,7 +32,7 @@ namespace Inshapardaz.Api.Tests.Library.UpdateLibrary
 
             _response = await Client.PutObject($"/libraries/{LibraryId}", _expectedLibrary);
             var returnedView = await _response.GetContent<LibraryView>();
-            _assert = Services.GetService<LibraryAssert>().ForResponse(_response).ForLibrary(returnedView.Id);
+            _assert = Services.GetService<LibraryAssert>().ForResponse(_response).ForLibrary(returnedView.Id).WithSubmittedLibrary(_expectedLibrary);
         }
 
         [OneTimeTearDown]

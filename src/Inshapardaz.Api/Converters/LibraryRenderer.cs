@@ -321,9 +321,15 @@ public class LibraryRenderer(IRenderLink linkRenderer, IUserHelper userHelper, I
             SecondaryColor = model.SecondaryColor,
             Public = model.Public,
             Links = links,
-            DatabaseConnection = userHelper.IsAdmin ? model.DatabaseConnection : null,
+            // DatabaseConnection and FileStoreSource hold raw connection strings /
+            // storage credentials (e.g. S3 access key + secret in plaintext) --
+            // these must never be sent back over the API, to anyone, including
+            // admins. They're write-only: set via UpdateLibrary, never read back.
+            // (UpdateLibraryRequestHandler treats a blank submission as "leave
+            // unchanged" so admins don't need the current value to edit a library.)
+            DatabaseConnection = null,
             FileStoreType = userHelper.IsAdmin ? model.FileStoreType.ToDescription() : null,
-            FileStoreSource = userHelper.IsAdmin ? model.FileStoreSource : null
+            FileStoreSource = null
         };
     }
 }

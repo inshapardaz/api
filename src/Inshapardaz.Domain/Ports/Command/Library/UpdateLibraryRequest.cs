@@ -37,6 +37,20 @@ public class UpdateLibraryRequestHandler(ILibraryRepository libraryRepository)
         else
         {
             command.Library.Id = command.LibraryId;
+
+            // These are never returned by the API (see LibraryRenderer), so a
+            // client editing a library has no way to resubmit its current
+            // value -- treat a blank submission as "leave unchanged" rather
+            // than clobbering the stored secret with an empty string.
+            if (string.IsNullOrWhiteSpace(command.Library.DatabaseConnection))
+            {
+                command.Library.DatabaseConnection = result.DatabaseConnection;
+            }
+            if (string.IsNullOrWhiteSpace(command.Library.FileStoreSource))
+            {
+                command.Library.FileStoreSource = result.FileStoreSource;
+            }
+
             await libraryRepository.UpdateLibrary(command.Library, cancellationToken);
             command.Result.Library = command.Library;
         }

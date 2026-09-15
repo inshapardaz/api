@@ -30,7 +30,7 @@ namespace Inshapardaz.Api.Tests.Library.AddLibrary
 
             _response = await Client.PostObject($"/libraries", _library);
             _returnedView = await _response.GetContent<LibraryView>();
-            _assert = Services.GetService<LibraryAssert>().ForResponse(_response).ForLibrary(_returnedView.Id);
+            _assert = Services.GetService<LibraryAssert>().ForResponse(_response).ForLibrary(_returnedView.Id).WithSubmittedLibrary(_library);
         }
 
         [OneTimeTearDown]

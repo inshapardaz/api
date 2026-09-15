@@ -19,6 +19,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
     {
         private HttpResponseMessage _response;
         private LibraryView _view;
+        private LibraryView _submitted;
         private int _libraryId;
         private readonly IFileTestRepository _fileRepository = fileRepository;
         private readonly IAuthorTestRepository _authorRepository = authorRepository;
@@ -41,6 +42,16 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         public LibraryAssert ForLibrary(int libraryId)
         {
             _libraryId = libraryId;
+            return this;
+        }
+
+        // DatabaseConnection/FileStoreSource are write-only -- the API never
+        // echoes them back (see LibraryRenderer), so asserting the stored DB
+        // value matches what was submitted needs the original request body,
+        // not the (redacted) response view.
+        public LibraryAssert WithSubmittedLibrary(LibraryView submitted)
+        {
+            _submitted = submitted;
             return this;
         }
 
@@ -86,7 +97,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             library.OwnerEmail.Should().Be(_view.OwnerEmail);
             library.DatabaseConnection.Should().NotBeNull();
             library.FileStoreType.ToEnum<FileStoreTypes>(FileStoreTypes.Unknown).ToDescription().Should().Be(_view.FileStoreType);
-            library.FileStoreSource.Should().Be(_view.FileStoreSource);
+            library.FileStoreSource.Should().Be(_submitted.FileStoreSource);
             return this;
         }
 
@@ -105,7 +116,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _view.PrimaryColor.Should().Be(dbLibrary.PrimaryColor);
             _view.SecondaryColor.Should().Be(dbLibrary.SecondaryColor);
             _view.FileStoreType.ToEnum<FileStoreTypes>(FileStoreTypes.Unknown).Should().Be(dbLibrary.FileStoreType.ToEnum<FileStoreTypes>(FileStoreTypes.Unknown));
-            _view.FileStoreSource.Should().Be(dbLibrary.FileStoreSource);
+            dbLibrary.FileStoreSource.Should().Be(_submitted?.FileStoreSource);
             return this;
         }
 
@@ -127,9 +138,10 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _view.SupportsPeriodicals.Should().Be(expectedLibrary.SupportsPeriodicals);
             _view.PrimaryColor.Should().Be(expectedLibrary.PrimaryColor);
             _view.SecondaryColor.Should().Be(expectedLibrary.SecondaryColor);
-            _view.DatabaseConnection.Should().Be(expectedLibrary.DatabaseConnection);
+            // Write-only: never echoed back over the API, even to admins.
+            _view.DatabaseConnection.Should().BeNull();
             _view.FileStoreType.Should().Be(expectedLibrary.FileStoreType);
-            _view.FileStoreSource.Should().Be(expectedLibrary.FileStoreSource);
+            _view.FileStoreSource.Should().BeNull();
             return this;
         }
 

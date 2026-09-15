@@ -18,8 +18,11 @@ public static class LibraryMapper
             PrimaryColor = source.PrimaryColor,
             SecondaryColor = source.SecondaryColor,
             Public = source.Public,
-            DatabaseConnection = source.DatabaseConnection,
-            FileStoreSource = source.FileStoreSource,
+            // Write-only -- never echo raw connection strings/credentials back
+            // over the API. See LibraryRenderer for the same rule on the
+            // properly-authorized rendering path.
+            DatabaseConnection = null,
+            FileStoreSource = null,
             FileStoreType = source.FileStoreType.ToDescription()
         };
 

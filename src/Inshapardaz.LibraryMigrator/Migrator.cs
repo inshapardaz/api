@@ -4,6 +4,7 @@ using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Storage.S3;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Inshapardaz.LibraryMigrator;
 
@@ -44,7 +45,7 @@ public class Migrator(string source, DatabaseTypes sourceType, string destinatio
        var config = JsonSerializer.Deserialize<S3Configuration>(newLibrary.FileStoreSource);
        _fileStore =
            //production ? 
-           new S3FileStorage(config); 
+           new S3FileStorage(config, NullLogger<S3FileStorage>.Instance);
        //: new FileSystemStorage("../FileStore");
 
        Console.WriteLine("Step 2 of 10 - Migrating Accounts");

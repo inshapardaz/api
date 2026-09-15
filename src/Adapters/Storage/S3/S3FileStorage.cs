@@ -2,27 +2,36 @@
 using Amazon.S3.Model;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Inshapardaz.Storage.S3;
 
 
-public class S3FileStorage(S3Configuration configuration) : IFileStorage
+public class S3FileStorage(S3Configuration configuration, ILogger<S3FileStorage> logger) : IFileStorage
 {
     public bool SupportsPublicLink => false;
 
     public async Task<byte[]> GetFile(string filePath, CancellationToken cancellationToken)
     {
+        var key = $"{configuration.FolderName}/{filePath}";
         try
         {
             var client = GetClient();
             var request = new GetObjectRequest();
-            request.Key = $"{configuration.FolderName}/{filePath}";
+            request.Key = key;
             request.BucketName = configuration.BucketName;
             var response = await client.GetObjectAsync(request, cancellationToken);
             return await ReadAllContents(response.ResponseStream);
         }
         catch (AmazonS3Exception ex)
         {
+            // Every S3 failure -- object genuinely missing, wrong bucket,
+            // bad/expired credentials -- collapses into the same null here,
+            // which the caller then reports as an identical opaque 404.
+            // Log the real reason so a "download 404s" report is diagnosable
+            // without needing direct S3 access.
+            logger.LogWarning(ex, "S3 GetFile failed for key {Key} in bucket {Bucket}: {ErrorCode} {StatusCode} {Message}",
+                key, configuration.BucketName, ex.ErrorCode, ex.StatusCode, ex.Message);
             return null;
         }
     }

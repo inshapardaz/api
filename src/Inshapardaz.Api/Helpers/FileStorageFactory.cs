@@ -6,6 +6,7 @@ using Inshapardaz.Domain.Models;
 using Inshapardaz.Storage.Azure;
 using Inshapardaz.Storage.FileSystem;
 using Inshapardaz.Storage.S3;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 
@@ -35,7 +36,7 @@ public static class FileStorageFactory
                 return new AzureFileStorage(configuration.FileStoreSource);
             case FileStoreTypes.S3Storage:
                 var config = JsonSerializer.Deserialize<S3Configuration>(configuration.FileStoreSource);
-                return new S3FileStorage(config);
+                return new S3FileStorage(config, provider.GetRequiredService<ILogger<S3FileStorage>>());
             case FileStoreTypes.FileSystem:
                 var path = configuration.FileStoreSource ?? $"data/{configuration.LibraryId}";
                 var root = new DirectoryInfo(webHostEnvironment.ContentRootPath).Parent.FullName;

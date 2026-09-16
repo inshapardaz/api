@@ -184,4 +184,54 @@ public class UserController(
 
         return NoContent();
     }
+
+    [HttpGet("libraries/{libraryId}/my/books/{bookId}/notes", Name = nameof(GetUserNotes))]
+    [Produces(typeof(IEnumerable<NoteView>))]
+    public async Task<IActionResult> GetUserNotes(int libraryId, int bookId, CancellationToken token = default)
+    {
+        var query = new GetNotesQuery(libraryId, userHelper.AccountId ?? 0, bookId);
+        var result = await queryProcessor.ExecuteAsync(query, token);
+
+        return new OkObjectResult(result.Select(n => n.Map()));
+    }
+
+    [HttpPut("libraries/{libraryId}/my/books/{bookId}/notes/{clientId}", Name = nameof(UpsertUserNote))]
+    [Produces(typeof(NoteView))]
+    public async Task<IActionResult> UpsertUserNote(int libraryId,
+        int bookId,
+        string clientId,
+        [FromBody] NoteView note,
+        CancellationToken token = default)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        var upsertNoteCommand = new UpsertNoteRequest(libraryId, userHelper.AccountId ?? 0, bookId, clientId, new NoteModel
+        {
+            ChapterId = note.ChapterId,
+            StartOffset = note.StartOffset,
+            EndOffset = note.EndOffset,
+            Text = note.Text,
+            Comment = note.Comment,
+        });
+        await commandProcessor.SendAsync(upsertNoteCommand, cancellationToken: token);
+
+        if (upsertNoteCommand.Result?.Note == null)
+        {
+            return NotFound();
+        }
+
+        return new OkObjectResult(upsertNoteCommand.Result.Note.Map());
+    }
+
+    [HttpDelete("libraries/{libraryId}/my/books/{bookId}/notes/{clientId}", Name = nameof(DeleteUserNote))]
+    public async Task<IActionResult> DeleteUserNote(int libraryId, int bookId, string clientId, CancellationToken token = default)
+    {
+        var deleteNoteCommand = new DeleteNoteRequest(libraryId, userHelper.AccountId ?? 0, bookId, clientId);
+        await commandProcessor.SendAsync(deleteNoteCommand, cancellationToken: token);
+
+        return NoContent();
+    }
 }

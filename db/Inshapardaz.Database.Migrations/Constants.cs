@@ -38,6 +38,7 @@ namespace Inshapardaz.Database.Migrations
         public const string IssuePage = "IssuePage";
         public const string IssueChapterContent = "IssueChapterContent";
         public const string Bookmarks = "Bookmarks";
+        public const string Notes = "Notes";
 
     }
 

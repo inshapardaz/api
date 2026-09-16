@@ -753,6 +753,59 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
         }
     }
 
+    public async Task<IEnumerable<NoteModel>> GetNotes(int libraryId, int accountId, int bookId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = """
+                      SELECT * FROM Notes
+                      WHERE LibraryId = @LibraryId AND AccountId = @AccountId AND BookId = @BookId
+                      ORDER BY DateAdded
+                      """;
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, BookId = bookId }, cancellationToken: cancellationToken);
+            return await connection.QueryAsync<NoteModel>(command);
+        }
+    }
+
+    // Same upsert-by-(BookId, AccountId, ClientId) shape as UpsertBookmark above.
+    public async Task<NoteModel> UpsertNote(int libraryId, int accountId, int bookId, string clientId, NoteModel note, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = """
+                      INSERT INTO Notes (BookId, LibraryId, AccountId, ClientId, ChapterId, StartOffset, EndOffset, Text, Comment, DateAdded)
+                          VALUES (@BookId, @LibraryId, @AccountId, @ClientId, @ChapterId, @StartOffset, @EndOffset, @Text, @Comment, UTC_TIMESTAMP())
+                          ON DUPLICATE KEY UPDATE ChapterId = @ChapterId, StartOffset = @StartOffset, EndOffset = @EndOffset, Text = @Text, Comment = @Comment, DateUpdated = UTC_TIMESTAMP();
+
+                      SELECT * FROM Notes
+                      WHERE LibraryId = @LibraryId AND AccountId = @AccountId AND BookId = @BookId AND ClientId = @ClientId
+                      """;
+            var command = new CommandDefinition(sql, new
+            {
+                LibraryId = libraryId,
+                BookId = bookId,
+                AccountId = accountId,
+                ClientId = clientId,
+                ChapterId = note.ChapterId,
+                StartOffset = note.StartOffset,
+                EndOffset = note.EndOffset,
+                Text = note.Text,
+                Comment = note.Comment,
+            }, cancellationToken: cancellationToken);
+            return await connection.QuerySingleOrDefaultAsync<NoteModel>(command);
+        }
+    }
+
+    public async Task DeleteNote(int libraryId, int accountId, int bookId, string clientId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"DELETE FROM Notes WHERE LibraryId = @LibraryId AND AccountId = @AccountId AND BookId = @BookId AND ClientId = @ClientId";
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, BookId = bookId, ClientId = clientId }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+        }
+    }
+
     public async Task DeleteBookContent(int libraryId, int bookId, long contentId, CancellationToken cancellationToken)
     {
         using (var connection = connectionProvider.GetLibraryConnection())

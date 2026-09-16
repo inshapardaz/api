@@ -700,6 +700,59 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
         }
     }
 
+    public async Task<IEnumerable<BookmarkModel>> GetBookmarks(int libraryId, int accountId, int bookId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = """
+                      SELECT * FROM Bookmarks
+                      WHERE LibraryId = @LibraryId AND AccountId = @AccountId AND BookId = @BookId
+                      ORDER BY DateAdded
+                      """;
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, BookId = bookId }, cancellationToken: cancellationToken);
+            return await connection.QueryAsync<BookmarkModel>(command);
+        }
+    }
+
+    // Upsert by (BookId, AccountId, ClientId) - ON DUPLICATE KEY UPDATE rather than REPLACE INTO
+    // (see AddRecentBook above) so an update doesn't delete+reinsert the row and mint a new
+    // internal Id/DateAdded for a bookmark the client already has.
+    public async Task<BookmarkModel> UpsertBookmark(int libraryId, int accountId, int bookId, string clientId, BookmarkModel bookmark, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = """
+                      INSERT INTO Bookmarks (BookId, LibraryId, AccountId, ClientId, ChapterId, Position, Name, DateAdded)
+                          VALUES (@BookId, @LibraryId, @AccountId, @ClientId, @ChapterId, @Position, @Name, UTC_TIMESTAMP())
+                          ON DUPLICATE KEY UPDATE ChapterId = @ChapterId, Position = @Position, Name = @Name, DateUpdated = UTC_TIMESTAMP();
+
+                      SELECT * FROM Bookmarks
+                      WHERE LibraryId = @LibraryId AND AccountId = @AccountId AND BookId = @BookId AND ClientId = @ClientId
+                      """;
+            var command = new CommandDefinition(sql, new
+            {
+                LibraryId = libraryId,
+                BookId = bookId,
+                AccountId = accountId,
+                ClientId = clientId,
+                ChapterId = bookmark.ChapterId,
+                Position = bookmark.Position,
+                Name = bookmark.Name,
+            }, cancellationToken: cancellationToken);
+            return await connection.QuerySingleOrDefaultAsync<BookmarkModel>(command);
+        }
+    }
+
+    public async Task DeleteBookmark(int libraryId, int accountId, int bookId, string clientId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"DELETE FROM Bookmarks WHERE LibraryId = @LibraryId AND AccountId = @AccountId AND BookId = @BookId AND ClientId = @ClientId";
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, BookId = bookId, ClientId = clientId }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+        }
+    }
+
     public async Task DeleteBookContent(int libraryId, int bookId, long contentId, CancellationToken cancellationToken)
     {
         using (var connection = connectionProvider.GetLibraryConnection())

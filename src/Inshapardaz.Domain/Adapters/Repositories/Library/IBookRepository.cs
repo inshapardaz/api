@@ -49,4 +49,10 @@ public interface IBookRepository
 
     Task<Page<string>> FindPublishers(int libraryId, string query, int pageNumber, int pageSize,
         CancellationToken cancellationToken);
+
+    Task<IEnumerable<BookmarkModel>> GetBookmarks(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
+
+    Task<BookmarkModel> UpsertBookmark(int libraryId, int accountId, int bookId, string clientId, BookmarkModel bookmark, CancellationToken cancellationToken);
+
+    Task DeleteBookmark(int libraryId, int accountId, int bookId, string clientId, CancellationToken cancellationToken);
 }

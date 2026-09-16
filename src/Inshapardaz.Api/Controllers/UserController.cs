@@ -128,12 +128,60 @@ public class UserController(
 
         var updateBookProgressCommand = new UpdateBookProgressRequest(libraryId, userHelper.AccountId ?? 0, bookId, readStatus.Map());
         await commandProcessor.SendAsync(updateBookProgressCommand, cancellationToken: token);
-    
+
         if (updateBookProgressCommand.Result?.Progress == null)
         {
             return NotFound();
         }
-    
+
         return new OkObjectResult(updateBookProgressCommand.Result.Progress.Map());
+    }
+
+    [HttpGet("libraries/{libraryId}/my/books/{bookId}/bookmarks", Name = nameof(GetUserBookmarks))]
+    [Produces(typeof(IEnumerable<BookmarkView>))]
+    public async Task<IActionResult> GetUserBookmarks(int libraryId, int bookId, CancellationToken token = default)
+    {
+        var query = new GetBookmarksQuery(libraryId, userHelper.AccountId ?? 0, bookId);
+        var result = await queryProcessor.ExecuteAsync(query, token);
+
+        return new OkObjectResult(result.Select(b => b.Map()));
+    }
+
+    [HttpPut("libraries/{libraryId}/my/books/{bookId}/bookmarks/{clientId}", Name = nameof(UpsertUserBookmark))]
+    [Produces(typeof(BookmarkView))]
+    public async Task<IActionResult> UpsertUserBookmark(int libraryId,
+        int bookId,
+        string clientId,
+        [FromBody] BookmarkView bookmark,
+        CancellationToken token = default)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        var upsertBookmarkCommand = new UpsertBookmarkRequest(libraryId, userHelper.AccountId ?? 0, bookId, clientId, new BookmarkModel
+        {
+            ChapterId = bookmark.ChapterId,
+            Position = bookmark.Position,
+            Name = bookmark.Name,
+        });
+        await commandProcessor.SendAsync(upsertBookmarkCommand, cancellationToken: token);
+
+        if (upsertBookmarkCommand.Result?.Bookmark == null)
+        {
+            return NotFound();
+        }
+
+        return new OkObjectResult(upsertBookmarkCommand.Result.Bookmark.Map());
+    }
+
+    [HttpDelete("libraries/{libraryId}/my/books/{bookId}/bookmarks/{clientId}", Name = nameof(DeleteUserBookmark))]
+    public async Task<IActionResult> DeleteUserBookmark(int libraryId, int bookId, string clientId, CancellationToken token = default)
+    {
+        var deleteBookmarkCommand = new DeleteBookmarkRequest(libraryId, userHelper.AccountId ?? 0, bookId, clientId);
+        await commandProcessor.SendAsync(deleteBookmarkCommand, cancellationToken: token);
+
+        return NoContent();
     }
 }

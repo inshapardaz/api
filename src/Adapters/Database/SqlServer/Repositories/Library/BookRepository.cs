@@ -560,6 +560,56 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
         }
     }
 
+    public async Task<IEnumerable<BookmarkModel>> GetBookmarks(int libraryId, int accountId, int bookId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"Select * From Bookmarks Where LibraryId = @LibraryId And AccountId = @AccountId And BookId = @BookId Order By DateAdded";
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, BookId = bookId }, cancellationToken: cancellationToken);
+            return await connection.QueryAsync<BookmarkModel>(command);
+        }
+    }
+
+    // Upsert by (BookId, AccountId, ClientId) via MERGE (rather than the two-round-trip
+    // check-then-insert AddBookToFavorites uses above) so the OUTPUT clause can return the row -
+    // matching AddBook's own "OUTPUT Inserted." idiom - in the same round trip.
+    public async Task<BookmarkModel> UpsertBookmark(int libraryId, int accountId, int bookId, string clientId, BookmarkModel bookmark, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"Merge Bookmarks As target
+                            Using (Select @BookId As BookId, @AccountId As AccountId, @ClientId As ClientId) As source
+                            On target.BookId = source.BookId And target.AccountId = source.AccountId And target.ClientId = source.ClientId
+                        When Matched Then
+                            Update Set ChapterId = @ChapterId, Position = @Position, Name = @Name, DateUpdated = GETDATE()
+                        When Not Matched Then
+                            Insert (BookId, LibraryId, AccountId, ClientId, ChapterId, Position, Name, DateAdded)
+                            Values (@BookId, @LibraryId, @AccountId, @ClientId, @ChapterId, @Position, @Name, GETDATE())
+                        Output Inserted.*;";
+            var command = new CommandDefinition(sql, new
+            {
+                LibraryId = libraryId,
+                BookId = bookId,
+                AccountId = accountId,
+                ClientId = clientId,
+                ChapterId = bookmark.ChapterId,
+                Position = bookmark.Position,
+                Name = bookmark.Name,
+            }, cancellationToken: cancellationToken);
+            return await connection.QuerySingleOrDefaultAsync<BookmarkModel>(command);
+        }
+    }
+
+    public async Task DeleteBookmark(int libraryId, int accountId, int bookId, string clientId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"Delete From Bookmarks Where LibraryId = @LibraryId And AccountId = @AccountId And BookId = @BookId And ClientId = @ClientId";
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, BookId = bookId, ClientId = clientId }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+        }
+    }
+
     public async Task DeleteBookContent(int libraryId, int bookId, long contentId, CancellationToken cancellationToken)
     {
         using (var connection = connectionProvider.GetLibraryConnection())

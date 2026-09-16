@@ -112,4 +112,15 @@ public static class BookMapper
             ProgressId = source.ProgressId,
             ProgressValue = source.ProgressValue
         };
+
+    public static BookmarkView Map(this BookmarkModel source)
+        => source == null ? null : new BookmarkView
+        {
+            Id = source.ClientId,
+            ChapterId = source.ChapterId,
+            Position = source.Position,
+            Name = source.Name,
+            DateAdded = source.DateAdded,
+            DateUpdated = source.DateUpdated
+        };
 }

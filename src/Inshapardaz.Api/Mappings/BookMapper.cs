@@ -123,4 +123,17 @@ public static class BookMapper
             DateAdded = source.DateAdded,
             DateUpdated = source.DateUpdated
         };
+
+    public static NoteView Map(this NoteModel source)
+        => source == null ? null : new NoteView
+        {
+            Id = source.ClientId,
+            ChapterId = source.ChapterId,
+            StartOffset = source.StartOffset,
+            EndOffset = source.EndOffset,
+            Text = source.Text,
+            Comment = source.Comment,
+            DateAdded = source.DateAdded,
+            DateUpdated = source.DateUpdated
+        };
 }

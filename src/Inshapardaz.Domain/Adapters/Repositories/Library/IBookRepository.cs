@@ -55,4 +55,10 @@ public interface IBookRepository
     Task<BookmarkModel> UpsertBookmark(int libraryId, int accountId, int bookId, string clientId, BookmarkModel bookmark, CancellationToken cancellationToken);
 
     Task DeleteBookmark(int libraryId, int accountId, int bookId, string clientId, CancellationToken cancellationToken);
+
+    Task<IEnumerable<NoteModel>> GetNotes(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
+
+    Task<NoteModel> UpsertNote(int libraryId, int accountId, int bookId, string clientId, NoteModel note, CancellationToken cancellationToken);
+
+    Task DeleteNote(int libraryId, int accountId, int bookId, string clientId, CancellationToken cancellationToken);
 }

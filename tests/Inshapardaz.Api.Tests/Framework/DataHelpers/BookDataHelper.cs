@@ -57,6 +57,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         void AddBooksAuthor(IEnumerable<int> bookIds, int authorId);
         ReadProgressDto GetBookProgress(int bookId, int accountId);
 
+        void AddNote(NoteDto note);
+        NoteDto GetNote(int bookId, int accountId, string clientId);
     }
 
     public class MySqlBookTestRepository(IProvideConnection connectionProvider) : IBookTestRepository
@@ -336,6 +338,26 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                 return connection.QueryFirstOrDefault<ReadProgressDto>(sql, new { BookId = bookId, AccountId = accountId });
             }
         }
+
+        public void AddNote(NoteDto note)
+        {
+            using (var connection = connectionProvider.GetConnection())
+            {
+                var sql = @"INSERT INTO Notes (BookId, LibraryId, AccountId, ClientId, ChapterId, StartOffset, EndOffset, `Text`, Comment, DateAdded, DateUpdated)
+                        VALUES (@BookId, @LibraryId, @AccountId, @ClientId, @ChapterId, @StartOffset, @EndOffset, @Text, @Comment, @DateAdded, @DateUpdated);
+                    SELECT LAST_INSERT_ID();";
+                note.Id = connection.ExecuteScalar<long>(sql, note);
+            }
+        }
+
+        public NoteDto GetNote(int bookId, int accountId, string clientId)
+        {
+            using (var connection = connectionProvider.GetConnection())
+            {
+                var sql = "SELECT * FROM Notes WHERE BookId = @BookId AND AccountId = @AccountId AND ClientId = @ClientId";
+                return connection.QueryFirstOrDefault<NoteDto>(sql, new { BookId = bookId, AccountId = accountId, ClientId = clientId });
+            }
+        }
     }
 
     public class SqlServerBookTestRepository(IProvideConnection connectionProvider) : IBookTestRepository
@@ -608,5 +630,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         }
 
         public ReadProgressDto GetBookProgress(int bookId, int accountId) => throw new NotImplementedException();
+
+        public void AddNote(NoteDto note) => throw new NotImplementedException();
+
+        public NoteDto GetNote(int bookId, int accountId, string clientId) => throw new NotImplementedException();
     }
 }

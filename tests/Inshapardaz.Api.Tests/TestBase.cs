@@ -190,6 +190,7 @@ namespace Inshapardaz.Api.Tests
                     .AddTransient<PeriodicalAssert>()
                     .AddTransient<CommonWordAssert>()
                     .AddTransient<ReadProgressAssert>()
+                    .AddTransient<NoteAssert>()
                     .AddTransient<SeriesAssert>();
         }
 

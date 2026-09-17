@@ -59,6 +59,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         void AddNote(NoteDto note);
         NoteDto GetNote(int bookId, int accountId, string clientId);
+
+        void AddBookmark(BookmarkDto bookmark);
+        BookmarkDto GetBookmark(int bookId, int accountId, string clientId);
     }
 
     public class MySqlBookTestRepository(IProvideConnection connectionProvider) : IBookTestRepository
@@ -358,6 +361,26 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                 return connection.QueryFirstOrDefault<NoteDto>(sql, new { BookId = bookId, AccountId = accountId, ClientId = clientId });
             }
         }
+
+        public void AddBookmark(BookmarkDto bookmark)
+        {
+            using (var connection = connectionProvider.GetConnection())
+            {
+                var sql = @"INSERT INTO Bookmarks (BookId, LibraryId, AccountId, ClientId, ChapterId, Position, Name, DateAdded, DateUpdated)
+                        VALUES (@BookId, @LibraryId, @AccountId, @ClientId, @ChapterId, @Position, @Name, @DateAdded, @DateUpdated);
+                    SELECT LAST_INSERT_ID();";
+                bookmark.Id = connection.ExecuteScalar<long>(sql, bookmark);
+            }
+        }
+
+        public BookmarkDto GetBookmark(int bookId, int accountId, string clientId)
+        {
+            using (var connection = connectionProvider.GetConnection())
+            {
+                var sql = "SELECT * FROM Bookmarks WHERE BookId = @BookId AND AccountId = @AccountId AND ClientId = @ClientId";
+                return connection.QueryFirstOrDefault<BookmarkDto>(sql, new { BookId = bookId, AccountId = accountId, ClientId = clientId });
+            }
+        }
     }
 
     public class SqlServerBookTestRepository(IProvideConnection connectionProvider) : IBookTestRepository
@@ -634,5 +657,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         public void AddNote(NoteDto note) => throw new NotImplementedException();
 
         public NoteDto GetNote(int bookId, int accountId, string clientId) => throw new NotImplementedException();
+
+        public void AddBookmark(BookmarkDto bookmark) => throw new NotImplementedException();
+
+        public BookmarkDto GetBookmark(int bookId, int accountId, string clientId) => throw new NotImplementedException();
     }
 }

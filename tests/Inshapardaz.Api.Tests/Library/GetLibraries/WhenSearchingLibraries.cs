@@ -1,4 +1,6 @@
-﻿using Inshapardaz.Api.Tests.Framework.Asserts;
+﻿using FluentAssertions;
+using Inshapardaz.Api.Tests.Framework.Asserts;
+using Inshapardaz.Api.Tests.Framework.DataBuilders;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Models;
@@ -12,6 +14,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
     {
         private HttpResponseMessage _response;
         private PagingAssert<LibraryView> _assert;
+        private LibraryDataBuilder _nonMatchingLibraryBuilder;
         private string _startWith = RandomData.String;
 
         [OneTimeSetUp]
@@ -19,12 +22,19 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
         {
             LibraryBuilder.AssignToUser(AccountId, Role.Writer).StartingWith(_startWith).Build(4);
 
+            _nonMatchingLibraryBuilder = Services.GetService<LibraryDataBuilder>();
+            _nonMatchingLibraryBuilder.AssignToUser(AccountId, Role.Writer).Build(2);
+
             _response = await Client.GetAsync($"/libraries?query={_startWith}");
             _assert = Services.GetService<PagingAssert<LibraryView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
-        public void Teardown() => Cleanup();
+        public void Teardown()
+        {
+            _nonMatchingLibraryBuilder.CleanUp();
+            Cleanup();
+        }
 
         [Test]
         public void ShouldReturnOk() => _response.ShouldBeOk();
@@ -40,6 +50,18 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
         {
             _assert.ShouldNotHaveNextLink();
             _assert.ShouldNotHavePreviousLink();
+        }
+
+        [Test]
+        public void ShouldHaveTotalCount() => _assert.ShouldHaveTotalCount(4);
+
+        [Test]
+        public void ShouldNotReturnNonMatchingLibraries()
+        {
+            foreach (var item in _nonMatchingLibraryBuilder.Libraries)
+            {
+                _assert.Data.Should().NotContain(x => x.Id == item.Id);
+            }
         }
 
         [Test]

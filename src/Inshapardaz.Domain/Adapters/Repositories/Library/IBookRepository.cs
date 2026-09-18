@@ -61,4 +61,12 @@ public interface IBookRepository
     Task<NoteModel> UpsertNote(int libraryId, int accountId, int bookId, string clientId, NoteModel note, CancellationToken cancellationToken);
 
     Task DeleteNote(int libraryId, int accountId, int bookId, string clientId, CancellationToken cancellationToken);
+
+    Task<RatingModel> GetBookRating(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
+
+    Task<RatingModel> UpsertBookRating(int libraryId, int accountId, int bookId, RatingModel rating, CancellationToken cancellationToken);
+
+    Task DeleteBookRating(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
+
+    Task<RatingSummaryModel> GetBookRatingSummary(int libraryId, int bookId, CancellationToken cancellationToken);
 }

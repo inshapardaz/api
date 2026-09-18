@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Paramore.Brighter;
 
@@ -18,6 +19,7 @@ public class AddFileRequestHandler(IFileRepository fileRepository, IFileStorage 
         var url = await AddImageToFileStore(command.File.FileName, command.File.Contents, command.File.MimeType, cancellationToken);
         command.File.FilePath = url;
         command.File.IsPublic = true;
+        command.File.Checksum = ChecksumHelper.ComputeChecksum(command.File.Contents);
         command.Response = await fileRepository.AddFile(command.File, cancellationToken);
         return await base.HandleAsync(command, cancellationToken);
     }

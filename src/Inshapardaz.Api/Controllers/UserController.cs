@@ -6,9 +6,11 @@ using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.Library.Book;
+using Inshapardaz.Domain.Ports.Command.Library.Periodical.Issue;
 using Inshapardaz.Domain.Ports.Query.Library;
 using Inshapardaz.Domain.Ports.Query.Library.Book;
 using Inshapardaz.Domain.Ports.Query.Library.Book.Page;
+using Inshapardaz.Domain.Ports.Query.Library.Periodical.Issue;
 using Inshapardaz.Domain.Ports.Query.Library.Periodical.Issue.Page;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -185,6 +187,56 @@ public class UserController(
         return NoContent();
     }
 
+    [HttpGet("libraries/{libraryId}/my/books/{bookId}/rating", Name = nameof(GetUserBookRating))]
+    [Produces(typeof(RatingView))]
+    public async Task<IActionResult> GetUserBookRating(int libraryId, int bookId, CancellationToken token = default)
+    {
+        var query = new GetBookRatingQuery(libraryId, userHelper.AccountId ?? 0, bookId);
+        var result = await queryProcessor.ExecuteAsync(query, token);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return new OkObjectResult(result.Map());
+    }
+
+    [HttpPut("libraries/{libraryId}/my/books/{bookId}/rating", Name = nameof(UpsertUserBookRating))]
+    [Produces(typeof(RatingView))]
+    public async Task<IActionResult> UpsertUserBookRating(int libraryId,
+        int bookId,
+        [FromBody] RatingView rating,
+        CancellationToken token = default)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        var upsertRatingCommand = new UpsertBookRatingRequest(libraryId, userHelper.AccountId ?? 0, bookId, new RatingModel
+        {
+            Value = rating.Value,
+        });
+        await commandProcessor.SendAsync(upsertRatingCommand, cancellationToken: token);
+
+        if (upsertRatingCommand.Result?.Rating == null)
+        {
+            return NotFound();
+        }
+
+        return new OkObjectResult(upsertRatingCommand.Result.Rating.Map());
+    }
+
+    [HttpDelete("libraries/{libraryId}/my/books/{bookId}/rating", Name = nameof(DeleteUserBookRating))]
+    public async Task<IActionResult> DeleteUserBookRating(int libraryId, int bookId, CancellationToken token = default)
+    {
+        var deleteRatingCommand = new DeleteBookRatingRequest(libraryId, userHelper.AccountId ?? 0, bookId);
+        await commandProcessor.SendAsync(deleteRatingCommand, cancellationToken: token);
+
+        return NoContent();
+    }
+
     [HttpGet("libraries/{libraryId}/my/books/{bookId}/notes", Name = nameof(GetUserNotes))]
     [Produces(typeof(IEnumerable<NoteView>))]
     public async Task<IActionResult> GetUserNotes(int libraryId, int bookId, CancellationToken token = default)
@@ -231,6 +283,58 @@ public class UserController(
     {
         var deleteNoteCommand = new DeleteNoteRequest(libraryId, userHelper.AccountId ?? 0, bookId, clientId);
         await commandProcessor.SendAsync(deleteNoteCommand, cancellationToken: token);
+
+        return NoContent();
+    }
+
+    [HttpGet("libraries/{libraryId}/my/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/rating", Name = nameof(GetUserIssueRating))]
+    [Produces(typeof(RatingView))]
+    public async Task<IActionResult> GetUserIssueRating(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token = default)
+    {
+        var query = new GetIssueRatingQuery(libraryId, userHelper.AccountId ?? 0, periodicalId, volumeNumber, issueNumber);
+        var result = await queryProcessor.ExecuteAsync(query, token);
+
+        if (result == null)
+        {
+            return NotFound();
+        }
+
+        return new OkObjectResult(result.Map());
+    }
+
+    [HttpPut("libraries/{libraryId}/my/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/rating", Name = nameof(UpsertUserIssueRating))]
+    [Produces(typeof(RatingView))]
+    public async Task<IActionResult> UpsertUserIssueRating(int libraryId,
+        int periodicalId,
+        int volumeNumber,
+        int issueNumber,
+        [FromBody] RatingView rating,
+        CancellationToken token = default)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        var upsertRatingCommand = new UpsertIssueRatingRequest(libraryId, userHelper.AccountId ?? 0, periodicalId, volumeNumber, issueNumber, new RatingModel
+        {
+            Value = rating.Value,
+        });
+        await commandProcessor.SendAsync(upsertRatingCommand, cancellationToken: token);
+
+        if (upsertRatingCommand.Result?.Rating == null)
+        {
+            return NotFound();
+        }
+
+        return new OkObjectResult(upsertRatingCommand.Result.Rating.Map());
+    }
+
+    [HttpDelete("libraries/{libraryId}/my/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/rating", Name = nameof(DeleteUserIssueRating))]
+    public async Task<IActionResult> DeleteUserIssueRating(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token = default)
+    {
+        var deleteRatingCommand = new DeleteIssueRatingRequest(libraryId, userHelper.AccountId ?? 0, periodicalId, volumeNumber, issueNumber);
+        await commandProcessor.SendAsync(deleteRatingCommand, cancellationToken: token);
 
         return NoContent();
     }

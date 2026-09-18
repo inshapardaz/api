@@ -192,6 +192,8 @@ namespace Inshapardaz.Api.Tests
                     .AddTransient<ReadProgressAssert>()
                     .AddTransient<NoteAssert>()
                     .AddTransient<BookmarkAssert>()
+                    .AddTransient<RatingAssert>()
+                    .AddTransient<IssueRatingAssert>()
                     .AddTransient<SeriesAssert>();
         }
 

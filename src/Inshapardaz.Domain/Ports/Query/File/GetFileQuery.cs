@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.Logging;
 using Paramore.Darker;
@@ -65,6 +66,12 @@ public class GetFileRequestHandler(IFileRepository fileRepository, IFileStorage 
         }*/
         {
             file.Contents = stream.ToArray();
+        }
+
+        if (string.IsNullOrEmpty(file.Checksum))
+        {
+            file.Checksum = ChecksumHelper.ComputeChecksum(file.Contents);
+            await fileRepository.UpdateChecksum(file.Id, file.Checksum, cancellationToken);
         }
 
         return file;

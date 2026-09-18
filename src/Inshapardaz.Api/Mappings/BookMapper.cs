@@ -136,4 +136,19 @@ public static class BookMapper
             DateAdded = source.DateAdded,
             DateUpdated = source.DateUpdated
         };
+
+    public static RatingView Map(this RatingModel source)
+        => source == null ? null : new RatingView
+        {
+            Value = source.Value,
+            DateAdded = source.DateAdded,
+            DateUpdated = source.DateUpdated
+        };
+
+    public static RatingSummaryView Map(this RatingSummaryModel source)
+        => source == null ? null : new RatingSummaryView
+        {
+            AverageRating = source.AverageRating,
+            TotalCount = source.TotalCount
+        };
 }

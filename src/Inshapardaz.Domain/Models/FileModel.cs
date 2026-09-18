@@ -16,4 +16,6 @@ public class FileModel
 
     public string FilePath { get; set; }
     public DateTime DateUpdated { get; set; }
+
+    public string Checksum { get; set; }
 }

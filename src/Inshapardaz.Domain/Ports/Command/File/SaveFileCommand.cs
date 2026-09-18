@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Helpers;
 using Paramore.Brighter;
 using Inshapardaz.Domain.Models;
 
@@ -24,6 +25,8 @@ public class SaveFileCommandHandler(IFileRepository fileRepository, IFileStorage
 {
     public override async Task<SaveFileCommand> HandleAsync(SaveFileCommand command, CancellationToken cancellationToken = new CancellationToken())
     {
+        var checksum = ChecksumHelper.ComputeChecksum(command.Contents);
+
         if (command.ExistingFileId.HasValue)
         {
             var file = await fileRepository.GetFileById(command.ExistingFileId.Value, cancellationToken);
@@ -35,10 +38,11 @@ public class SaveFileCommandHandler(IFileRepository fileRepository, IFileStorage
                 FileName = command.FileName,
                 FilePath = command.Path,
                 MimeType = command.MimeType,
-                IsPublic = command.IsPublic
+                IsPublic = command.IsPublic,
+                Checksum = checksum
             }, cancellationToken);
         }
-        else 
+        else
         {
             var url = await fileStorage.StoreFile(command.Path, command.Contents, command.MimeType, cancellationToken);
             command.Result = await fileRepository.AddFile(new FileModel
@@ -46,7 +50,8 @@ public class SaveFileCommandHandler(IFileRepository fileRepository, IFileStorage
                 FileName = command.FileName,
                 FilePath = command.Path,
                 MimeType = command.MimeType,
-                IsPublic = command.IsPublic
+                IsPublic = command.IsPublic,
+                Checksum = checksum
             }, cancellationToken);
         }
 

@@ -24,8 +24,8 @@ public class FileRepository(MySqlConnectionProvider connectionProvider) : IFileR
         int id;
         using (var connection = connectionProvider.GetLibraryConnection())
         {
-            var sql = @"INSERT INTO `File` (FileName, MimeType, FilePath, IsPublic, DateCreated)
-                            VALUES (@FileName, @MimeType, @FilePath, @IsPublic, UTC_TIMESTAMP());
+            var sql = @"INSERT INTO `File` (FileName, MimeType, FilePath, IsPublic, Checksum, DateCreated)
+                            VALUES (@FileName, @MimeType, @FilePath, @IsPublic, @Checksum, UTC_TIMESTAMP());
                             SELECT LAST_INSERT_ID()";
             var command = new CommandDefinition(sql, file, cancellationToken: cancellationToken);
             id = await connection.ExecuteScalarAsync<int>(command);
@@ -43,6 +43,7 @@ public class FileRepository(MySqlConnectionProvider connectionProvider) : IFileR
                                 MimeType = @MimeType,
                                 FilePath = @FilePath,
                                 IsPublic = @IsPublic,
+                                Checksum = @Checksum,
                                 DateUpdated = UTC_TIMESTAMP()
                             Where Id = @Id";
             var command = new CommandDefinition(sql, file, cancellationToken: cancellationToken);
@@ -57,6 +58,19 @@ public class FileRepository(MySqlConnectionProvider connectionProvider) : IFileR
         {
             var sql = @"DELETE FROM `File` WHERE Id = @Id";
             var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+        }
+    }
+
+    // Lightweight lazy backfill (see GetFileRequestHandler) - only touches Checksum, not the
+    // other columns UpdateFile writes, so it can't race with an in-flight rename/move of the
+    // same file.
+    public async Task UpdateChecksum(long id, string checksum, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"Update `File` Set Checksum = @Checksum Where Id = @Id";
+            var command = new CommandDefinition(sql, new { Id = id, Checksum = checksum }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
         }
     }

@@ -11,4 +11,6 @@ public interface IFileRepository
     Task<FileModel> UpdateFile(FileModel file, CancellationToken cancellationToken);
 
     Task DeleteFile(long id, CancellationToken cancellationToken);
+
+    Task UpdateChecksum(long id, string checksum, CancellationToken cancellationToken);
 }

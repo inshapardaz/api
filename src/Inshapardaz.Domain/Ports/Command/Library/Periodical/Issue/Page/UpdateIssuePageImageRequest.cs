@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Paramore.Brighter;
 
@@ -60,6 +61,7 @@ public class UpdateIssuePageImageRequestHandler(
 
             command.Image.FilePath = url;
             command.Image.IsPublic = true;
+            command.Image.Checksum = ChecksumHelper.ComputeChecksum(command.Image.Contents);
             await fileRepository.UpdateFile(command.Image, cancellationToken);
             command.Result.File = command.Image;
             command.Result.File.Id = issuePage.ImageId.Value;
@@ -70,6 +72,7 @@ public class UpdateIssuePageImageRequestHandler(
             var url = await AddImageToFileStore(command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
             command.Image.FilePath = url;
             command.Image.IsPublic = true;
+            command.Image.Checksum = ChecksumHelper.ComputeChecksum(command.Image.Contents);
             command.Result.File = await fileRepository.AddFile(command.Image, cancellationToken);
             command.Result.HasAddedNew = true;
 

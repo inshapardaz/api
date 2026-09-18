@@ -806,6 +806,69 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
         }
     }
 
+    public async Task<RatingModel> GetBookRating(int libraryId, int accountId, int bookId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = """
+                      SELECT * FROM BookRatings
+                      WHERE LibraryId = @LibraryId AND AccountId = @AccountId AND BookId = @BookId
+                      """;
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, BookId = bookId }, cancellationToken: cancellationToken);
+            return await connection.QuerySingleOrDefaultAsync<RatingModel>(command);
+        }
+    }
+
+    // Upsert by (BookId, AccountId) - ON DUPLICATE KEY UPDATE rather than REPLACE INTO
+    // so an update doesn't delete+reinsert the row and mint a new internal Id/DateAdded for a
+    // rating the account already has. Same idiom as UpsertBookmark above.
+    public async Task<RatingModel> UpsertBookRating(int libraryId, int accountId, int bookId, RatingModel rating, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = """
+                      INSERT INTO BookRatings (BookId, LibraryId, AccountId, Value, DateAdded)
+                          VALUES (@BookId, @LibraryId, @AccountId, @Value, UTC_TIMESTAMP())
+                          ON DUPLICATE KEY UPDATE Value = @Value, DateUpdated = UTC_TIMESTAMP();
+
+                      SELECT * FROM BookRatings
+                      WHERE LibraryId = @LibraryId AND AccountId = @AccountId AND BookId = @BookId
+                      """;
+            var command = new CommandDefinition(sql, new
+            {
+                LibraryId = libraryId,
+                BookId = bookId,
+                AccountId = accountId,
+                Value = rating.Value,
+            }, cancellationToken: cancellationToken);
+            return await connection.QuerySingleOrDefaultAsync<RatingModel>(command);
+        }
+    }
+
+    public async Task DeleteBookRating(int libraryId, int accountId, int bookId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"DELETE FROM BookRatings WHERE LibraryId = @LibraryId AND AccountId = @AccountId AND BookId = @BookId";
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, BookId = bookId }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+        }
+    }
+
+    public async Task<RatingSummaryModel> GetBookRatingSummary(int libraryId, int bookId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = """
+                      SELECT COALESCE(AVG(Value), 0) AS AverageRating, COUNT(*) AS TotalCount
+                      FROM BookRatings
+                      WHERE LibraryId = @LibraryId AND BookId = @BookId
+                      """;
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
+            return await connection.QuerySingleAsync<RatingSummaryModel>(command);
+        }
+    }
+
     public async Task DeleteBookContent(int libraryId, int bookId, long contentId, CancellationToken cancellationToken)
     {
         using (var connection = connectionProvider.GetLibraryConnection())

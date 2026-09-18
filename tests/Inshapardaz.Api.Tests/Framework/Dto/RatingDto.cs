@@ -1,0 +1,12 @@
+namespace Inshapardaz.Api.Tests.Framework.Dto;
+
+public class RatingDto
+{
+    public long Id { get; set; }
+    public int BookId { get; set; }
+    public int LibraryId { get; set; }
+    public int AccountId { get; set; }
+    public int Value { get; set; }
+    public DateTime DateAdded { get; set; }
+    public DateTime? DateUpdated { get; set; }
+}

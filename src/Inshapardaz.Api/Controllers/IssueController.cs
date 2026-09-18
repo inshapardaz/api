@@ -107,6 +107,16 @@ public class IssueController(
         return new NotFoundResult();
     }
 
+    [HttpGet("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/rating", Name = nameof(IssueController.GetIssueRating))]
+    [Produces(typeof(RatingSummaryView))]
+    public async Task<IActionResult> GetIssueRating(int libraryId, int periodicalId, int volumeNumber, int issueNumber, CancellationToken token = default)
+    {
+        var query = new GetIssueRatingSummaryQuery(libraryId, periodicalId, volumeNumber, issueNumber);
+        var summary = await queryProcessor.ExecuteAsync(query, cancellationToken: token);
+
+        return new OkObjectResult(summary.Map());
+    }
+
 
     [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/issues", Name = nameof(IssueController.CreateIssue))]
     public async Task<IActionResult> CreateIssue(int libraryId, int periodicalId, [FromBody] IssueView issue, CancellationToken token = default(CancellationToken))

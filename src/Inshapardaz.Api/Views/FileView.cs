@@ -1,4 +1,4 @@
-﻿namespace Inshapardaz.Api.Views;
+namespace Inshapardaz.Api.Views;
 
 public class FileView : ViewWithLinks
 {
@@ -9,4 +9,6 @@ public class FileView : ViewWithLinks
     public string FileName { get; set; }
 
     public DateTime DateCreated { get; set; }
+
+    public string Checksum { get; set; }
 }

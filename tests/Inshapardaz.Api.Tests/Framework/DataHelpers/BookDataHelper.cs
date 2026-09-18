@@ -62,6 +62,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         void AddBookmark(BookmarkDto bookmark);
         BookmarkDto GetBookmark(int bookId, int accountId, string clientId);
+
+        void AddRating(RatingDto rating);
+        RatingDto GetRating(int bookId, int accountId);
     }
 
     public class MySqlBookTestRepository(IProvideConnection connectionProvider) : IBookTestRepository
@@ -381,6 +384,26 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                 return connection.QueryFirstOrDefault<BookmarkDto>(sql, new { BookId = bookId, AccountId = accountId, ClientId = clientId });
             }
         }
+
+        public void AddRating(RatingDto rating)
+        {
+            using (var connection = connectionProvider.GetConnection())
+            {
+                var sql = @"INSERT INTO BookRatings (BookId, LibraryId, AccountId, Value, DateAdded, DateUpdated)
+                        VALUES (@BookId, @LibraryId, @AccountId, @Value, @DateAdded, @DateUpdated);
+                    SELECT LAST_INSERT_ID();";
+                rating.Id = connection.ExecuteScalar<long>(sql, rating);
+            }
+        }
+
+        public RatingDto GetRating(int bookId, int accountId)
+        {
+            using (var connection = connectionProvider.GetConnection())
+            {
+                var sql = "SELECT * FROM BookRatings WHERE BookId = @BookId AND AccountId = @AccountId";
+                return connection.QueryFirstOrDefault<RatingDto>(sql, new { BookId = bookId, AccountId = accountId });
+            }
+        }
     }
 
     public class SqlServerBookTestRepository(IProvideConnection connectionProvider) : IBookTestRepository
@@ -661,5 +684,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         public void AddBookmark(BookmarkDto bookmark) => throw new NotImplementedException();
 
         public BookmarkDto GetBookmark(int bookId, int accountId, string clientId) => throw new NotImplementedException();
+
+        public void AddRating(RatingDto rating) => throw new NotImplementedException();
+
+        public RatingDto GetRating(int bookId, int accountId) => throw new NotImplementedException();
     }
 }

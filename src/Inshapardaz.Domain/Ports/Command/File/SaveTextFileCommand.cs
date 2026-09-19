@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Helpers;
 using Paramore.Brighter;
 using Inshapardaz.Domain.Models;
 
@@ -39,7 +40,8 @@ public class SaveTextFileCommandHandler(IFileRepository fileRepository, IFileSto
                 FilePath = command.Path,
                 MimeType = command.MimeType,
                 DateCreated = DateTime.Now,
-                IsPublic = command.IsPublic
+                IsPublic = command.IsPublic,
+                Checksum = ChecksumHelper.Compute(command.Contents)
             }, cancellationToken);
         }
 

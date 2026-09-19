@@ -12,6 +12,7 @@ public static class FileMapper
             MimeType = source.MimeType,
             FileName = source.FileName,
             DateCreated = source.DateCreated,
+            Checksum = source.Checksum,
         };
 
     public static FileModel Map(this FileView source)
@@ -20,6 +21,7 @@ public static class FileMapper
             Id = source.Id,
             MimeType = source.MimeType,
             FileName = source.FileName,
-            DateCreated = source.DateCreated
+            DateCreated = source.DateCreated,
+            Checksum = source.Checksum
         };
 }

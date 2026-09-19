@@ -829,7 +829,7 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
         using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = """
-                      SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
+                      SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName, f.Checksum
                                                   FROM BookContent bc
                                                       INNER JOIN Book b ON b.Id = bc.BookId
                                                       INNER JOIN `File` f ON bc.FileId = f.Id
@@ -848,7 +848,7 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
         using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = """
-                      SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
+                      SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName, f.Checksum
                                                   FROM BookContent bc
                                                       INNER JOIN Book b ON b.Id = bc.BookId
                                                       INNER JOIN `File` f ON bc.FileId = f.Id
@@ -866,7 +866,7 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
         using (var connection = connectionProvider.GetLibraryConnection())
         {
             var sql = """
-                      SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName
+                      SELECT bc.Id, bc.BookId, bc.Language, f.MimeType, f.Id As FileId, f.FilePath As ContentUrl, f.FileName As FileName, f.Checksum
                                                   FROM BookContent bc
                                                       INNER JOIN Book b ON b.Id = bc.BookId
                                                       INNER JOIN `File` f ON bc.FileId = f.Id

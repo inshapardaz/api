@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Paramore.Brighter;
 using Inshapardaz.Domain.Models.Library;
@@ -65,7 +66,8 @@ public class UploadIssuePagesHandler(
                 FilePath = url,
                 DateCreated = DateTime.UtcNow,
                 FileName = file.FileName,
-                MimeType = file.MimeType
+                MimeType = file.MimeType,
+                Checksum = ChecksumHelper.Compute(file.Contents)
             }, cancellationToken);
             var bookPage = await issuePageRepository.AddPage(command.LibraryId, new IssuePageModel()
             {

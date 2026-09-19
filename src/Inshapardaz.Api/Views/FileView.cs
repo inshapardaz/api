@@ -9,4 +9,6 @@ public class FileView : ViewWithLinks
     public string FileName { get; set; }
 
     public DateTime DateCreated { get; set; }
+
+    public string Checksum { get; set; }
 }

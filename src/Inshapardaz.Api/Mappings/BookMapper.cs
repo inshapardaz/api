@@ -70,6 +70,7 @@ public static class BookMapper
             Language = source.Language,
             MimeType = source.MimeType,
             FileName = source.FileName,
+            Checksum = source.Checksum,
         };
 
     public static BookContentModel Map(this BookContentView source)
@@ -78,7 +79,8 @@ public static class BookMapper
             Id = source.Id,
             BookId = source.BookId,
             Language = source.Language,
-            MimeType = source.MimeType
+            MimeType = source.MimeType,
+            Checksum = source.Checksum
         };
 
     public static PageSummaryView Map(this PageStatusSummaryModel source)

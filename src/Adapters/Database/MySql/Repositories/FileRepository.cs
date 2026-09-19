@@ -24,8 +24,8 @@ public class FileRepository(MySqlConnectionProvider connectionProvider) : IFileR
         int id;
         using (var connection = connectionProvider.GetLibraryConnection())
         {
-            var sql = @"INSERT INTO `File` (FileName, MimeType, FilePath, IsPublic, DateCreated)
-                            VALUES (@FileName, @MimeType, @FilePath, @IsPublic, UTC_TIMESTAMP());
+            var sql = @"INSERT INTO `File` (FileName, MimeType, FilePath, IsPublic, Checksum, DateCreated)
+                            VALUES (@FileName, @MimeType, @FilePath, @IsPublic, @Checksum, UTC_TIMESTAMP());
                             SELECT LAST_INSERT_ID()";
             var command = new CommandDefinition(sql, file, cancellationToken: cancellationToken);
             id = await connection.ExecuteScalarAsync<int>(command);
@@ -43,6 +43,7 @@ public class FileRepository(MySqlConnectionProvider connectionProvider) : IFileR
                                 MimeType = @MimeType,
                                 FilePath = @FilePath,
                                 IsPublic = @IsPublic,
+                                Checksum = @Checksum,
                                 DateUpdated = UTC_TIMESTAMP()
                             Where Id = @Id";
             var command = new CommandDefinition(sql, file, cancellationToken: cancellationToken);

@@ -24,9 +24,9 @@ public class FileRepository(SqlServerConnectionProvider connectionProvider) : IF
         int id;
         using (var connection = connectionProvider.GetLibraryConnection())
         {
-            var sql = @"Insert Into [File] (FileName, MimeType, FilePath, IsPublic, DateCreated)
+            var sql = @"Insert Into [File] (FileName, MimeType, FilePath, IsPublic, Checksum, DateCreated)
                             Output Inserted.Id
-                            VALUES (@FileName, @MimeType, @FilePath, @IsPublic, GETDATE())"; ;
+                            VALUES (@FileName, @MimeType, @FilePath, @IsPublic, @Checksum, GETDATE())"; ;
             var command = new CommandDefinition(sql, file, cancellationToken: cancellationToken);
             id = await connection.ExecuteScalarAsync<int>(command);
         }
@@ -43,6 +43,7 @@ public class FileRepository(SqlServerConnectionProvider connectionProvider) : IF
                                 MimeType = @MimeType,
                                 FilePath = @FilePath,
                                 IsPublic = @IsPublic,
+                                Checksum = @Checksum,
                                 DateUpdated = GETDATE()
                             Where Id = @Id";
             var command = new CommandDefinition(sql, file, cancellationToken: cancellationToken);

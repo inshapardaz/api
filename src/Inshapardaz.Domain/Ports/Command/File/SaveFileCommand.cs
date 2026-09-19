@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Helpers;
 using Paramore.Brighter;
 using Inshapardaz.Domain.Models;
 
@@ -35,10 +36,11 @@ public class SaveFileCommandHandler(IFileRepository fileRepository, IFileStorage
                 FileName = command.FileName,
                 FilePath = command.Path,
                 MimeType = command.MimeType,
-                IsPublic = command.IsPublic
+                IsPublic = command.IsPublic,
+                Checksum = ChecksumHelper.Compute(command.Contents)
             }, cancellationToken);
         }
-        else 
+        else
         {
             var url = await fileStorage.StoreFile(command.Path, command.Contents, command.MimeType, cancellationToken);
             command.Result = await fileRepository.AddFile(new FileModel
@@ -46,7 +48,8 @@ public class SaveFileCommandHandler(IFileRepository fileRepository, IFileStorage
                 FileName = command.FileName,
                 FilePath = command.Path,
                 MimeType = command.MimeType,
-                IsPublic = command.IsPublic
+                IsPublic = command.IsPublic,
+                Checksum = ChecksumHelper.Compute(command.Contents)
             }, cancellationToken);
         }
 

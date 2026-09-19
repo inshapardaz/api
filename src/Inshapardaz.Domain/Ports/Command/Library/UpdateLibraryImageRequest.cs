@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Exception;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Paramore.Brighter;
 
@@ -35,6 +36,8 @@ public class UpdateLibraryImageRequestHandler(
         {
             throw new NotFoundException();
         }
+
+        command.Image.Checksum = ChecksumHelper.Compute(command.Image.Contents);
 
         if (library.ImageId.HasValue)
         {

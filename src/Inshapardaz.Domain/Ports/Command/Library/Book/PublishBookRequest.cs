@@ -142,7 +142,8 @@ public class PublishBookRequestHandler(
             FilePath = url,
             MimeType = mimeType,
             FileName = fileName,
-            IsPublic = false
+            IsPublic = false,
+            Checksum = ChecksumHelper.Compute(contents)
         }, cancellationToken);
         return file;
     }
@@ -157,6 +158,7 @@ public class PublishBookRequestHandler(
         }
 
         existingDocx.FilePath = await fileStorage.StoreFile($"books/{book.Id}/{fileName}", file, MimeTypes.MsWord, cancellationToken);
+        existingDocx.Checksum = ChecksumHelper.Compute(file);
 
         await fileRepository.UpdateFile(existingDocx, cancellationToken);
     }

@@ -1,4 +1,4 @@
-﻿using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models;
 using Inshapardaz.Api.Views;
 
 namespace Inshapardaz.Api.Mappings;

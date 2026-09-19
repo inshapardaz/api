@@ -10,4 +10,8 @@ public static class ChecksumHelper
 
     public static string Compute(string contents) =>
         contents == null ? null : Compute(Encoding.UTF8.GetBytes(contents));
+    public static string ComputeChecksum(byte[] contents) =>
+        contents == null || contents.Length == 0
+            ? null
+            : Convert.ToHexString(SHA256.HashData(contents)).ToLowerInvariant();
 }

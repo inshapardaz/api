@@ -61,4 +61,17 @@ public class FileRepository(SqlServerConnectionProvider connectionProvider) : IF
             await connection.ExecuteAsync(command);
         }
     }
+
+    // Lightweight lazy backfill (see GetFileRequestHandler) - only touches Checksum, not the
+    // other columns UpdateFile writes, so it can't race with an in-flight rename/move of the
+    // same file.
+    public async Task UpdateChecksum(long id, string checksum, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"Update [File] Set Checksum = @Checksum Where Id = @Id";
+            var command = new CommandDefinition(sql, new { Id = id, Checksum = checksum }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+        }
+    }
 }

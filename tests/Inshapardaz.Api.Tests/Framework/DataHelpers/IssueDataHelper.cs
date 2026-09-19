@@ -32,6 +32,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         string GetIssueContentPath(long issueId, string language, string mimetype);
         IssueContentDto GetIssueContent(long issueId);
+
+        void AddRating(IssueRatingDto rating);
+        IssueRatingDto GetRating(int issueId, int accountId);
     }
 
     public class MySqlIssueTestRepository(IProvideConnection connectionProvider) : IIssueTestRepository
@@ -190,6 +193,26 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                 {
                     IssueId = issueId
                 });
+            }
+        }
+
+        public void AddRating(IssueRatingDto rating)
+        {
+            using (var connection = connectionProvider.GetConnection())
+            {
+                var sql = @"INSERT INTO IssueRatings (IssueId, LibraryId, AccountId, Value, DateAdded, DateUpdated)
+                        VALUES (@IssueId, @LibraryId, @AccountId, @Value, @DateAdded, @DateUpdated);
+                    SELECT LAST_INSERT_ID();";
+                rating.Id = connection.ExecuteScalar<long>(sql, rating);
+            }
+        }
+
+        public IssueRatingDto GetRating(int issueId, int accountId)
+        {
+            using (var connection = connectionProvider.GetConnection())
+            {
+                var sql = "SELECT * FROM IssueRatings WHERE IssueId = @IssueId AND AccountId = @AccountId";
+                return connection.QueryFirstOrDefault<IssueRatingDto>(sql, new { IssueId = issueId, AccountId = accountId });
             }
         }
     }
@@ -352,6 +375,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
                 });
             }
         }
+
+        public void AddRating(IssueRatingDto rating) => throw new NotImplementedException();
+
+        public IssueRatingDto GetRating(int issueId, int accountId) => throw new NotImplementedException();
     }
 
 

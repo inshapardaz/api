@@ -25,6 +25,8 @@ public class SaveFileCommandHandler(IFileRepository fileRepository, IFileStorage
 {
     public override async Task<SaveFileCommand> HandleAsync(SaveFileCommand command, CancellationToken cancellationToken = new CancellationToken())
     {
+        var checksum = ChecksumHelper.ComputeChecksum(command.Contents);
+
         if (command.ExistingFileId.HasValue)
         {
             var file = await fileRepository.GetFileById(command.ExistingFileId.Value, cancellationToken);
@@ -38,6 +40,7 @@ public class SaveFileCommandHandler(IFileRepository fileRepository, IFileStorage
                 MimeType = command.MimeType,
                 IsPublic = command.IsPublic,
                 Checksum = ChecksumHelper.Compute(command.Contents)
+                Checksum = checksum
             }, cancellationToken);
         }
         else
@@ -50,6 +53,7 @@ public class SaveFileCommandHandler(IFileRepository fileRepository, IFileStorage
                 MimeType = command.MimeType,
                 IsPublic = command.IsPublic,
                 Checksum = ChecksumHelper.Compute(command.Contents)
+                Checksum = checksum
             }, cancellationToken);
         }
 

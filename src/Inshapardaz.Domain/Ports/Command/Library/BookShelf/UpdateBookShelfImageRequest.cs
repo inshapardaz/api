@@ -60,6 +60,7 @@ public class UpdateBookShelfImageRequestHandler(
             var url = await AddImageToFileStore(bookShelf.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
             command.Image.FilePath = url;
             command.Image.IsPublic = true;
+            command.Image.Checksum = ChecksumHelper.ComputeChecksum(command.Image.Contents);
             await fileRepository.UpdateFile(command.Image, cancellationToken);
             command.Result.File = command.Image;
             command.Result.File.Id = bookShelf.ImageId.Value;
@@ -70,6 +71,7 @@ public class UpdateBookShelfImageRequestHandler(
             var url = await AddImageToFileStore(bookShelf.Id, command.Image.FileName, command.Image.Contents, command.Image.MimeType, cancellationToken);
             command.Image.FilePath = url;
             command.Image.IsPublic = true;
+            command.Image.Checksum = ChecksumHelper.ComputeChecksum(command.Image.Contents);
             command.Result.File = await fileRepository.AddFile(command.Image, cancellationToken);
             command.Result.HasAddedNew = true;
 

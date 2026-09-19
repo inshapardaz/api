@@ -1,4 +1,4 @@
-﻿namespace Inshapardaz.Api.Views;
+namespace Inshapardaz.Api.Views;
 
 public class FileView : ViewWithLinks
 {

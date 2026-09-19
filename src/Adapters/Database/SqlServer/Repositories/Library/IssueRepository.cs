@@ -437,6 +437,62 @@ public class IssueRepository(SqlServerConnectionProvider connectionProvider) : I
         return await connection.QuerySingleOrDefaultAsync<IssueContentModel>(command);
     }
 
+    public async Task<RatingModel> GetIssueRating(int libraryId, int accountId, int issueId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"Select * From IssueRatings Where LibraryId = @LibraryId And AccountId = @AccountId And IssueId = @IssueId";
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, IssueId = issueId }, cancellationToken: cancellationToken);
+            return await connection.QuerySingleOrDefaultAsync<RatingModel>(command);
+        }
+    }
+
+    // Upsert by (IssueId, AccountId) via MERGE, same idiom as UpsertBookRating.
+    public async Task<RatingModel> UpsertIssueRating(int libraryId, int accountId, int issueId, RatingModel rating, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"Merge IssueRatings As target
+                            Using (Select @IssueId As IssueId, @AccountId As AccountId) As source
+                            On target.IssueId = source.IssueId And target.AccountId = source.AccountId
+                        When Matched Then
+                            Update Set Value = @Value, DateUpdated = GETDATE()
+                        When Not Matched Then
+                            Insert (IssueId, LibraryId, AccountId, Value, DateAdded)
+                            Values (@IssueId, @LibraryId, @AccountId, @Value, GETDATE())
+                        Output Inserted.*;";
+            var command = new CommandDefinition(sql, new
+            {
+                LibraryId = libraryId,
+                IssueId = issueId,
+                AccountId = accountId,
+                Value = rating.Value,
+            }, cancellationToken: cancellationToken);
+            return await connection.QuerySingleOrDefaultAsync<RatingModel>(command);
+        }
+    }
+
+    public async Task DeleteIssueRating(int libraryId, int accountId, int issueId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"Delete From IssueRatings Where LibraryId = @LibraryId And AccountId = @AccountId And IssueId = @IssueId";
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, IssueId = issueId }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+        }
+    }
+
+    public async Task<RatingSummaryModel> GetIssueRatingSummary(int libraryId, int issueId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"Select ISNULL(AVG(CAST(Value AS FLOAT)), 0) As AverageRating, COUNT(*) As TotalCount
+                            From IssueRatings Where LibraryId = @LibraryId And IssueId = @IssueId";
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, IssueId = issueId }, cancellationToken: cancellationToken);
+            return await connection.QuerySingleAsync<RatingSummaryModel>(command);
+        }
+    }
+
     private static string GetSortByQuery(IssueSortByType sortBy)
     {
         switch (sortBy)

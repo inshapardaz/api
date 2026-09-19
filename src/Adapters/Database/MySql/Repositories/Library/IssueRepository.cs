@@ -520,6 +520,68 @@ public class IssueRepository(MySqlConnectionProvider connectionProvider) : IIssu
         return await connection.QuerySingleOrDefaultAsync<IssueContentModel>(command);
     }
 
+    public async Task<RatingModel> GetIssueRating(int libraryId, int accountId, int issueId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = """
+                      SELECT * FROM IssueRatings
+                      WHERE LibraryId = @LibraryId AND AccountId = @AccountId AND IssueId = @IssueId
+                      """;
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, IssueId = issueId }, cancellationToken: cancellationToken);
+            return await connection.QuerySingleOrDefaultAsync<RatingModel>(command);
+        }
+    }
+
+    // Upsert by (IssueId, AccountId) - ON DUPLICATE KEY UPDATE rather than REPLACE INTO, same
+    // idiom as UpsertBookRating.
+    public async Task<RatingModel> UpsertIssueRating(int libraryId, int accountId, int issueId, RatingModel rating, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = """
+                      INSERT INTO IssueRatings (IssueId, LibraryId, AccountId, Value, DateAdded)
+                          VALUES (@IssueId, @LibraryId, @AccountId, @Value, UTC_TIMESTAMP())
+                          ON DUPLICATE KEY UPDATE Value = @Value, DateUpdated = UTC_TIMESTAMP();
+
+                      SELECT * FROM IssueRatings
+                      WHERE LibraryId = @LibraryId AND AccountId = @AccountId AND IssueId = @IssueId
+                      """;
+            var command = new CommandDefinition(sql, new
+            {
+                LibraryId = libraryId,
+                IssueId = issueId,
+                AccountId = accountId,
+                Value = rating.Value,
+            }, cancellationToken: cancellationToken);
+            return await connection.QuerySingleOrDefaultAsync<RatingModel>(command);
+        }
+    }
+
+    public async Task DeleteIssueRating(int libraryId, int accountId, int issueId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"DELETE FROM IssueRatings WHERE LibraryId = @LibraryId AND AccountId = @AccountId AND IssueId = @IssueId";
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, AccountId = accountId, IssueId = issueId }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+        }
+    }
+
+    public async Task<RatingSummaryModel> GetIssueRatingSummary(int libraryId, int issueId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = """
+                      SELECT COALESCE(AVG(Value), 0) AS AverageRating, COUNT(*) AS TotalCount
+                      FROM IssueRatings
+                      WHERE LibraryId = @LibraryId AND IssueId = @IssueId
+                      """;
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, IssueId = issueId }, cancellationToken: cancellationToken);
+            return await connection.QuerySingleAsync<RatingSummaryModel>(command);
+        }
+    }
+
     private static string GetSortByQuery(IssueSortByType sortBy)
     {
         switch (sortBy)

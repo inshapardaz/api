@@ -100,6 +100,21 @@ public class BookController(
         return new NotFoundResult();
     }
 
+    [HttpGet("libraries/{libraryId}/books/{bookId}/rating", Name = nameof(BookController.GetBookRating))]
+    [Produces(typeof(RatingSummaryView))]
+    public async Task<IActionResult> GetBookRating(int libraryId, int bookId, CancellationToken token)
+    {
+        var request = new GetBookRatingSummaryQuery(libraryId, bookId, userHelper.AccountId);
+        var summary = await queryProcessor.ExecuteAsync(request, cancellationToken: token);
+
+        if (summary == null)
+        {
+            return new NotFoundResult();
+        }
+
+        return new OkObjectResult(summary.Map());
+    }
+
     [HttpPost("libraries/{libraryId}/books", Name = nameof(BookController.CreateBook))]
     public async Task<IActionResult> CreateBook(int libraryId, [FromBody] BookView book, CancellationToken token)
     {

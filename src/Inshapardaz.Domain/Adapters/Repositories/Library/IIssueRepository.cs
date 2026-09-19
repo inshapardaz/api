@@ -29,4 +29,12 @@ public interface IIssueRepository
 
     Task<IssueContentModel> UpdateIssueContent(int libraryId, IssueContentModel model, CancellationToken cancellationToken);
     Task<IEnumerable<PageSummaryModel>> GetIssuePageSummary(int libraryId, int[] issues, CancellationToken cancellationToken);
+
+    Task<RatingModel> GetIssueRating(int libraryId, int accountId, int issueId, CancellationToken cancellationToken);
+
+    Task<RatingModel> UpsertIssueRating(int libraryId, int accountId, int issueId, RatingModel rating, CancellationToken cancellationToken);
+
+    Task DeleteIssueRating(int libraryId, int accountId, int issueId, CancellationToken cancellationToken);
+
+    Task<RatingSummaryModel> GetIssueRatingSummary(int libraryId, int issueId, CancellationToken cancellationToken);
 }

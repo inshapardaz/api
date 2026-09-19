@@ -20,6 +20,7 @@ public class AddFileRequestHandler(IFileRepository fileRepository, IFileStorage 
         command.File.FilePath = url;
         command.File.IsPublic = true;
         command.File.Checksum = ChecksumHelper.Compute(command.File.Contents);
+        command.File.Checksum = ChecksumHelper.ComputeChecksum(command.File.Contents);
         command.Response = await fileRepository.AddFile(command.File, cancellationToken);
         return await base.HandleAsync(command, cancellationToken);
     }

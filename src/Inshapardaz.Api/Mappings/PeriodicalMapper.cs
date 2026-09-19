@@ -75,6 +75,7 @@ public static class PeriodicalMapper
             MimeType = source.MimeType,
             FileId = source.FileId,
             FileName = source.FileName,
+            Checksum = source.Checksum,
         };
 
     public static IssueContentModel Map(this IssueContentView source)
@@ -85,7 +86,8 @@ public static class PeriodicalMapper
             IssueNumber = source.IssueNumber,
             VolumeNumber = source.VolumeNumber,
             Language = source.Language,
-            MimeType = source.MimeType
+            MimeType = source.MimeType,
+            Checksum = source.Checksum
         };
 
     public static IssueArticleView Map(this IssueArticleModel source)

@@ -184,6 +184,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _issueContent.Id.Should().Be(dbContent.Id);
             _issueContent.Language.Should().Be(dbContent.Language);
             _issueContent.MimeType.Should().Be(dbFile.MimeType);
+            _issueContent.Checksum.Should().Be(dbFile.Checksum);
 
             return this;
         }
@@ -259,7 +260,14 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
 
             var dbFile = fileRepository.GetFileById(content.FileId);
             _issueContent.MimeType.Should().Be(dbFile.MimeType);
+            _issueContent.Checksum.Should().Be(dbFile.Checksum);
 
+            return this;
+        }
+
+        public IssueContentAssert ShouldHaveChecksum(string expectedChecksum)
+        {
+            _issueContent.Checksum.Should().Be(expectedChecksum);
             return this;
         }
     }

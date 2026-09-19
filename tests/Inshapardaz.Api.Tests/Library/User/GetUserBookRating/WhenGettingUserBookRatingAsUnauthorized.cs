@@ -1,4 +1,5 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
+using Inshapardaz.Api.Tests.Framework.Asserts;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.User.GetUserBookRating

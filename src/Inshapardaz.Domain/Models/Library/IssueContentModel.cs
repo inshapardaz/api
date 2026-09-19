@@ -17,4 +17,6 @@ public class IssueContentModel
     public string FileName { get; set; }
 
     public int VolumeNumber { get; set; }
+
+    public string Checksum { get; set; }
 }

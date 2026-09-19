@@ -12,6 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UploadPeriodicalImage
         private HttpResponseMessage _response;
         private PeriodicalAssert _assert;
         private int _periodicalId;
+        private byte[] _newImage = RandomData.Bytes;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -19,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UploadPeriodicalImage
             var periodical = PeriodicalBuilder.WithLibrary(LibraryId).WithNoImage().Build();
             _periodicalId = periodical.Id;
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_periodicalId}/image", RandomData.Bytes);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/periodicals/{_periodicalId}/image", _newImage);
             _assert = Services.GetService<PeriodicalAssert>().ForResponse(_response)
                     .ForLibrary(LibraryId);
         }
@@ -42,5 +43,8 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.UploadPeriodicalImage
 
         [Test]
         public void ShouldHaveImage() => _assert.ShouldHavePublicImage(_periodicalId);
+
+        [Test]
+        public void ShouldReturnChecksum() => _assert.ShouldHaveChecksum(_newImage);
     }
 }

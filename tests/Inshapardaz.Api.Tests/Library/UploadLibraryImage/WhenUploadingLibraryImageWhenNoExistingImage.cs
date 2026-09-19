@@ -37,5 +37,8 @@ namespace Inshapardaz.Api.Tests.Library.UploadLibraryImage
 
         [Test]
         public void ShouldSavePublicImage() => _assert.ShouldHavePublicImage(_libraryId);
+
+        [Test]
+        public void ShouldReturnChecksum() => _assert.ShouldHaveChecksum(_newImage);
     }
 }

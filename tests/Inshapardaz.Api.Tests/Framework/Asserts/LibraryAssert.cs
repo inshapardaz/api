@@ -397,5 +397,12 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
+        public LibraryAssert ShouldHaveChecksum(byte[] contents)
+        {
+            var file = _response.GetContent<FileView>().Result;
+            file.Checksum.Should().Be(ChecksumTestHelper.Compute(contents));
+            return this;
+        }
+
     }
 }

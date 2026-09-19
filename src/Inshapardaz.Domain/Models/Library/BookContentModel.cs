@@ -15,4 +15,6 @@ public class BookContentModel
     public string FileName { get; set; }
 
     public long FileId { get; set; }
+
+    public string Checksum { get; set; }
 }

@@ -61,7 +61,7 @@ public class AccountsController(
     [HttpPost("revoke-token")]
     public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest? model, CancellationToken cancellationToken)
     {
-        var token = model.Token ?? Request.Cookies["refreshToken"];
+        var token = model?.Token ?? Request.Cookies["refreshToken"];
         if (token is not null)
         {
             var command = new RevokeTokenCommand(token);

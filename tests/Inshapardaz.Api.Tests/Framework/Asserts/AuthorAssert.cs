@@ -3,6 +3,7 @@ using Inshapardaz.Api.Tests.Framework.DataHelpers;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
+using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
 using Inshapardaz.Domain.Models;
 
@@ -168,6 +169,13 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             imageUrl.Should().NotBeNull();
             var image = fileStorage.GetFile(imageUrl, CancellationToken.None).Result;
             image.Should().NotBeNull().And.Equal(newImage);
+            return this;
+        }
+
+        public AuthorAssert ShouldHaveChecksum(byte[] contents)
+        {
+            var file = _response.GetContent<FileView>().Result;
+            file.Checksum.Should().Be(ChecksumTestHelper.Compute(contents));
             return this;
         }
 

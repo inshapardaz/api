@@ -12,6 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
         private HttpResponseMessage _response;
         private BookAssert _assert;
         private int _bookId;
+        private byte[] _newImage = RandomData.Bytes;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -19,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
             var book = BookBuilder.WithLibrary(LibraryId).WithNoImage().Build();
             _bookId = book.Id;
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_bookId}/image", RandomData.Bytes);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/books/{_bookId}/image", _newImage);
             _assert = Services.GetService<BookAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
@@ -38,5 +39,8 @@ namespace Inshapardaz.Api.Tests.Library.Book.UploadBookImage
 
         [Test]
         public void ShouldHaveAddedImageToBook() => _assert.ShouldHaveAddedBookImage(_bookId);
+
+        [Test]
+        public void ShouldReturnChecksum() => _assert.ShouldHaveChecksum(_newImage);
     }
 }

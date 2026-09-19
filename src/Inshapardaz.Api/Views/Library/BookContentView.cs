@@ -11,4 +11,6 @@ public class BookContentView : ViewWithLinks
     public string MimeType { get; set; }
 
     public string Language { get; set; }
+
+    public string Checksum { get; set; }
 }

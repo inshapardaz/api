@@ -214,7 +214,7 @@ public class IssueRepository(SqlServerConnectionProvider connectionProvider) : I
     {
         using (var connection = connectionProvider.GetLibraryConnection())
         {
-            var sql = @"SELECT ic.Id, ic.IssueId, i.PeriodicalId, i.VolumeNumber, i.IssueNumber, ic.Language, f.MimeType, f.Id As FileId, f.FilePath AS ContentUrl
+            var sql = @"SELECT ic.Id, ic.IssueId, i.PeriodicalId, i.VolumeNumber, i.IssueNumber, ic.Language, f.MimeType, f.Id As FileId, f.FilePath AS ContentUrl, f.Checksum
                             FROM IssueContent ic
                             INNER JOIN Issue i ON i.Id = ic.IssueId
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
@@ -240,7 +240,7 @@ public class IssueRepository(SqlServerConnectionProvider connectionProvider) : I
         {
             var sql = @"SELECT ic.Id, ic.IssueId, ic.Language, 
                             p.Id As PeriodicalId, i.VolumeNumber As VolumeNumber, i.IssueNumber As IssueNumber,
-                            f.MimeType, f.Id As FileId, f.FilePath AS ContentUrl
+                            f.MimeType, f.Id As FileId, f.FilePath AS ContentUrl, f.Checksum
                             FROM IssueContent ic
                             INNER JOIN Issue i ON i.Id = ic.IssueId
                             INNER JOIN Periodical p ON p.Id = i.PeriodicalId
@@ -424,7 +424,7 @@ public class IssueRepository(SqlServerConnectionProvider connectionProvider) : I
     {
         var sql = @"SELECT ic.Id, ic.IssueId, ic.Language, 
                                 p.Id As PeriodicalId, i.VolumeNumber As VolumeNumber, i.IssueNumber As IssueNumber,
-                                f.MimeType, f.Id As FileId, f.FilePath AS ContentUrl
+                                f.MimeType, f.Id As FileId, f.FilePath AS ContentUrl, f.Checksum
                             FROM IssueContent ic
                                 INNER JOIN Issue i ON i.Id = ic.IssueId
                                 INNER JOIN Periodical p ON p.Id = i.PeriodicalId

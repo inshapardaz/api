@@ -25,8 +25,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = connectionProvider.GetConnection())
             {
-                var mySql = @"INSERT INTO `File` (DateCreated, `FileName`, MimeType, FilePath, IsPublic)
-                        Values (@DateCreated, @FileName, @MimeType, @FilePath, @IsPublic);
+                var mySql = @"INSERT INTO `File` (DateCreated, `FileName`, MimeType, FilePath, IsPublic, Checksum)
+                        Values (@DateCreated, @FileName, @MimeType, @FilePath, @IsPublic, @Checksum);
                         SELECT LAST_INSERT_ID();";
                 var id = connection.ExecuteScalar<int>(mySql, file);
                 file.Id = id;
@@ -63,9 +63,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into [File] (DateCreated, [FileName], MimeType, FilePath, IsPublic)
+                var sql = @"Insert Into [File] (DateCreated, [FileName], MimeType, FilePath, IsPublic, Checksum)
                         Output Inserted.Id
-                        Values (@DateCreated, @FileName, @MimeType, @FilePath, @IsPublic)";
+                        Values (@DateCreated, @FileName, @MimeType, @FilePath, @IsPublic, @Checksum)";
                 var id = connection.ExecuteScalar<int>(sql, file);
                 file.Id = id;
             }
@@ -99,11 +99,11 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public static void AddFile(this IDbConnection connection, FileDto file)
         {
-            var sql = @"Insert Into [File] (DateCreated, [FileName], MimeType, FilePath, IsPublic)
+            var sql = @"Insert Into [File] (DateCreated, [FileName], MimeType, FilePath, IsPublic, Checksum)
                         Output Inserted.Id
-                        Values (@DateCreated, @FileName, @MimeType, @FilePath, @IsPublic)";
-            var mySql = @"INSERT INTO `File` (DateCreated, `FileName`, MimeType, FilePath, IsPublic)
-                        Values (@DateCreated, @FileName, @MimeType, @FilePath, @IsPublic);
+                        Values (@DateCreated, @FileName, @MimeType, @FilePath, @IsPublic, @Checksum)";
+            var mySql = @"INSERT INTO `File` (DateCreated, `FileName`, MimeType, FilePath, IsPublic, Checksum)
+                        Values (@DateCreated, @FileName, @MimeType, @FilePath, @IsPublic, @Checksum);
                         SELECT LAST_INSERT_ID();";
             var id = connection.ExecuteScalar<int>(_dbType == DatabaseTypes.SqlServer ? sql : mySql, file);
             file.Id = id;

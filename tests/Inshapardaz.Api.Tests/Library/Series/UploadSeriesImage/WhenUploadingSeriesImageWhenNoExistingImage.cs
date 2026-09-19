@@ -12,6 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
         private HttpResponseMessage _response;
         private SeriesAssert _assert;
         private int _seriesId;
+        private byte[] _newImage = RandomData.Bytes;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -19,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
             var series = SeriesBuilder.WithLibrary(LibraryId).WithoutImage().Build();
             _seriesId = series.Id;
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/series/{series.Id}/image", RandomData.Bytes);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/series/{series.Id}/image", _newImage);
             _assert = Services.GetService<SeriesAssert>().ForResponse(_response).InLibrary(LibraryId);
         }
 
@@ -37,5 +38,8 @@ namespace Inshapardaz.Api.Tests.Library.Series.UploadSeriesImage
 
         [Test]
         public void ShouldSavePublicImage() => _assert.ShouldHavePublicImage(_seriesId);
+
+        [Test]
+        public void ShouldReturnChecksum() => _assert.ShouldHaveChecksum(_newImage);
     }
 }

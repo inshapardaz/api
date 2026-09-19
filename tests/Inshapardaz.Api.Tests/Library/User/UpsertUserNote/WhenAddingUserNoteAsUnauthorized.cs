@@ -1,5 +1,6 @@
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Api.Tests.Framework.Asserts;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.User.UpsertUserNote

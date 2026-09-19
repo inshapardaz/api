@@ -54,5 +54,12 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.Issue.GetIssueContent
 
         [Test]
         public void ShouldReturnCorrectChapterData() => _assert.ShouldMatch(_expected, _expected.Id);
+
+        [Test]
+        public void ShouldReturnCorrectChecksum()
+        {
+            var file = FileTestRepository.GetFileById(_expected.FileId);
+            _assert.ShouldHaveChecksum(file.Checksum);
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UploadBookShelfImage
         private HttpResponseMessage _response;
         private BookShelfAssert _assert;
         private int _bookShelfId;
+        private byte[] _newImage = RandomData.Bytes;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -19,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UploadBookShelfImage
             var bookShelfId = BookShelfBuilder.WithLibrary(LibraryId).ForAccount(AccountId).WithoutImage().Build();
             _bookShelfId = bookShelfId.Id;
 
-            _response = await Client.PutFile($"/libraries/{LibraryId}/bookshelves/{bookShelfId.Id}/image", RandomData.Bytes);
+            _response = await Client.PutFile($"/libraries/{LibraryId}/bookshelves/{bookShelfId.Id}/image", _newImage);
             _assert = Services.GetService<BookShelfAssert>().ForResponse(_response).ForLibrary(LibraryId);
         }
 
@@ -37,5 +38,8 @@ namespace Inshapardaz.Api.Tests.Library.BookShelf.UploadBookShelfImage
 
         [Test]
         public void ShouldSavePublicImage() => _assert.ShouldHavePublicImage(_bookShelfId);
+
+        [Test]
+        public void ShouldReturnChecksum() => _assert.ShouldHaveChecksum(_newImage);
     }
 }

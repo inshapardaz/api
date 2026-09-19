@@ -2,6 +2,7 @@ using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Api.Tests.Framework.Asserts;
 using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Library.User.DeleteUserBookRating

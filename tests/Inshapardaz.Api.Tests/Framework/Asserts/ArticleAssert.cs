@@ -193,6 +193,13 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
+        public ArticleAssert ShouldHaveChecksum(byte[] contents)
+        {
+            var file = _response.GetContent<FileView>().Result;
+            file.Checksum.Should().Be(ChecksumTestHelper.Compute(contents));
+            return this;
+        }
+
         public ArticleAssert ShouldHaveSelfLink()
         {
             _article.SelfLink()

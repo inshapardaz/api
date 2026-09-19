@@ -13,5 +13,7 @@
         public string FilePath { get; set; }
 
         public bool IsPublic { get; set; }
+
+        public string Checksum { get; set; }
     }
 }

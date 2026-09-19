@@ -259,7 +259,7 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             GROUP BY b.Id) AS bkcnt";
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
-            var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
+            var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken, AccountId);
 
             return new Page<BookModel>
             {
@@ -343,7 +343,7 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
 
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
-            var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
+            var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken, AccountId);
 
             return new Page<BookModel>
             {
@@ -404,7 +404,7 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
 
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
-            var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
+            var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken, accountId);
 
             return new Page<BookModel>
             {
@@ -426,7 +426,7 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
                             (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.id) As PageCount,
                             (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.id) As ChapterCount,
-                            a.*, c.*
+                            a.*, c.*, r.*
                             from Book b
                             Left Outer Join BookAuthor ba ON b.Id = ba.BookId
                             Left Outer Join Author a On ba.AuthorId = a.Id
@@ -435,9 +435,10 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             Left Outer Join BookCategory bc ON b.Id = bc.BookId
                             Left Outer Join Category c ON bc.CategoryId = c.Id
                             Left Outer Join FavoriteBooks fb On fb.BookId = b.Id
+                            Left Outer Join RecentBooks r On b.Id = r.BookId AND (r.AccountId = @AccountId OR @AccountId Is Null)
                             LEFT OUTER JOIN [File] fl ON fl.Id = b.ImageId
                             Where b.LibraryId = @LibraryId AND b.Id = @Id";
-            await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(sql, (b, a, c) =>
+            await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, ReadProgressModel, BookModel>(sql, (b, a, c, r) =>
             {
                 if (book == null)
                 {
@@ -454,8 +455,13 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                     book.Categories.Add(c);
                 }
 
+                if (r != null && (r.ProgressType != null || r.ProgressId != 0 || r.DateRead != null))
+                {
+                    book.ReadProgress = r;
+                }
+
                 return book;
-            }, new { LibraryId = libraryId, Id = bookId, AccountId = AccountId });
+            }, new { LibraryId = libraryId, Id = bookId, AccountId = AccountId }, splitOn: "Id,Id,ProgressType");
 
             return book;
         }
@@ -856,14 +862,14 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
         }
     }
 
-    private async Task<IEnumerable<BookModel>> GetBooks(IDbConnection connection, int libraryId, List<int> bookIds, CancellationToken cancellationToken)
+    private async Task<IEnumerable<BookModel>> GetBooks(IDbConnection connection, int libraryId, List<int> bookIds, CancellationToken cancellationToken, int? AccountId = null)
     {
         var books = new Dictionary<int, BookModel>();
         var sql3 = @"Select b.*, s.Name As SeriesName, fl.FilePath AS ImageUrl,
                             CASE WHEN fb.id IS NULL THEN 0 ELSE 1 END AS IsFavorite,
                             (SELECT COUNT(*) FROM BookPage WHERE BookPage.BookId = b.Id) As PageCount,
                             (SELECT COUNT(*) FROM Chapter WHERE Chapter.BookId = b.Id) As ChapterCount,
-                            a.*, c.*
+                            a.*, c.*, r.*
                             From Book b
                             LEFT JOIN Series s On b.SeriesId = s.id
                             LEFT JOIN FavoriteBooks f On b.Id = f.BookId
@@ -872,13 +878,13 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             LEFT JOIN BookCategory bc ON b.Id = bc.BookId
                             LEFT JOIN Category c ON bc.CategoryId = c.Id
                             LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id
-                            LEFT JOIN RecentBooks r On b.Id = r.BookId
+                            LEFT JOIN RecentBooks r On b.Id = r.BookId AND (r.AccountId = @AccountId OR @AccountId Is Null)
                             LEFT OUTER JOIN [File] fl ON fl.Id = b.ImageId
                             Where b.LibraryId = @LibraryId
                             AND b.Id IN @BookList";
-        var command3 = new CommandDefinition(sql3, new { LibraryId = libraryId, BookList = bookIds }, cancellationToken: cancellationToken);
+        var command3 = new CommandDefinition(sql3, new { LibraryId = libraryId, BookList = bookIds, AccountId = AccountId }, cancellationToken: cancellationToken);
 
-        await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, BookModel>(command3, (b, a, c) =>
+        await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, ReadProgressModel, BookModel>(command3, (b, a, c, r) =>
         {
             if (!books.TryGetValue(b.Id, out BookModel book))
                 books.Add(b.Id, book = b);
@@ -893,8 +899,13 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                 book.Categories.Add(c);
             }
 
+            if (r != null && (r.ProgressType != null || r.ProgressId != 0 || r.DateRead != null))
+            {
+                book.ReadProgress = r;
+            }
+
             return book;
-        });
+        }, splitOn: "Id,Id,ProgressType");
 
         return books.Values.OrderBy(b => bookIds.IndexOf(b.Id)).ToList();
     }

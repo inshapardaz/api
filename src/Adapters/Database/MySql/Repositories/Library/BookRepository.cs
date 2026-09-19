@@ -340,7 +340,7 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                            """;
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
-            var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
+            var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken, AccountId);
 
             return new Page<BookModel>
             {
@@ -439,7 +439,7 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
 
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
-            var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
+            var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken, AccountId);
 
             return new Page<BookModel>
             {
@@ -503,7 +503,7 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
 
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
-            var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken);
+            var books = await GetBooks(connection, libraryId, bookIds.Select(b => (int)b.Id).ToList(), cancellationToken, accountId);
 
             return new Page<BookModel>
             {
@@ -537,9 +537,9 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                                    LEFT OUTER JOIN BookTag bt ON b.Id = bt.BookId
                                                    LEFT OUTER JOIN Tag t ON bt.TagId = t.Id
                                                    LEFT OUTER JOIN FavoriteBooks fb ON fb.BookId = b.Id
-                                                   LEFT JOIN RecentBooks r ON b.Id = r.BookId
+                                                   LEFT JOIN RecentBooks r ON b.Id = r.BookId AND (r.AccountId = @AccountId OR @AccountId IS NULL)
                                                    LEFT OUTER JOIN `File` fl ON fl.Id = b.ImageId
-                                              WHERE b.LibraryId = @LibraryId 
+                                              WHERE b.LibraryId = @LibraryId
                                                     AND b.Id = @Id
                       """;
 
@@ -1033,7 +1033,7 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
         }
     }
 
-    private async Task<IEnumerable<BookModel>> GetBooks(IDbConnection connection, int libraryId, List<int> bookIds, CancellationToken cancellationToken)
+    private async Task<IEnumerable<BookModel>> GetBooks(IDbConnection connection, int libraryId, List<int> bookIds, CancellationToken cancellationToken, int? AccountId = null)
     {
         var books = new Dictionary<int, BookModel>();
         var sql = """
@@ -1052,13 +1052,13 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                        LEFT JOIN BookTag bt ON b.Id = bt.BookId
                                        LEFT JOIN Tag t ON bt.TagId = t.Id
                                        LEFT JOIN FavoriteBooks fb ON fb.BookId = b.Id
-                                       LEFT JOIN RecentBooks r ON b.Id = r.BookId
+                                       LEFT JOIN RecentBooks r ON b.Id = r.BookId AND (r.AccountId = @AccountId OR @AccountId IS NULL)
                                        LEFT OUTER JOIN `File` fl ON fl.Id = b.ImageId
                                   WHERE b.LibraryId = @LibraryId
                                         AND b.Id IN @BookList
                   """;
 
-        var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookList = bookIds }, cancellationToken: cancellationToken);
+        var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookList = bookIds, AccountId = AccountId }, cancellationToken: cancellationToken);
 
         await connection.QueryAsync<BookModel, AuthorModel, CategoryModel, ReadProgressModel, TagModel, BookModel>(
             command,

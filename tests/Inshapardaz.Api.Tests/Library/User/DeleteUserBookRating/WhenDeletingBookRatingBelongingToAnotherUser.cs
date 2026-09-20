@@ -1,3 +1,4 @@
+using Inshapardaz.Api.Tests.Framework.Asserts;
 using FluentAssertions;
 using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Helpers;

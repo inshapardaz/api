@@ -1,6 +1,7 @@
 ﻿using Inshapardaz.Domain.Adapters.Configuration;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
@@ -48,6 +49,11 @@ public class DownloadRekhtaBookRequestHandler(
     [AuthorizeAdmin(1)]
     public override async Task<DownloadRekhtaBookRequest> HandleAsync(DownloadRekhtaBookRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
+        if (!UrlAllowlistHelper.IsAllowedHost(command.Url, "rekhta.org"))
+        {
+            throw new BadRequestException();
+        }
+
         logger.BeginScope("Downloading {Url} for {Library}", command.Url, _settings.DefaultLibraryId);
         var book = await bookRepository.GetBookBySource(_settings.DefaultLibraryId, command.Url, cancellationToken);
         if (book != null)

@@ -43,6 +43,10 @@ public interface IAccountRepository
 
     Task UpdateAccount(AccountModel account, CancellationToken cancellationToken);
 
+    Task AnonymizeAccount(int accountId, CancellationToken cancellationToken);
+
+    Task RevokeAllRefreshTokens(int accountId, string ipAddress, CancellationToken cancellationToken);
+
     #region for migration
     Task AddAccountToLibrary(int libraryId, int accountId, Role role, CancellationToken cancellationToken);
     Task<AccountModel> AddAccount(AccountModel account, CancellationToken cancellationToken);

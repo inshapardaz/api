@@ -17,6 +17,7 @@
         public string ResetToken { get; set; }
         public DateTime? ResetTokenExpires { get; set; }
         public DateTime? PasswordReset { get; set; }
+        public bool IsDeleted { get; set; }
         public bool IsVerified => Verified != null;
     }
 }

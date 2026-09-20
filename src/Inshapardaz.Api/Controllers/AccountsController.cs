@@ -285,16 +285,15 @@ public class AccountsController(
         return Ok(model);
     }
 
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpDelete("{id:int}", Name = nameof(AccountsController.Delete))]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
     {
-        // users can delete their own account and admins can delete any account
-        //if (id != Account.Id && Account.Role != Role.Admin)
-        //    return Unauthorized(new { message = "Unauthorized" });
-
-        //_accountService.Delete(id);
-        //return Ok(new { message = "Account deleted successfully" });
-        return NotFound();
+        // users can delete (anonymize) their own account, admins can delete any account
+        await commandProcessor.SendAsync(new DeleteAccountCommand(id), cancellationToken: cancellationToken);
+        return Ok();
     }
 
     private void SetRefreshTokenCookie(string token, bool expire = false)

@@ -46,7 +46,7 @@ public class RefreshTokenCommandHandler(
         }
 
         var account = await accountRepository.GetAccountById(refreshToken.AccountId, cancellationToken);
-        if (account == null)
+        if (account == null || account.IsDeleted)
         {
             logger.LogInformation("Account related to Refresh token not found");
             throw new NotFoundException();

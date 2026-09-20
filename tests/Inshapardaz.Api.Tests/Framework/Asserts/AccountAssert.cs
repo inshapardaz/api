@@ -114,5 +114,17 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             accounts.Should().Contain(t => t.LibraryId == libraryId, "user not found in library");
             return this;
         }
+
+        public AccountAssert ShouldBeAnonymized(int accountId)
+        {
+            var dbAccount = accountTestRepository.GetAccountById(accountId);
+            dbAccount.Should().NotBeNull();
+            dbAccount.IsDeleted.Should().BeTrue();
+            dbAccount.Email.Should().BeNull();
+            dbAccount.PasswordHash.Should().BeNull();
+            dbAccount.Verified.Should().BeNull();
+
+            return this;
+        }
     }
 }

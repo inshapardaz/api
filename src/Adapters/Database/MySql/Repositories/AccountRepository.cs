@@ -435,4 +435,41 @@ public class AccountRepository(MySqlConnectionProvider connectionProvider) : IAc
             await connection.ExecuteAsync(command);
         }
     }
+
+    public async Task AnonymizeAccount(int accountId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetConnection())
+        {
+            var sql = @"UPDATE Accounts
+                            SET Name = 'Deleted User',
+                            Email = NULL,
+                            PasswordHash = NULL,
+                            VerificationToken = NULL,
+                            Verified = NULL,
+                            ResetToken = NULL,
+                            ResetTokenExpires = NULL,
+                            InvitationCode = NULL,
+                            InvitationCodeExpiry = NULL,
+                            IsDeleted = 1,
+                            Updated = UTC_TIMESTAMP()
+                            WHERE Id = @Id";
+            var command = new CommandDefinition(sql, new { Id = accountId }, cancellationToken: cancellationToken);
+
+            await connection.ExecuteAsync(command);
+        }
+    }
+
+    public async Task RevokeAllRefreshTokens(int accountId, string ipAddress, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetConnection())
+        {
+            var sql = @"UPDATE RefreshToken
+                            SET Revoked = UTC_TIMESTAMP(),
+                            RevokedByIp = @RevokedByIp
+                            WHERE AccountId = @AccountId AND Revoked IS NULL";
+            var command = new CommandDefinition(sql, new { AccountId = accountId, RevokedByIp = ipAddress }, cancellationToken: cancellationToken);
+
+            await connection.ExecuteAsync(command);
+        }
+    }
 }

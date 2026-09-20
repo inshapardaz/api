@@ -32,7 +32,7 @@ public class AuthenticateQueryHandler(
     {
         var account = await accountRepository.GetAccountByEmail(command.Email, cancellationToken);
 
-        if (account == null || !account.IsVerified || !BC.Verify(command.Password, account.PasswordHash))
+        if (account == null || account.IsDeleted || !account.IsVerified || !BC.Verify(command.Password, account.PasswordHash))
         {
             throw new UnauthorizedException();
         }

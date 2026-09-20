@@ -17,4 +17,5 @@ public class BookFilter
     public AssignmentStatus AssignmentStatus { get; set; }
     public int? BookShelfId { get; set; }
     public int? TagId { get; set; }
+    public string Language { get; set; }
 }

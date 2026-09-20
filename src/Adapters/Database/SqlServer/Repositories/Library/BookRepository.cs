@@ -210,7 +210,8 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                 CategoryFilter = filter.CategoryId,
                 FavoriteFilter = filter.Favorite,
                 RecentFilter = filter.Read,
-                StatusFilter = filter.Status
+                StatusFilter = filter.Status,
+                LanguageFilter = filter.Language
             };
             var sql = @"Select b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead
                             From Book b
@@ -230,6 +231,7 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
+                            AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
                             GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead " +
                         $" ORDER BY {sortByQuery} {sortDirection} " +
                         @"OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -256,6 +258,7 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
+                            AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
                             GROUP BY b.Id) AS bkcnt";
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
@@ -289,7 +292,8 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                 CategoryFilter = filter.CategoryId,
                 FavoriteFilter = filter.Favorite,
                 RecentFilter = filter.Read,
-                StatusFilter = filter.Status
+                StatusFilter = filter.Status,
+                LanguageFilter = filter.Language
             };
 
             var sql = @"Select b.Id, b.Title, b.seriesIndex, b.DateAdded
@@ -311,6 +315,7 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                             AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                            AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
                             GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded " +
                         $" ORDER BY {sortByQuery} {sortDirection} " +
                         @"OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -339,6 +344,7 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                             AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                            AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
                             GROUP BY b.Id) AS bkcnt";
 
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));

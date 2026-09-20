@@ -42,7 +42,10 @@ public class PublishBookRequestHandler(
             }
         }
         var chapters = await chapterRepository.GetChaptersByBook(command.LibraryId, command.BookId, cancellationToken);
-        var chapterTexts = new Dictionary<string, string>();
+        // Keyed by ChapterNumber, not Title -- chapter titles aren't unique within a book, and
+        // Dictionary<string, string>.Add on a duplicate title used to throw, making it
+        // impossible to publish any book with two same-named chapters.
+        var chapterTexts = new Dictionary<int, string>();
 
         foreach (var chapter in chapters)
         {
@@ -56,15 +59,15 @@ public class PublishBookRequestHandler(
                     var file = await fileRepository.GetFileById(chapterContent.FileId.Value, cancellationToken);
                     finalContent = await fileStorage.GetTextFile(file.FilePath, cancellationToken);
                 }
-                
-                chapterTexts.Add(chapter.Title, finalContent ?? string.Empty);
+
+                chapterTexts.Add(chapter.ChapterNumber, finalContent ?? string.Empty);
             }
             else
             {
                 var pages = await bookPageRepository.GetPagesByBookChapter(command.LibraryId, command.BookId,
                     chapter.Id, cancellationToken);
                 var finalText = await CombinePages(pages, cancellationToken);
-                chapterTexts.Add(chapter.Title, finalText);
+                chapterTexts.Add(chapter.ChapterNumber, finalText);
 
                 if (chapter.Contents.Any(cc => cc.Language == book.Language))
                 {
@@ -95,7 +98,7 @@ public class PublishBookRequestHandler(
                 chapters.Select(x => 
                     new MarkdownToEpubConverter.Chapter(
                         x.Title,
-                        chapterTexts.TryGetValue(x.Title, out var text) ? text : string.Empty
+                        chapterTexts.TryGetValue(x.ChapterNumber, out var text) ? text : string.Empty
                     )).ToList(), 
                 $"{book.Title.ToSafeFilename()}.epub",
                 bookImage

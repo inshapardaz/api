@@ -10,7 +10,7 @@ public record Settings
 
     public Storage Storage { get; init; }
 
-    public string[] AllowedOrigins { get; init; }
+    public string AllowedOrigins { get; init; }
 
     public string FrontEndUrl { get; init; }
 

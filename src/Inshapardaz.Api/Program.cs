@@ -58,12 +58,28 @@ builder.Host.UseSerilog((ctx, cfg) =>
 });
 
 //--------------------------------------------------------------------
+// Cookie-based auth (see AccountsController's token/refreshToken cookies) means a CORS
+// policy that both allows any origin and allows credentials would let any third-party
+// site make authenticated requests on behalf of a logged-in user. So credentials are only
+// allowed for origins explicitly listed in AppSettings:AllowedOrigins; everything else gets
+// a permissive but credential-less policy (fine for anonymous/public reads).
+var allowedOrigins = (configSection["AllowedOrigins"] ?? string.Empty)
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policyBuilder =>
     {
-        policyBuilder.WithOrigins("*")
-               .AllowAnyHeader()
+        if (allowedOrigins.Length > 0)
+        {
+            policyBuilder.WithOrigins(allowedOrigins).AllowCredentials();
+        }
+        else
+        {
+            policyBuilder.SetIsOriginAllowed(_ => true);
+        }
+
+        policyBuilder.AllowAnyHeader()
                .AllowAnyMethod()
                .WithExposedHeaders(HeaderNames.Location, HeaderNames.ContentDisposition, HeaderNames.ContentType);
     });
@@ -232,12 +248,7 @@ if (!string.IsNullOrEmpty(basePath))
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors(x => x
-                .SetIsOriginAllowed(origin => true)
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials()
-                .WithExposedHeaders(HeaderNames.Location, HeaderNames.ContentDisposition, HeaderNames.ContentType));
+app.UseCors();
 
 app.UseHttpsRedirection();
 

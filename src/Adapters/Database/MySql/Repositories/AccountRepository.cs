@@ -379,9 +379,9 @@ public class AccountRepository(MySqlConnectionProvider connectionProvider) : IAc
     {
         using (var connection = connectionProvider.GetConnection())
         {
-            var sql = @$"DELETE FROM RefreshToken 
-                            WHERE AccountId = @AccountId AND Revoked IS NULL AND Created < (CURDATE() - INTERVAL {tokenAgeInDays} DAY)";
-            var command = new CommandDefinition(sql, new { AccountId = account.Id }, cancellationToken: cancellationToken);
+            var sql = @"DELETE FROM RefreshToken
+                            WHERE AccountId = @AccountId AND Revoked IS NULL AND Created < DATE_SUB(CURDATE(), INTERVAL @TokenAgeInDays DAY)";
+            var command = new CommandDefinition(sql, new { AccountId = account.Id, TokenAgeInDays = tokenAgeInDays }, cancellationToken: cancellationToken);
 
             await connection.ExecuteAsync(command);
         }

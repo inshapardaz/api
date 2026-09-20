@@ -28,7 +28,7 @@ using Serilog;
 using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseKestrel(o => o.Limits.MaxRequestBodySize = null);
+builder.WebHost.UseKestrel(o => o.Limits.MaxRequestBodySize = RequestSizeLimits.Default);
 
 const string serviceName = "Inshapardaz";
 
@@ -92,11 +92,13 @@ builder.Services.AddControllers().AddJsonOptions(j =>
 
 builder.Services.Configure<FormOptions>(x =>
 {
-    x.ValueLengthLimit = int.MaxValue;
-    x.MultipartBodyLengthLimit = int.MaxValue;
-    x.MultipartBoundaryLengthLimit = int.MaxValue;
-    x.MultipartHeadersCountLimit = int.MaxValue;
-    x.MultipartHeadersLengthLimit = int.MaxValue;
+    // Needs to allow up to RequestSizeLimits.BulkPageUpload -- the bulk page upload endpoints
+    // (BookPageController/IssuePageController UploadPages) read the multipart form directly
+    // rather than a bound model, so this is the limit that actually applies to them. Every
+    // other FormOptions limit (ValueLengthLimit, MultipartBoundaryLengthLimit,
+    // MultipartHeadersCountLimit/LengthLimit) is left at its framework default -- nothing in
+    // this app needs, say, an oversized individual form field or header block.
+    x.MultipartBodyLengthLimit = RequestSizeLimits.BulkPageUpload;
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

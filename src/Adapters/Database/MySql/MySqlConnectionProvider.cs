@@ -2,11 +2,12 @@
 using Inshapardaz.Domain.Adapters.Configuration;
 using Microsoft.Extensions.Options;
 using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Models;
 using MySql.Data.MySqlClient;
 
 namespace Inshapardaz.Adapters.Database.MySql;
 
-public class MySqlConnectionProvider(IOptions<Settings> settings) : IProvideConnection
+public class MySqlConnectionProvider(IOptions<Settings> settings, LibraryConfiguration libraryConfiguration) : IProvideConnection
 {
     private readonly Settings _settings = settings.Value;
 
@@ -19,11 +20,12 @@ public class MySqlConnectionProvider(IOptions<Settings> settings) : IProvideConn
 
     public IDbConnection GetLibraryConnection()
     {
-        return GetConnection();
+        var connectionString = string.IsNullOrWhiteSpace(libraryConfiguration.ConnectionString)
+            ? _settings.Database.ConnectionString
+            : libraryConfiguration.ConnectionString;
 
-        // TODO : This will break the multiple database support. Fix it by using better connection management
-        //var connection = new MySqlConnection(_libraryConfiguration.ConnectionString);
-        //connection.Open();
-        //return connection;
+        var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        return connection;
     }
 }

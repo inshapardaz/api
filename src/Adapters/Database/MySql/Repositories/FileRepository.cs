@@ -74,4 +74,25 @@ public class FileRepository(MySqlConnectionProvider connectionProvider) : IFileR
             await connection.ExecuteAsync(command);
         }
     }
+
+    public async Task<bool?> GetFileOwnerIsPublic(long fileId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"SELECT b.IsPublic FROM Book b WHERE b.ImageId = @FileId
+                        UNION ALL
+                        SELECT b.IsPublic FROM BookPage p INNER JOIN Book b ON b.Id = p.BookId WHERE p.ImageId = @FileId
+                        UNION ALL
+                        SELECT b.IsPublic FROM BookContent bc INNER JOIN Book b ON b.Id = bc.BookId WHERE bc.FileId = @FileId
+                        UNION ALL
+                        SELECT i.IsPublic FROM Issue i WHERE i.ImageId = @FileId
+                        UNION ALL
+                        SELECT i.IsPublic FROM IssuePage p INNER JOIN Issue i ON i.Id = p.IssueId WHERE p.ImageId = @FileId
+                        UNION ALL
+                        SELECT i.IsPublic FROM IssueContent ic INNER JOIN Issue i ON i.Id = ic.IssueId WHERE ic.FileId = @FileId
+                        LIMIT 1";
+            var command = new CommandDefinition(sql, new { FileId = fileId }, cancellationToken: cancellationToken);
+            return await connection.QuerySingleOrDefaultAsync<bool?>(command);
+        }
+    }
 }

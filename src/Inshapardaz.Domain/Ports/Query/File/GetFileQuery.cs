@@ -7,10 +7,10 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Query.File;
 
-public class GetFileQuery(long fileId) : IQuery<FileModel>
+public class GetFileQuery(long fileId, int? accountId) : IQuery<FileModel>
 {
     public long FileId { get; private set; } = fileId;
-    public bool IsPublic { get; set; }
+    public int? AccountId { get; private set; } = accountId;
 }
 
 public class GetFileRequestHandler(IFileRepository fileRepository, IFileStorage fileStorage, ILogger<GetFileRequestHandler> logger)
@@ -29,6 +29,19 @@ public class GetFileRequestHandler(IFileRepository fileRepository, IFileStorage 
             // "download 404s" report.
             logger.LogWarning("GetFile {FileId}: no File row with this id", query.FileId);
             throw new NotFoundException();
+        }
+
+        // Files that back a book/issue page or content file inherit that book's/issue's
+        // own visibility, the same way GetBookContentQuery gates content downloads --
+        // File.IsPublic itself isn't a reliable signal for those (page images are saved
+        // with IsPublic left at its default regardless of the owning book's visibility).
+        // Files with no owning book/issue (author/category/library images, etc.) are
+        // always public, so fall back to File.IsPublic for those.
+        var ownerIsPublic = await fileRepository.GetFileOwnerIsPublic(query.FileId, cancellationToken);
+        var isPublic = ownerIsPublic ?? file.IsPublic;
+        if (!isPublic && !query.AccountId.HasValue)
+        {
+            throw new UnauthorizedException();
         }
 
         if (string.IsNullOrWhiteSpace(file.FilePath))

@@ -82,6 +82,23 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
         
+        public BookAssert ShouldHaveReadProgress(ReadProgressDto expected)
+        {
+            _book.ReadProgress.Should().NotBeNull();
+            _book.ReadProgress.ProgressType.Should().Be(expected.ProgressType.ToDescription());
+            _book.ReadProgress.ProgressId.Should().Be(expected.ProgressId);
+            _book.ReadProgress.ProgressValue.Should().Be(expected.ProgressValue);
+
+            return this;
+        }
+
+        public BookAssert ShouldNotHaveReadProgress()
+        {
+            _book.ReadProgress.Should().BeNull();
+
+            return this;
+        }
+
         public BookAssert ShouldHaveRemoveFromBookShelfImageLink(int bookShelfId)
         {
             _book.Link(RelTypes.RemoveBookFromBookShelf)

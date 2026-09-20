@@ -11,6 +11,6 @@ EXPOSE 5000
 COPY --from=build /app/publish .
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl --fail http://localhost:5000/swagger/index.html || exit 1
+  CMD curl --fail http://localhost:5000/health/check || exit 1
 
 ENTRYPOINT ["dotnet", "Inshapardaz.Api.dll"]

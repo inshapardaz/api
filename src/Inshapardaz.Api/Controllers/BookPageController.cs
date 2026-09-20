@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
+using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
@@ -115,7 +116,7 @@ public class BookPageController(
     }
 
     [HttpPost("libraries/{libraryId}/books/{bookId}/pages/upload", Name = nameof(BookPageController.UploadPages))]
-    [RequestSizeLimit(long.MaxValue)]
+    [RequestSizeLimit(RequestSizeLimits.BulkPageUpload)]
     public async Task<IActionResult> UploadPages(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
     {
         List<IFormFile> files = Request.Form.Files.ToList();

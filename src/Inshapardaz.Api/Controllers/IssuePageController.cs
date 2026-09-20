@@ -1,5 +1,6 @@
 ﻿using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
+using Inshapardaz.Api.Helpers;
 using Inshapardaz.Api.Mappings;
 using Inshapardaz.Api.Views;
 using Inshapardaz.Api.Views.Library;
@@ -130,7 +131,7 @@ public class IssuePageController(
     }
 
     [HttpPost("libraries/{libraryId}/periodicals/{periodicalId}/volumes/{volumeNumber}/issues/{issueNumber}/pages/upload", Name = nameof(IssuePageController.UploadIssuePages))]
-    [RequestSizeLimit(long.MaxValue)]
+    [RequestSizeLimit(RequestSizeLimits.BulkPageUpload)]
     public async Task<IActionResult> UploadIssuePages(int libraryId,
         int periodicalId,
         int volumeNumber,

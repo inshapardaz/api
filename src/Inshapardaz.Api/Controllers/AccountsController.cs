@@ -8,6 +8,7 @@ using Inshapardaz.Api.Views;
 using Inshapardaz.Domain.Adapters.Configuration;
 using Inshapardaz.Domain.Ports.Command.Account;
 using Inshapardaz.Domain.Ports.Query.Account;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 
 namespace Inshapardaz.Api.Controllers;
@@ -27,6 +28,7 @@ public class AccountsController(
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthenticateResponse))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized, Type = typeof(void))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(void))]
+    [EnableRateLimiting("auth")]
     [HttpPost("authenticate")]
     public async Task<ActionResult<AuthenticateResponse>> Authenticate(AuthenticateRequest model, CancellationToken cancellationToken)
     {
@@ -94,6 +96,7 @@ public class AccountsController(
 
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [EnableRateLimiting("auth")]
     [HttpPost("invitations", Name = nameof(ResendInvitationCode))]
     public async Task<IActionResult> ResendInvitationCode([FromBody] ResendInvitationCodeRequest request, CancellationToken cancellationToken)
     {
@@ -125,6 +128,7 @@ public class AccountsController(
 
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [EnableRateLimiting("auth")]
     [HttpPost("register/{invitationCode}")]
     public async Task<IActionResult> Register(string invitationCode, [FromBody] RegisterRequest model, CancellationToken cancellationToken)
     {
@@ -142,6 +146,7 @@ public class AccountsController(
 
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [EnableRateLimiting("auth")]
     [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model, CancellationToken cancellationToken)
     {
@@ -153,6 +158,7 @@ public class AccountsController(
 
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [EnableRateLimiting("auth")]
     [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword(ResetPasswordRequest model, CancellationToken cancellationToken)
     {

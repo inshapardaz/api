@@ -26,6 +26,7 @@ public class LibraryConfigurationMiddleware(
         else if (!int.TryParse(libraryIdValue, out libraryId))
         {
             await next(context);
+            return;
         }
 
         var library = await _libraryRepository.GetLibraryById(libraryId, CancellationToken.None);

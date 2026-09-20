@@ -56,6 +56,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         private List<AccountItemCountSpec> _readBooks = new List<AccountItemCountSpec>();
         private List<BookContentDto> _contents = new List<BookContentDto>();
         private string _language = null;
+        private string _bookLanguage = null;
         private int _numberOfAuthors;
         private List<RecentBookDto> _recentBooks = new List<RecentBookDto>();
         private int _pageCount;
@@ -219,6 +220,12 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             return this;
         }
 
+        public BooksDataBuilder WithLanguage(string language)
+        {
+            _bookLanguage = language;
+            return this;
+        }
+
         public BooksDataBuilder AddToFavorites(int accountId, int? countOfbookToAddToFavorite = null)
         {
             _favoriteBooks.Add(new AccountItemCountSpec() { AccountId = accountId, Count = countOfbookToAddToFavorite });
@@ -274,7 +281,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                           .With(b => b.LibraryId, _libraryId)
                           .With(b => b.ImageId, _hasImage ? RandomData.Number : 0)
                           .With(b => b.IsPublic, isPublic)
-                          .With(b => b.Language, RandomData.Locale)
+                          .With(b => b.Language, _bookLanguage ?? RandomData.Locale)
                           .With(b => b.SeriesIndex, _hasSeries ? RandomData.Number : (int?)null)
                           .With(b => b.DateAdded, RandomData.Date)
                           .With(b => b.DateUpdated, RandomData.Date)

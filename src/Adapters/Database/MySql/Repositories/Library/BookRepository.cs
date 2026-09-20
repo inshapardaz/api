@@ -278,7 +278,8 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                 FavoriteFilter = filter.Favorite,
                 RecentFilter = filter.Read,
                 StatusFilter = filter.Status,
-                BookShelfId = filter.BookShelfId
+                BookShelfId = filter.BookShelfId,
+                LanguageFilter = filter.Language
             };
             var sql = """
                       SELECT b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead
@@ -290,7 +291,7 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                                       LEFT JOIN BookCategory bc ON b.Id = bc.BookId
                                                       LEFT JOIN Category c ON bc.CategoryId = c.Id
                                                       LEFT JOIN BookTag bt ON b.Id = bt.BookId
-                                                      LEFT JOIN Tag t ON bt.TagId = c.Id
+                                                      LEFT JOIN Tag t ON bt.TagId = t.Id
                                                       LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
                                                       LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
                                                       LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
@@ -304,7 +305,8 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                                       AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                                                       AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                                                       AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
-                                                  GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead 
+                                                      AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
+                                                  GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead
                       """ +
                         $" ORDER BY {sortByQuery} {sortDirection} " +
                         "LIMIT @PageSize OFFSET @Offset";
@@ -322,7 +324,7 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                                            LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
                                                            LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
                                                            LEFT JOIN BookTag bt ON b.Id = bt.BookId
-                                                           LEFT JOIN Tag t ON bt.TagId = c.Id
+                                                           LEFT JOIN Tag t ON bt.TagId = t.Id
                                                            LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
                                                            LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
                                                            LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
@@ -336,6 +338,7 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                                            AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                                                            AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                                                            AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
+                                                           AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
                                                        GROUP BY b.Id) AS bkcnt
                            """;
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
@@ -372,7 +375,8 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                 FavoriteFilter = filter.Favorite,
                 RecentFilter = filter.Read,
                 StatusFilter = filter.Status,
-                BookShelfId = filter.BookShelfId
+                BookShelfId = filter.BookShelfId,
+                LanguageFilter = filter.Language
             };
 
             var sql = """
@@ -385,7 +389,7 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                                       LEFT JOIN BookCategory bc ON b.Id = bc.BookId
                                                       LEFT JOIN Category c ON bc.CategoryId = c.Id
                                                       LEFT JOIN BookTag bt ON b.Id = bt.BookId
-                                                      LEFT JOIN Tag t ON bt.TagId = c.Id
+                                                      LEFT JOIN Tag t ON bt.TagId = t.Id
                                                       LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id
                                                       LEFT JOIN RecentBooks r On b.Id = r.BookId
                                                       LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
@@ -400,7 +404,8 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                                       AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                                                       AND (bt.TagId = @TagFilter OR @TagFilter IS NULL)
                                                       AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
-                                                  GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded 
+                                                      AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
+                                                  GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded
                       """ +
                         $" ORDER BY {sortByQuery} {sortDirection} " +
                         @"LIMIT @PageSize OFFSET @Offset";
@@ -419,7 +424,7 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                                            LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
                                                            LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
                                                            LEFT JOIN BookTag bt ON b.Id = bt.BookId
-                                                           LEFT JOIN Tag t ON bt.TagId = c.Id
+                                                           LEFT JOIN Tag t ON bt.TagId = t.Id
                                                            LEFT OUTER JOIN FavoriteBooks fb On fb.BookId = b.Id
                                                            LEFT OUTER JOIN RecentBooks r On b.Id = r.BookId
                                                            LEFT JOIN BookShelfBook bshf ON bshf.BookId = b.Id
@@ -434,6 +439,7 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                                            AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                                                            AND (bt.TagId = @TagFilter OR @TagFilter IS NULL)
                                                            AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
+                                                           AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
                                                        GROUP BY b.Id) AS bkcnt
                            """;
 

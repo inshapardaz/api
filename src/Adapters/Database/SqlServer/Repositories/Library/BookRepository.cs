@@ -208,10 +208,14 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                 AuthorFilter = filter.AuthorId,
                 SeriesFilter = filter.SeriesId,
                 CategoryFilter = filter.CategoryId,
+                TagFilter = filter.TagId,
                 FavoriteFilter = filter.Favorite,
                 RecentFilter = filter.Read,
                 StatusFilter = filter.Status,
-                LanguageFilter = filter.Language
+                LanguageFilter = filter.Language,
+                AuthorNameFilter = string.IsNullOrWhiteSpace(filter.AuthorName) ? null : $"%{filter.AuthorName}%",
+                TagNameFilter = string.IsNullOrWhiteSpace(filter.TagName) ? null : $"%{filter.TagName}%",
+                SeriesNameFilter = string.IsNullOrWhiteSpace(filter.SeriesName) ? null : $"%{filter.SeriesName}%"
             };
             var sql = @"Select b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead
                             From Book b
@@ -221,6 +225,8 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             INNER JOIN Author a On ba.AuthorId = a.Id
                             LEFT JOIN BookCategory bc ON b.Id = bc.BookId
                             LEFT JOIN Category c ON bc.CategoryId = c.Id
+                            LEFT JOIN BookTag bt ON b.Id = bt.BookId
+                            LEFT JOIN Tag t ON bt.TagId = t.Id
                             LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
                             LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
                             Where b.LibraryId = @LibraryId
@@ -229,9 +235,13 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
                             AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
                             AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                            AND (bt.TagId = @TagFilter OR @TagFilter IS NULL)
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                             AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
+                            AND (a.Name LIKE @AuthorNameFilter OR @AuthorNameFilter IS NULL)
+                            AND (t.Name LIKE @TagNameFilter OR @TagNameFilter IS NULL)
+                            AND (s.Name LIKE @SeriesNameFilter OR @SeriesNameFilter IS NULL)
                             GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead " +
                         $" ORDER BY {sortByQuery} {sortDirection} " +
                         @"OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -248,6 +258,8 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             LEFT OUTER JOIN FavoriteBooks f On b.Id = f.BookId
                             LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
                             LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
+                            LEFT JOIN BookTag bt ON b.Id = bt.BookId
+                            LEFT JOIN Tag t ON bt.TagId = t.Id
                             LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id AND fb.AccountId = @AccountId
                             LEFT JOIN RecentBooks r On r.BookId = b.Id AND r.AccountId = @AccountId
                             Where b.LibraryId = @LibraryId
@@ -256,9 +268,13 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             AND (ba.AuthorId = @AuthorFilter OR @AuthorFilter IS NULL)
                             AND (s.Id = @SeriesFilter OR @SeriesFilter IS NULL)
                             AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
+                            AND (bt.TagId = @TagFilter OR @TagFilter IS NULL)
                             AND (f.AccountId = @AccountId OR @FavoriteFilter IS NULL)
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                             AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
+                            AND (a.Name LIKE @AuthorNameFilter OR @AuthorNameFilter IS NULL)
+                            AND (t.Name LIKE @TagNameFilter OR @TagNameFilter IS NULL)
+                            AND (s.Name LIKE @SeriesNameFilter OR @SeriesNameFilter IS NULL)
                             GROUP BY b.Id) AS bkcnt";
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
 
@@ -290,10 +306,14 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                 AuthorFilter = filter.AuthorId,
                 SeriesFilter = filter.SeriesId,
                 CategoryFilter = filter.CategoryId,
+                TagFilter = filter.TagId,
                 FavoriteFilter = filter.Favorite,
                 RecentFilter = filter.Read,
                 StatusFilter = filter.Status,
-                LanguageFilter = filter.Language
+                LanguageFilter = filter.Language,
+                AuthorNameFilter = string.IsNullOrWhiteSpace(filter.AuthorName) ? null : $"%{filter.AuthorName}%",
+                TagNameFilter = string.IsNullOrWhiteSpace(filter.TagName) ? null : $"%{filter.TagName}%",
+                SeriesNameFilter = string.IsNullOrWhiteSpace(filter.SeriesName) ? null : $"%{filter.SeriesName}%"
             };
 
             var sql = @"Select b.Id, b.Title, b.seriesIndex, b.DateAdded
@@ -304,6 +324,8 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             INNER JOIN Author a On ba.AuthorId = a.Id
                             LEFT JOIN BookCategory bc ON b.Id = bc.BookId
                             LEFT JOIN Category c ON bc.CategoryId = c.Id
+                            LEFT JOIN BookTag bt ON b.Id = bt.BookId
+                            LEFT JOIN Tag t ON bt.TagId = t.Id
                             LEFT JOIN FavoriteBooks fb On fb.BookId = b.Id
                             LEFT JOIN RecentBooks r On b.Id = r.BookId
                             Where b.LibraryId = @LibraryId
@@ -316,6 +338,10 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                             AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                             AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
+                            AND (bt.TagId = @TagFilter OR @TagFilter IS NULL)
+                            AND (a.Name LIKE @AuthorNameFilter OR @AuthorNameFilter IS NULL)
+                            AND (t.Name LIKE @TagNameFilter OR @TagNameFilter IS NULL)
+                            AND (s.Name LIKE @SeriesNameFilter OR @SeriesNameFilter IS NULL)
                             GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded " +
                         $" ORDER BY {sortByQuery} {sortDirection} " +
                         @"OFFSET @PageSize * (@PageNumber - 1) ROWS
@@ -333,6 +359,8 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             LEFT OUTER JOIN FavoriteBooks f On b.Id = f.BookId
                             LEFT OUTER JOIN BookCategory bc ON b.Id = bc.BookId
                             LEFT OUTER JOIN Category c ON bc.CategoryId = c.Id
+                            LEFT JOIN BookTag bt ON b.Id = bt.BookId
+                            LEFT JOIN Tag t ON bt.TagId = t.Id
                             LEFT OUTER JOIN FavoriteBooks fb On fb.BookId = b.Id
                             LEFT OUTER JOIN RecentBooks r On b.Id = r.BookId
                             Where b.LibraryId = @LibraryId
@@ -345,6 +373,10 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                             AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                             AND (bc.CategoryId = @CategoryFilter OR @CategoryFilter IS NULL)
                             AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
+                            AND (bt.TagId = @TagFilter OR @TagFilter IS NULL)
+                            AND (a.Name LIKE @AuthorNameFilter OR @AuthorNameFilter IS NULL)
+                            AND (t.Name LIKE @TagNameFilter OR @TagNameFilter IS NULL)
+                            AND (s.Name LIKE @SeriesNameFilter OR @SeriesNameFilter IS NULL)
                             GROUP BY b.Id) AS bkcnt";
 
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));

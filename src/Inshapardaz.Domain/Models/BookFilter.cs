@@ -18,4 +18,7 @@ public class BookFilter
     public int? BookShelfId { get; set; }
     public int? TagId { get; set; }
     public string Language { get; set; }
+    public string AuthorName { get; set; }
+    public string TagName { get; set; }
+    public string SeriesName { get; set; }
 }

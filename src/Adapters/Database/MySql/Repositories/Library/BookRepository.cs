@@ -279,7 +279,10 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                 RecentFilter = filter.Read,
                 StatusFilter = filter.Status,
                 BookShelfId = filter.BookShelfId,
-                LanguageFilter = filter.Language
+                LanguageFilter = filter.Language,
+                AuthorNameFilter = string.IsNullOrWhiteSpace(filter.AuthorName) ? null : $"%{filter.AuthorName}%",
+                TagNameFilter = string.IsNullOrWhiteSpace(filter.TagName) ? null : $"%{filter.TagName}%",
+                SeriesNameFilter = string.IsNullOrWhiteSpace(filter.SeriesName) ? null : $"%{filter.SeriesName}%"
             };
             var sql = """
                       SELECT b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead
@@ -306,6 +309,9 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                                       AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                                                       AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
                                                       AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
+                                                      AND (a.Name LIKE @AuthorNameFilter OR @AuthorNameFilter IS NULL)
+                                                      AND (t.Name LIKE @TagNameFilter OR @TagNameFilter IS NULL)
+                                                      AND (s.Name LIKE @SeriesNameFilter OR @SeriesNameFilter IS NULL)
                                                   GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded, r.DateRead
                       """ +
                         $" ORDER BY {sortByQuery} {sortDirection} " +
@@ -339,6 +345,9 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                                            AND (r.AccountId = @AccountId OR @RecentFilter IS NULL)
                                                            AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
                                                            AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
+                                                           AND (a.Name LIKE @AuthorNameFilter OR @AuthorNameFilter IS NULL)
+                                                           AND (t.Name LIKE @TagNameFilter OR @TagNameFilter IS NULL)
+                                                           AND (s.Name LIKE @SeriesNameFilter OR @SeriesNameFilter IS NULL)
                                                        GROUP BY b.Id) AS bkcnt
                            """;
             var bookCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCount, param, cancellationToken: cancellationToken));
@@ -376,7 +385,10 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                 RecentFilter = filter.Read,
                 StatusFilter = filter.Status,
                 BookShelfId = filter.BookShelfId,
-                LanguageFilter = filter.Language
+                LanguageFilter = filter.Language,
+                AuthorNameFilter = string.IsNullOrWhiteSpace(filter.AuthorName) ? null : $"%{filter.AuthorName}%",
+                TagNameFilter = string.IsNullOrWhiteSpace(filter.TagName) ? null : $"%{filter.TagName}%",
+                SeriesNameFilter = string.IsNullOrWhiteSpace(filter.SeriesName) ? null : $"%{filter.SeriesName}%"
             };
 
             var sql = """
@@ -405,6 +417,9 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                                       AND (bt.TagId = @TagFilter OR @TagFilter IS NULL)
                                                       AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
                                                       AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
+                                                      AND (a.Name LIKE @AuthorNameFilter OR @AuthorNameFilter IS NULL)
+                                                      AND (t.Name LIKE @TagNameFilter OR @TagNameFilter IS NULL)
+                                                      AND (s.Name LIKE @SeriesNameFilter OR @SeriesNameFilter IS NULL)
                                                   GROUP BY b.Id, b.Title, b.seriesIndex, b.DateAdded
                       """ +
                         $" ORDER BY {sortByQuery} {sortDirection} " +
@@ -440,6 +455,9 @@ public class BookRepository(MySqlConnectionProvider connectionProvider) : IBookR
                                                            AND (bt.TagId = @TagFilter OR @TagFilter IS NULL)
                                                            AND (bshf.BookShelfId = @BookShelfId OR @BookShelfId IS NULL)
                                                            AND (b.Language = @LanguageFilter OR @LanguageFilter IS NULL)
+                                                           AND (a.Name LIKE @AuthorNameFilter OR @AuthorNameFilter IS NULL)
+                                                           AND (t.Name LIKE @TagNameFilter OR @TagNameFilter IS NULL)
+                                                           AND (s.Name LIKE @SeriesNameFilter OR @SeriesNameFilter IS NULL)
                                                        GROUP BY b.Id) AS bkcnt
                            """;
 

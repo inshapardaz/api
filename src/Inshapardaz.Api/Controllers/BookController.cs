@@ -40,6 +40,9 @@ public class BookController(
         [FromQuery] SortDirection sortDirection = SortDirection.Ascending,
         [FromQuery] AssignmentStatus assignedFor = AssignmentStatus.None,
         [FromQuery] string language = null,
+        [FromQuery] string authorName = null,
+        [FromQuery] string tagName = null,
+        [FromQuery] string seriesName = null,
         CancellationToken token = default(CancellationToken))
     {
         var filter = new BookFilter
@@ -53,7 +56,10 @@ public class BookController(
             Read = read,
             Status = status,
             AssignmentStatus = assignedFor,
-            Language = language
+            Language = language,
+            AuthorName = authorName,
+            TagName = tagName,
+            SeriesName = seriesName
         };
 
         BookShelfModel bookShelf = null;

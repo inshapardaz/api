@@ -89,6 +89,29 @@ builder.Services.AddSwaggerGen();
 // Authentication & Authorization
 //-------------------------------------------------------------------
 var securitySettings = configSection.GetSection("Security").Get<Security>();
+if (string.IsNullOrWhiteSpace(securitySettings.Secret))
+{
+    if (builder.Environment.IsDevelopment())
+    {
+        // Never fall back to a fixed secret -- a shared default would let anyone who has
+        // read the source forge a token (including isSuperAdmin) for any deployment that
+        // forgets to override it. Generating a random one here keeps `dotnet run` working
+        // out of the box for local development; tokens just won't survive a restart.
+        var ephemeralSecret = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64));
+        Console.Error.WriteLine("WARNING: AppSettings:Security:Secret is not configured -- using a random ephemeral secret for this run. " +
+                     "Set the AppSettings__Security__Secret environment variable to keep issued tokens valid across restarts.");
+
+        // builder.Configuration is a ConfigurationManager, so this write is visible to
+        // everything that resolves IOptions<Settings> later (TokenGenerator, etc.) -- not
+        // just the local `securitySettings` used below to set up JwtBearer validation.
+        builder.Configuration["AppSettings:Security:Secret"] = ephemeralSecret;
+        securitySettings = configSection.GetSection("Security").Get<Security>();
+    }
+    else
+    {
+        throw new InvalidOperationException("AppSettings:Security:Secret is not configured. Set the AppSettings__Security__Secret environment variable before starting the API.");
+    }
+}
 var jwtKey = Encoding.ASCII.GetBytes(securitySettings.Secret);
 
 builder.Services.AddAuthentication(options =>

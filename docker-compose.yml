@@ -31,6 +31,6 @@ services:
         - '1433:1433'
     environment:
         - ACCEPT_EULA=Y
-        - SA_PASSWORD=Secret1234
+        - SA_PASSWORD=${MSSQL_SA_PASSWORD:?Set MSSQL_SA_PASSWORD in your environment or a .env file before running docker-compose}
     volumes:
         - './drive:/var/opt/mssql'

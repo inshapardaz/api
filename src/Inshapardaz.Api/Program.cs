@@ -58,12 +58,28 @@ builder.Host.UseSerilog((ctx, cfg) =>
 });
 
 //--------------------------------------------------------------------
+// Cookie-based auth (see AccountsController's token/refreshToken cookies) means a CORS
+// policy that both allows any origin and allows credentials would let any third-party
+// site make authenticated requests on behalf of a logged-in user. So credentials are only
+// allowed for origins explicitly listed in AppSettings:AllowedOrigins; everything else gets
+// a permissive but credential-less policy (fine for anonymous/public reads).
+var allowedOrigins = (configSection["AllowedOrigins"] ?? string.Empty)
+    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policyBuilder =>
     {
-        policyBuilder.WithOrigins("*")
-               .AllowAnyHeader()
+        if (allowedOrigins.Length > 0)
+        {
+            policyBuilder.WithOrigins(allowedOrigins).AllowCredentials();
+        }
+        else
+        {
+            policyBuilder.SetIsOriginAllowed(_ => true);
+        }
+
+        policyBuilder.AllowAnyHeader()
                .AllowAnyMethod()
                .WithExposedHeaders(HeaderNames.Location, HeaderNames.ContentDisposition, HeaderNames.ContentType);
     });
@@ -89,6 +105,29 @@ builder.Services.AddSwaggerGen();
 // Authentication & Authorization
 //-------------------------------------------------------------------
 var securitySettings = configSection.GetSection("Security").Get<Security>();
+if (string.IsNullOrWhiteSpace(securitySettings.Secret))
+{
+    if (builder.Environment.IsDevelopment())
+    {
+        // Never fall back to a fixed secret -- a shared default would let anyone who has
+        // read the source forge a token (including isSuperAdmin) for any deployment that
+        // forgets to override it. Generating a random one here keeps `dotnet run` working
+        // out of the box for local development; tokens just won't survive a restart.
+        var ephemeralSecret = Convert.ToBase64String(System.Security.Cryptography.RandomNumberGenerator.GetBytes(64));
+        Console.Error.WriteLine("WARNING: AppSettings:Security:Secret is not configured -- using a random ephemeral secret for this run. " +
+                     "Set the AppSettings__Security__Secret environment variable to keep issued tokens valid across restarts.");
+
+        // builder.Configuration is a ConfigurationManager, so this write is visible to
+        // everything that resolves IOptions<Settings> later (TokenGenerator, etc.) -- not
+        // just the local `securitySettings` used below to set up JwtBearer validation.
+        builder.Configuration["AppSettings:Security:Secret"] = ephemeralSecret;
+        securitySettings = configSection.GetSection("Security").Get<Security>();
+    }
+    else
+    {
+        throw new InvalidOperationException("AppSettings:Security:Secret is not configured. Set the AppSettings__Security__Secret environment variable before starting the API.");
+    }
+}
 var jwtKey = Encoding.ASCII.GetBytes(securitySettings.Secret);
 
 builder.Services.AddAuthentication(options =>
@@ -209,12 +248,7 @@ if (!string.IsNullOrEmpty(basePath))
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors(x => x
-                .SetIsOriginAllowed(origin => true)
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials()
-                .WithExposedHeaders(HeaderNames.Location, HeaderNames.ContentDisposition, HeaderNames.ContentType));
+app.UseCors();
 
 app.UseHttpsRedirection();
 
@@ -223,7 +257,6 @@ app.UseAuthorization();
 app.UseRequestLogging();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<LibraryConfigurationMiddleware>();
-app.UseStatusCodeMiddleWare();
 
 app.MapControllers();
 

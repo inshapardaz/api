@@ -24,6 +24,8 @@
 *.jfm
 *.ncrunchproject
 
+.env
+
 #Specific files
 oneui.min.js
 custom.css

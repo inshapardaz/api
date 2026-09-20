@@ -1,4 +1,5 @@
-﻿using Inshapardaz.Domain.Ports.Command.File;
+﻿using Inshapardaz.Domain.Adapters;
+using Inshapardaz.Domain.Ports.Command.File;
 using Inshapardaz.Domain.Ports.Query.File;
 using Microsoft.AspNetCore.Mvc;
 using Paramore.Brighter;
@@ -6,13 +7,13 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Api.Controllers;
 
-public class FileController(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor)
+public class FileController(IAmACommandProcessor commandProcessor, IQueryProcessor queryProcessor, IUserHelper userHelper)
     : Controller
 {
     [HttpGet("files/{fileId}", Name = nameof(FileController.GetFile))]
     public async Task<IActionResult> GetFile(int fileId, CancellationToken token = default(CancellationToken))
     {
-        var query = new GetFileQuery(fileId) { Height = 200, Width = 200 };
+        var query = new GetFileQuery(fileId, userHelper.AccountId);
         var file = await queryProcessor.ExecuteAsync(query, token);
 
         if (file == null)
@@ -26,7 +27,7 @@ public class FileController(IAmACommandProcessor commandProcessor, IQueryProcess
     [HttpGet("libraries/{libraryId}/files/{fileId}", Name = nameof(FileController.GetLibraryFile))]
     public async Task<IActionResult> GetLibraryFile(int libraryId, int fileId, CancellationToken token = default(CancellationToken))
     {
-        var query = new GetFileQuery(fileId) {  Height = 200, Width = 200 };
+        var query = new GetFileQuery(fileId, userHelper.AccountId);
         var file = await queryProcessor.ExecuteAsync(query, token);
 
         if (file == null)

@@ -2,9 +2,9 @@
 
 namespace Inshapardaz.Api.Infrastructure.Middleware;
 
-public class RequestLoggingMiddleware(RequestDelegate next, ILogger<StatusCodeMiddleware> logger)
+public class RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggingMiddleware> logger)
 {
-    private readonly ILogger<StatusCodeMiddleware> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly ILogger<RequestLoggingMiddleware> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task Invoke(HttpContext context)
     {

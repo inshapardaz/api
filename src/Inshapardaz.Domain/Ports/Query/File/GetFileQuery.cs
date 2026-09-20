@@ -7,12 +7,10 @@ using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Query.File;
 
-public class GetFileQuery(long fileId) : IQuery<FileModel>
+public class GetFileQuery(long fileId, int? accountId) : IQuery<FileModel>
 {
     public long FileId { get; private set; } = fileId;
-    public int Height { get; set; }
-    public int Width { get; set; }
-    public bool IsPublic { get; set; }
+    public int? AccountId { get; private set; } = accountId;
 }
 
 public class GetFileRequestHandler(IFileRepository fileRepository, IFileStorage fileStorage, ILogger<GetFileRequestHandler> logger)
@@ -33,6 +31,19 @@ public class GetFileRequestHandler(IFileRepository fileRepository, IFileStorage 
             throw new NotFoundException();
         }
 
+        // Files that back a book/issue page or content file inherit that book's/issue's
+        // own visibility, the same way GetBookContentQuery gates content downloads --
+        // File.IsPublic itself isn't a reliable signal for those (page images are saved
+        // with IsPublic left at its default regardless of the owning book's visibility).
+        // Files with no owning book/issue (author/category/library images, etc.) are
+        // always public, so fall back to File.IsPublic for those.
+        var ownerIsPublic = await fileRepository.GetFileOwnerIsPublic(query.FileId, cancellationToken);
+        var isPublic = ownerIsPublic ?? file.IsPublic;
+        if (!isPublic && !query.AccountId.HasValue)
+        {
+            throw new UnauthorizedException();
+        }
+
         if (string.IsNullOrWhiteSpace(file.FilePath))
         {
             logger.LogWarning("GetFile {FileId}: File row exists but FilePath is empty", query.FileId);
@@ -47,23 +58,6 @@ public class GetFileRequestHandler(IFileRepository fileRepository, IFileStorage 
         }
 
         using (var stream = new MemoryStream(contents))
-        // TODO : Implementation needed
-        /*using (var output = new MemoryStream())
-        {
-            if (IsImageFile(command.Response.MimeType))
-            {
-                using (Image<Rgba32> image = Image.Load(stream))
-                {
-                    image.Mutate(x => x.Resize(command.Width, command.Height));
-                    image.Save(output, ImageFormats.Jpeg);
-                    command.Response.Contents = output.GetBuffer();
-                }
-            }
-            else
-            {
-                command.Response.Contents = stream.ToArray();
-            }
-        }*/
         {
             file.Contents = stream.ToArray();
         }
@@ -75,21 +69,5 @@ public class GetFileRequestHandler(IFileRepository fileRepository, IFileStorage 
         }
 
         return file;
-    }
-
-    private bool IsImageFile(string mimeType)
-    {
-        switch (mimeType.ToLower())
-        {
-            case "image/bmp":
-            case "image/jpg":
-            case "image/jpeg":
-            case "image/png":
-            case "image/gif":
-                return true;
-
-            default:
-                return false;
-        }
     }
 }

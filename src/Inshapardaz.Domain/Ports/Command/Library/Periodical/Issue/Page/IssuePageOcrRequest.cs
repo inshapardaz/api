@@ -28,7 +28,8 @@ public class IssuePageOcrRequestHandler(
     IIssuePageRepository issuePageRepository,
     IQueryProcessor queryProcessor,
     IAmACommandProcessor commandProcessor,
-    IProvideOcr ocr)
+    IProvideOcr ocr,
+    IUserHelper userHelper)
     : RequestHandlerAsync<IssuePageOcrRequest>
 {
     [LibraryAuthorize(1, Role.LibraryAdmin, Role.Writer)]
@@ -37,7 +38,7 @@ public class IssuePageOcrRequestHandler(
         var issuePage = await issuePageRepository.GetPageBySequenceNumber(command.LibraryId, command.PeriodicalId, command.VolumeNumber, command.IssueNumber, command.SequenceNumber, cancellationToken);
         if (issuePage != null && issuePage.ImageId.HasValue)
         {
-            var image = await queryProcessor.ExecuteAsync(new GetFileQuery(issuePage.ImageId.Value));
+            var image = await queryProcessor.ExecuteAsync(new GetFileQuery(issuePage.ImageId.Value, userHelper.AccountId), cancellationToken);
 
             if (image != null)
             {

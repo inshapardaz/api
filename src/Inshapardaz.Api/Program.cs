@@ -245,8 +245,15 @@ if (!string.IsNullOrEmpty(basePath))
 
 // Configure the HTTP request pipeline.
 
-app.UseSwagger();
-app.UseSwaggerUI();
+// Swagger exposes the full API surface/schema, which makes reconnaissance easier for an
+// attacker if left on in Production -- keep it to Development/other non-Production
+// environments only. The docker healthcheck points at /health/check instead of the Swagger
+// UI so it doesn't depend on this.
+if (!app.Environment.IsProduction())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseCors();
 

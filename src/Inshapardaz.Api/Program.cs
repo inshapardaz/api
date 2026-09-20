@@ -223,7 +223,6 @@ app.UseAuthorization();
 app.UseRequestLogging();
 app.UseMiddleware<ErrorHandlerMiddleware>();
 app.UseMiddleware<LibraryConfigurationMiddleware>();
-app.UseStatusCodeMiddleWare();
 
 app.MapControllers();
 

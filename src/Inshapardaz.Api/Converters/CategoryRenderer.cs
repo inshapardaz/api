@@ -28,6 +28,14 @@ public class CategoryRenderer(IRenderLink linkRenderer, IUserHelper userHelper) 
             Parameters = new { libraryId = libraryId },
         }));
 
+        view.Links.Add(linkRenderer.Render(new Link
+        {
+            ActionName = nameof(CategoryController.GetCategoryTree),
+            Method = HttpMethod.Get,
+            Rel = RelTypes.Tree,
+            Parameters = new { libraryId = libraryId },
+        }));
+
         if (userHelper.IsAdmin || userHelper.IsLibraryAdmin(libraryId))
         {
             view.Links.Add(linkRenderer.Render(new Link
@@ -65,6 +73,25 @@ public class CategoryRenderer(IRenderLink linkRenderer, IUserHelper userHelper) 
                 { "categoryid", category.Id.ToString() }
             }
         }));
+
+        view.Links.Add(linkRenderer.Render(new Link
+        {
+            ActionName = nameof(CategoryController.GetChildCategories),
+            Method = HttpMethod.Get,
+            Rel = RelTypes.Children,
+            Parameters = new { libraryId = libraryId, categoryId = category.Id }
+        }));
+
+        if (category.ParentCategoryId.HasValue)
+        {
+            view.Links.Add(linkRenderer.Render(new Link
+            {
+                ActionName = nameof(CategoryController.GetCategoryById),
+                Method = HttpMethod.Get,
+                Rel = RelTypes.Parent,
+                Parameters = new { libraryId = libraryId, categoryId = category.ParentCategoryId.Value }
+            }));
+        }
 
         if (userHelper.IsAdmin || userHelper.IsLibraryAdmin(libraryId))
         {

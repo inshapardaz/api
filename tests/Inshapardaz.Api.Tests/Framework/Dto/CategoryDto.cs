@@ -10,12 +10,15 @@ namespace Inshapardaz.Api.Tests.Framework.Dto
 
         public int LibraryId { get; set; }
 
+        public int? ParentCategoryId { get; set; }
+
         public CategoryView ToView()
         {
             return new CategoryView
             {
                 Id =  Id,
                 Name = Name,
+                ParentCategoryId = ParentCategoryId,
             };
         }
     }

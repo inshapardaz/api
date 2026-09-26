@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Storage.Azure;
 using Inshapardaz.Adapters.Database.SqlServer.Repositories;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Inshapardaz.Domain.Models;
@@ -42,9 +43,17 @@ namespace Inshapardaz.Api.Tests
             var projectDir = Directory.GetCurrentDirectory();
             var configPath = Path.Combine(projectDir, "appsettings.json");
 
+            // The API requires a JWT secret outside Development; read at host build, before the test appsettings file is applied.
+            if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AppSettings__Security__Secret")))
+            {
+                Environment.SetEnvironmentVariable("AppSettings__Security__Secret", "1448a5f505894b71a009e12200e204051448a5f505894b71a009e12200e20405");
+            }
+
             _factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
+                // Development enables DI scope validation, which rejects resolving the scoped-dependent test builders from the root provider.
+                builder.UseEnvironment("Testing");
                 builder.ConfigureAppConfiguration((context, conf) =>
                 {
                     conf.AddJsonFile(configPath);

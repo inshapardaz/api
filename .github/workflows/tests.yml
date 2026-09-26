@@ -1,0 +1,57 @@
+name: Tests
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: Passw0rd
+          MYSQL_DATABASE: nawishta_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pPassw0rd"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      ASPNETCORE_ENVIRONMENT: Production
+      AppSettings__Security__Secret: 1448a5f505894b71a009e12200e204051448a5f505894b71a009e12200e20405
+      AppSettings__Database__DatabaseConnectionType: MySql
+      AppSettings__Database__ConnectionString: Server=127.0.0.1;Port=3306;Database=nawishta_test;Uid=root;Pwd=Passw0rd;
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore
+        run: dotnet restore tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj
+
+      - name: Build
+        run: dotnet build tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj --no-restore
+
+      - name: Run API integration tests
+        run: >-
+          dotnet test tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj
+          --no-build --logger "trx;LogFileName=test-results.trx"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: "**/TestResults/*.trx"

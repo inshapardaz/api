@@ -348,6 +348,11 @@ public class LibraryRepository(SqlServerConnectionProvider connectionProvider) :
     {
         using (var connection = connectionProvider.GetConnection())
         {
+            await connection.ExecuteAsync(new CommandDefinition(
+                "Update Category Set ParentCategoryId = NULL Where LibraryId = @Id",
+                new { Id = libraryId },
+                cancellationToken: cancellationToken));
+
             var sql = @"Delete From Library Where Id = @Id";
             var command = new CommandDefinition(sql, new { Id = libraryId }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);

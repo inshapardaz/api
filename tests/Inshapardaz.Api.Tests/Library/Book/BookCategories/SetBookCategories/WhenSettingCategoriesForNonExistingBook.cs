@@ -21,6 +21,6 @@ namespace Inshapardaz.Api.Tests.Library.Book.BookCategories.SetBookCategories
         public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNotFound() => _response.ShouldBeNotFound();
+        public void ShouldReturnBadRequest() => _response.ShouldBeBadRequest();
     }
 }

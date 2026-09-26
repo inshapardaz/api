@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.BookCategories.AddCategoryToBook
         public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnNotFound() => _response.ShouldBeNotFound();
+        public void ShouldReturnBadRequest() => _response.ShouldBeBadRequest();
 
         [Test]
         public void ShouldNotHaveAddedAnyCategory() => CategoryTestRepository.GetCategoriesByBook(_book.Id).Should().BeEmpty();

@@ -40,7 +40,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = connectionProvider.GetConnection())
             {
-                var id = connection.ExecuteScalar<int>("INSERT INTO Category (`Name`, LibraryId) VALUES (@Name, @LibraryId); SELECT LAST_INSERT_ID();", category);
+                var id = connection.ExecuteScalar<int>("INSERT INTO Category (`Name`, LibraryId, ParentCategoryId) VALUES (@Name, @LibraryId, @ParentCategoryId); SELECT LAST_INSERT_ID();", category);
                 category.Id = id;
             }
         }
@@ -57,8 +57,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = connectionProvider.GetConnection())
             {
-                var sql = "DELETE FROM Category WHERE Id IN @Ids";
-                connection.Execute(sql, new { Ids = categories.Select(a => a.Id) });
+                var ids = categories.Select(a => a.Id).ToList();
+                connection.Execute("UPDATE Category SET ParentCategoryId = NULL WHERE Id IN @Ids OR ParentCategoryId IN @Ids", new { Ids = ids });
+                connection.Execute("DELETE FROM Category WHERE Id IN @Ids", new { Ids = ids });
             }
         }
 
@@ -169,7 +170,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = connectionProvider.GetConnection())
             {
-                var id = connection.ExecuteScalar<int>("INSERT INTO Category (Name, LibraryId) OUTPUT Inserted.Id VALUES (@Name, @LibraryId)", category);
+                var id = connection.ExecuteScalar<int>("INSERT INTO Category (Name, LibraryId, ParentCategoryId) OUTPUT Inserted.Id VALUES (@Name, @LibraryId, @ParentCategoryId)", category);
                 category.Id = id;
             }
         }
@@ -186,8 +187,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = connectionProvider.GetConnection())
             {
-                var sql = "DELETE FROM Category WHERE Id IN @Ids";
-                connection.Execute(sql, new { Ids = categories.Select(a => a.Id) });
+                var ids = categories.Select(a => a.Id).ToList();
+                connection.Execute("UPDATE Category SET ParentCategoryId = NULL WHERE Id IN @Ids OR ParentCategoryId IN @Ids", new { Ids = ids });
+                connection.Execute("DELETE FROM Category WHERE Id IN @Ids", new { Ids = ids });
             }
         }
 
@@ -300,8 +302,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         public static void AddCategory(this IDbConnection connection, CategoryDto category)
         {
             var id = _dbType == DatabaseTypes.SqlServer
-                ? connection.ExecuteScalar<int>("INSERT INTO Category (Name, LibraryId) OUTPUT Inserted.Id VALUES (@Name, @LibraryId)", category)
-                : connection.ExecuteScalar<int>("INSERT INTO Category (`Name`, LibraryId) VALUES (@Name, @LibraryId); SELECT LAST_INSERT_ID();", category);
+                ? connection.ExecuteScalar<int>("INSERT INTO Category (Name, LibraryId, ParentCategoryId) OUTPUT Inserted.Id VALUES (@Name, @LibraryId, @ParentCategoryId)", category)
+                : connection.ExecuteScalar<int>("INSERT INTO Category (`Name`, LibraryId, ParentCategoryId) VALUES (@Name, @LibraryId, @ParentCategoryId); SELECT LAST_INSERT_ID();", category);
             category.Id = id;
         }
 
@@ -315,8 +317,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
 
         public static void DeleteCategries(this IDbConnection connection, IEnumerable<CategoryDto> categories)
         {
-            var sql = "DELETE FROM Category WHERE Id IN @Ids";
-            connection.Execute(sql, new { Ids = categories.Select(a => a.Id) });
+            var ids = categories.Select(a => a.Id).ToList();
+            connection.Execute("UPDATE Category SET ParentCategoryId = NULL WHERE Id IN @Ids OR ParentCategoryId IN @Ids", new { Ids = ids });
+            connection.Execute("DELETE FROM Category WHERE Id IN @Ids", new { Ids = ids });
         }
 
         public static CategoryDto GetCategoryById(this IDbConnection connection, int libraryId, int id)

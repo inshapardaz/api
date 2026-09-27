@@ -10,6 +10,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
     services:
       mysql:
         image: mysql:8.0
@@ -47,11 +52,42 @@ jobs:
       - name: Run API integration tests
         run: >-
           dotnet test tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj
-          --no-build --logger "trx;LogFileName=test-results.trx"
+          --no-build
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory ./TestResults
+          --collect:"XPlat Code Coverage"
+
+      - name: Report test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: API test results
+          path: "TestResults/*.trx"
+          reporter: dotnet-trx
+          fail-on-error: true
+
+      - name: Generate coverage report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5
+        if: always()
+        with:
+          reports: "TestResults/**/coverage.cobertura.xml"
+          targetdir: coverage-report
+          reporttypes: "Html;MarkdownSummaryGithub"
+
+      - name: Publish coverage summary
+        if: always()
+        run: cat coverage-report/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: "**/TestResults/*.trx"
+          path: "TestResults/*.trx"
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-report

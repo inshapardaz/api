@@ -581,13 +581,17 @@ public class IssueArticleRepository(MySqlConnectionProvider connectionProvider) 
     public async Task UpdateArticleSequence(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IEnumerable<IssueArticleModel> articles, CancellationToken cancellationToken)
     {
         using (var connection = connectionProvider.GetLibraryConnection())
+        // Dapper issues one UPDATE per article in this parameter list sequentially (not a single
+        // statement), so without a transaction a failure partway through (e.g. a transient
+        // connection blip) leaves the sequence half-reordered instead of failing cleanly.
+        using (var transaction = connection.BeginTransaction())
         {
             var sql = @"UPDATE IssueArticle a
                                 INNER JOIN Issue i On i.Id = a.IssueId
-                                INNER JOIN Periodical p On p.Id = i.PeriodicalId 
+                                INNER JOIN Periodical p On p.Id = i.PeriodicalId
                             SET a.SequenceNumber = @SequenceNumber
-                            WHERE p.LibraryId = @LibraryId 
-                                AND p.Id = @PeriodicalId 
+                            WHERE p.LibraryId = @LibraryId
+                                AND p.Id = @PeriodicalId
                                 AND i.VolumeNumber = @VolumeNumber
                                 AND i.IssueNumber = @IssueNumber
                                 AND A.Id = @Id";
@@ -600,8 +604,9 @@ public class IssueArticleRepository(MySqlConnectionProvider connectionProvider) 
                 Id = a.Id,
                 SequenceNumber = a.SequenceNumber
             });
-            var command = new CommandDefinition(sql, args, cancellationToken: cancellationToken);
+            var command = new CommandDefinition(sql, args, transaction: transaction, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
+            transaction.Commit();
         }
     }
 }

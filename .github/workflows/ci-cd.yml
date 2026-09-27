@@ -1,0 +1,244 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test:
+    name: Run API integration tests
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.TEST_MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: nawishta_test
+          # The official mysql image only grants 'root'@'localhost' by default -- a TCP connection
+          # from the runner (via the published port) arrives as the docker bridge gateway address
+          # (e.g. 172.18.0.1), not 127.0.0.1, so it's rejected with a generic "Access denied" (1045)
+          # that looks identical to a wrong password. MYSQL_ROOT_HOST widens the grant to any host.
+          MYSQL_ROOT_HOST: "%"
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      ASPNETCORE_ENVIRONMENT: Production
+      # Fixture values for this ephemeral CI database/JWT signing key -- not real credentials,
+      # but stored as repo secrets (rather than inline) so secret scanners don't flag them.
+      AppSettings__Security__Secret: ${{ secrets.TEST_JWT_SECRET }}
+      AppSettings__Database__DatabaseConnectionType: MySql
+      # AllowPublicKeyRetrieval is required for MySql.Data to complete caching_sha2_password auth
+      # (MySQL 8's default plugin) over plain TCP with no SSL -- without it, RSA public-key exchange
+      # for a fresh/uncached login is refused and every connection fails with "Access denied", even
+      # with the correct password.
+      AppSettings__Database__ConnectionString: Server=127.0.0.1;Port=3306;Database=nawishta_test;Uid=root;Pwd=${{ secrets.TEST_MYSQL_ROOT_PASSWORD }};AllowPublicKeyRetrieval=True;SslMode=Disabled;
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # This suite creates one WebApplicationFactory per test fixture (thousands total), each
+      # registering its own config-file watcher. The runner's default inotify limits are too low
+      # for that many to coexist, and the run dies partway through with
+      # "The configured user limit (1280) on the number of inotify instances has been reached."
+      - name: Raise inotify limits for the large test suite
+        run: |
+          sudo sysctl -w fs.inotify.max_user_instances=8192
+          sudo sysctl -w fs.inotify.max_user_watches=524288
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore
+        run: dotnet restore tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj
+
+      - name: Build
+        run: dotnet build tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj --no-restore
+
+      - name: Run API integration tests
+        run: >-
+          dotnet test tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj
+          --no-build
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory ./TestResults
+          --collect:"XPlat Code Coverage"
+
+      - name: Report test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: API test results
+          path: "TestResults/*.trx"
+          reporter: dotnet-trx
+          fail-on-error: true
+
+      - name: Generate coverage report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5
+        if: always()
+        with:
+          reports: "TestResults/**/coverage.cobertura.xml"
+          targetdir: coverage-report
+          reporttypes: "Html;MarkdownSummaryGithub"
+
+      - name: Publish coverage summary
+        if: always()
+        run: cat coverage-report/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: "TestResults/*.trx"
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-report
+
+  docker-build-and-push:
+    name: Build and push Docker image
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Docker Login
+        uses: docker/login-action@v3.1.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PASSWORD }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deploy-docker:
+    name: Deploy to production (Docker)
+    # Only deploy on an actual push to master -- a pull_request build still needs the tests and
+    # Docker build/push above to succeed (so a broken PR can't merge or leave a broken image
+    # sitting in the registry), it just doesn't go on to touch the production host.
+    needs: docker-build-and-push
+    if: github.event_name == 'push'
+    runs-on: [self-hosted, production]
+    environment: production
+    steps:
+      - name: Pull latest environment config
+        run: git -C ~/code/environment pull --ff-only
+
+      - name: Pull and restart api
+        run: |
+          cd ~/code/environment/production
+          docker compose pull api
+          docker compose up -d api
+
+      - name: Verify deployment
+        run: |
+          check() {
+            local url="$1"
+            local label="$2"
+            for i in $(seq 1 10); do
+              if curl -fsS -o /dev/null -w '%{http_code}' "$url" | grep -q '^200$'; then
+                echo "$label OK"
+                return 0
+              fi
+              echo "$label not ready yet, retrying ($i/10)..."
+              sleep 3
+            done
+            echo "::error::$label failed at $url"
+            return 1
+          }
+
+          check "https://api.nawishta.co.uk/health/check" "health/check"
+          check "https://api.nawishta.co.uk/libraries?pageNumber=1&pageSize=1" "libraries (DB access)"
+
+  deploy-ftp:
+    name: Deploy to production (legacy FTP)
+    # Same reasoning as deploy-docker: only an actual push to master goes on to touch production.
+    needs: test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: App Settings Variable Substitution
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: '**/Inshapardaz.Api/appsettings.json'
+        env:
+          AppSettings.DefaultConnection: ${{ secrets.CONNECTIONSTRING }}
+          AppSettings.S3ServiceUrl: ${{ secrets.S3SERVICEURL }}
+          AppSettings.S3Accesskey: ${{ secrets.S3ACCESSKEY }}
+          AppSettings.S3BucketName: ${{ secrets.S3BUCKETNAME }}
+          AppSettings.S3AccessSecret: ${{ secrets.S3ACCESSSECRET }}
+          AppSettings.SmtpHost: ${{ secrets.SMTPHOST }}
+          AppSettings.SmtpPort: ${{ secrets.SMTPPORT }}
+          AppSettings.SmtpUser: ${{ secrets.SMTPUSER }}
+          AppSettings.SmtpPass: ${{ secrets.SMTPPASS }}
+          AppSettings.EmailFrom: ${{ secrets.EMAILFROM }}
+          AppSettings.EmailFromName: ${{ secrets.EMAILFROMNAME }}
+          AppSettings.Secret: ${{ secrets.SECRET }}
+          AppSettings.FrontEndUrl: ${{ secrets.FRONTENDURL }}
+          AppSettings.ResetPasswordPagePath: ${{ secrets.RESETPASSWORDPAGEPATH }}
+          AppSettings.RegisterPagePath: ${{ secrets.REGISTERPAGEPATH }}
+          AppSettings.FileStoreType: ${{ secrets.FILESTORETYPE }}
+          AppSettings.Allowed_Origins: ${{ secrets.ALLOWEDORIGINS }}
+          AppSettings.DefaultLibraryId": ${{ secrets.DEFAULT_LIBRARY }}
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Publish
+        run: dotnet publish -c Release -r win-x86 -o ./Release ./src/Inshapardaz.Api/Inshapardaz.Api.csproj
+
+      - name: Sync files
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ${{ secrets.DEPLOY_FTP_SERVER }}
+          username: ${{ secrets.DEPLOY_FTP_USERNAME }}
+          password: ${{ secrets.DEPLOY_FTP_PASSWORD }}
+          server-dir: /api/
+          local-dir: ./Release/

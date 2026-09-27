@@ -230,7 +230,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = connectionProvider.GetConnection())
             {
-                var sql = @"SELECT Count(*) FROM ArticleAuthor WHERE AuthorId = @Id";
+                var sql = @"SELECT Count(*) FROM ArticleAuthor
+                                INNER JOIN Article ON ArticleAuthor.ArticleId = Article.Id
+                                WHERE ArticleAuthor.AuthorId = @Id AND Article.`Type` = 1";
                 return connection.ExecuteScalar<int>(sql, new { Id = id });
             }
         }
@@ -420,7 +422,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = connectionProvider.GetConnection())
             {
-                var sql = @"SELECT Count(*) FROM ArticleAuthor WHERE AuthorId = @Id";
+                var sql = @"SELECT Count(*) FROM ArticleAuthor
+                                INNER JOIN Article ON ArticleAuthor.ArticleId = Article.Id
+                                WHERE ArticleAuthor.AuthorId = @Id AND Article.Type = 1";
                 return connection.ExecuteScalar<int>(sql, new { Id = id });
             }
         }

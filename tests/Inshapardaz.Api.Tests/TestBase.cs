@@ -57,7 +57,11 @@ namespace Inshapardaz.Api.Tests
                 builder.UseEnvironment("Testing");
                 builder.ConfigureAppConfiguration((context, conf) =>
                 {
-                    conf.AddJsonFile(configPath);
+                    // reloadOnChange: false -- this fixture file never changes during a run, and each
+                    // TestBase/WebApplicationFactory instance otherwise registers its own FileSystemWatcher
+                    // that's never disposed; with thousands of test fixtures in one process, that exhausts
+                    // the CI runner's inotify instance limit long before the suite finishes.
+                    conf.AddJsonFile(configPath, optional: false, reloadOnChange: false);
                     // WebApplicationFactory appends this AFTER Program.cs's own configuration sources
                     // (including environment variables), so without re-adding env vars here, this
                     // fixture file's hardcoded local-dev values (e.g. the DB password) would silently

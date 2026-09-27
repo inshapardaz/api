@@ -49,6 +49,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # This suite creates one WebApplicationFactory per test fixture (thousands total), each
+      # registering its own config-file watcher. The runner's default inotify limits are too low
+      # for that many to coexist, and the run dies partway through with
+      # "The configured user limit (1280) on the number of inotify instances has been reached."
+      - name: Raise inotify limits for the large test suite
+        run: |
+          sudo sysctl -w fs.inotify.max_user_instances=8192
+          sudo sysctl -w fs.inotify.max_user_watches=524288
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:

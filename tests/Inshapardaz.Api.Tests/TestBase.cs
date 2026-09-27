@@ -58,6 +58,13 @@ namespace Inshapardaz.Api.Tests
                 builder.ConfigureAppConfiguration((context, conf) =>
                 {
                     conf.AddJsonFile(configPath);
+                    // WebApplicationFactory appends this AFTER Program.cs's own configuration sources
+                    // (including environment variables), so without re-adding env vars here, this
+                    // fixture file's hardcoded local-dev values (e.g. the DB password) would silently
+                    // win over real values set by the environment -- as in CI, where this made every
+                    // test hit the CI database with the wrong password regardless of what the actual
+                    // environment variable/secret was set to.
+                    conf.AddEnvironmentVariables();
                 });
                 builder.ConfigureTestServices(services => ConfigureServices(services));
             });

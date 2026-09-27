@@ -19,21 +19,23 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: Passw0rd
+          MYSQL_ROOT_PASSWORD: ${{ secrets.TEST_MYSQL_ROOT_PASSWORD }}
           MYSQL_DATABASE: nawishta_test
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pPassw0rd"
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
 
     env:
       ASPNETCORE_ENVIRONMENT: Production
-      AppSettings__Security__Secret: 1448a5f505894b71a009e12200e204051448a5f505894b71a009e12200e20405
+      # Fixture values for this ephemeral CI database/JWT signing key -- not real credentials,
+      # but stored as repo secrets (rather than inline) so secret scanners don't flag them.
+      AppSettings__Security__Secret: ${{ secrets.TEST_JWT_SECRET }}
       AppSettings__Database__DatabaseConnectionType: MySql
-      AppSettings__Database__ConnectionString: Server=127.0.0.1;Port=3306;Database=nawishta_test;Uid=root;Pwd=Passw0rd;
+      AppSettings__Database__ConnectionString: Server=127.0.0.1;Port=3306;Database=nawishta_test;Uid=root;Pwd=${{ secrets.TEST_MYSQL_ROOT_PASSWORD }};
 
     steps:
       - uses: actions/checkout@v4

@@ -60,6 +60,17 @@ jobs:
       - name: Build
         run: dotnet build tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj --no-restore
 
+      # TEMPORARY diagnostic: prove/disprove a password mismatch independent of MySql.Data, by
+      # hitting the exact same TCP path (runner -> 127.0.0.1:3306) with the mysql CLI directly.
+      - name: Debug MySQL connectivity
+        run: |
+          echo "--- via TCP from runner (same path as .NET driver) ---"
+          mysql --protocol=TCP -h127.0.0.1 -P3306 -uroot -p"$MYSQL_ROOT_PASSWORD" -e "SELECT current_user(), @@version;" || echo "TCP CONNECT FAILED (exit $?)"
+          echo "--- root grants, queried from inside the container ---"
+          docker exec $(docker ps -qf "ancestor=mysql:8.0") mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -e "SELECT user, host, plugin FROM mysql.user WHERE user='root';"
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.TEST_MYSQL_ROOT_PASSWORD }}
+
       - name: Run API integration tests
         run: >-
           dotnet test tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj

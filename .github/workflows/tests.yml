@@ -35,7 +35,11 @@ jobs:
       # but stored as repo secrets (rather than inline) so secret scanners don't flag them.
       AppSettings__Security__Secret: ${{ secrets.TEST_JWT_SECRET }}
       AppSettings__Database__DatabaseConnectionType: MySql
-      AppSettings__Database__ConnectionString: Server=127.0.0.1;Port=3306;Database=nawishta_test;Uid=root;Pwd=${{ secrets.TEST_MYSQL_ROOT_PASSWORD }};
+      # AllowPublicKeyRetrieval is required for MySql.Data to complete caching_sha2_password auth
+      # (MySQL 8's default plugin) over plain TCP with no SSL -- without it, RSA public-key exchange
+      # for a fresh/uncached login is refused and every connection fails with "Access denied", even
+      # with the correct password.
+      AppSettings__Database__ConnectionString: Server=127.0.0.1;Port=3306;Database=nawishta_test;Uid=root;Pwd=${{ secrets.TEST_MYSQL_ROOT_PASSWORD }};AllowPublicKeyRetrieval=True;SslMode=None;
 
     steps:
       - uses: actions/checkout@v4

@@ -526,7 +526,28 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
             {
                     _bookShelfTestRepository.AddBooksToBookShelf(_bookshelfId.Value, _books.Select(x => x.Id));
             }
+
+            ResetPerBuildConfiguration();
+
             return _books;
+        }
+
+        // Author/_series/_categories/_tags are set via With*() and consumed above -- without this reset they stay
+        // set on this builder instance (it's cached per TestBase) and leak into the next unrelated Build() call.
+        // That silently reassociated later "noise" books with the earlier batch's specific author/series/tag, and
+        // WithTag/WithCategory's list .Add() duplicated entries across calls, causing a primary-key violation when
+        // the same tag/category got inserted for a book twice.
+        // _authors/_numberOfAuthors are deliberately NOT reset here: unlike Author/_series/_categories/_tags, the
+        // generated _authors list is a builder output some tests read via the Authors property right after Build().
+        private void ResetPerBuildConfiguration()
+        {
+            Author = null;
+            _series = null;
+            _hasSeries = false;
+            _categories = new List<CategoryDto>();
+            _categoriesCount = 0;
+            _tags = new List<TagDto>();
+            _tagsCount = 0;
         }
 
         public void CleanUp()

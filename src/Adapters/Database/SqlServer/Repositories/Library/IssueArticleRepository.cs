@@ -568,7 +568,7 @@ public class IssueArticleRepository(SqlServerConnectionProvider connectionProvid
         {
             var sql = @"Update a Set a.SequenceNumber = @SequenceNumber
                             From IssueArticle a
-                            Inner Join Issue i On i.Id = A.IssueId
+                            Inner Join Issue i On i.Id = a.IssueId
                             Inner Join Periodical p On p.Id = i.PeriodicalId
                             Where p.LibraryId = @LibraryId
                             AND p.Id = @PeriodicalId

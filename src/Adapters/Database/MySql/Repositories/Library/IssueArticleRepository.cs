@@ -594,7 +594,7 @@ public class IssueArticleRepository(MySqlConnectionProvider connectionProvider) 
                                 AND p.Id = @PeriodicalId
                                 AND i.VolumeNumber = @VolumeNumber
                                 AND i.IssueNumber = @IssueNumber
-                                AND A.Id = @Id";
+                                AND a.Id = @Id";
             var args = articles.Select(a => new
             {
                 LibraryId = libraryId,

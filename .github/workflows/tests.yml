@@ -69,16 +69,6 @@ jobs:
       - name: Build
         run: dotnet build tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj --no-restore
 
-      # TEMPORARY diagnostic: this test fails deterministically on CI but never locally or in
-      # isolation. Run it alone with full console verbosity to capture the real server-side
-      # exception (the client only ever sees the sanitized "An unexpected error occurred.").
-      - name: Debug flaky sequence test
-        run: >-
-          dotnet test tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj
-          --no-build
-          --filter "FullyQualifiedName~WhenUpdatingIssueArticleSequenceWithPermission"
-          --logger "console;verbosity=detailed"
-
       - name: Run API integration tests
         run: >-
           dotnet test tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj

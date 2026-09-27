@@ -8,13 +8,14 @@ using Paramore.Brighter;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Book.Chapter;
 
-public class AssignChapterToUserRequest(int libraryId, int bookId, int chapterNumber, int? accountId)
+public class AssignChapterToUserRequest(int libraryId, int bookId, int chapterNumber, int? accountId, bool unassign = false)
     : LibraryBaseCommand(libraryId)
 {
     public ChapterModel Result { get; set; }
     public int BookId { get; set; } = bookId;
     public int ChapterNumber { get; set; } = chapterNumber;
     public int? AccountId { get; private set; } = accountId;
+    public bool Unassign { get; private set; } = unassign;
 }
 
 public class AssignChapterToUserRequestHandler(
@@ -41,13 +42,16 @@ public class AssignChapterToUserRequestHandler(
             throw new BadRequestException();
         }
 
+        // No account given and not an explicit unassign means "assign to me".
+        var accountId = command.Unassign ? null : command.AccountId ?? userHelper.AccountId;
+
         if (chapter.Status == EditingStatus.Available || chapter.Status == EditingStatus.Typing)
         {
-            command.Result = await chapterRepository.UpdateWriterAssignment(command.LibraryId, command.BookId, command.ChapterNumber, command.AccountId, cancellationToken);
+            command.Result = await chapterRepository.UpdateWriterAssignment(command.LibraryId, command.BookId, command.ChapterNumber, accountId, cancellationToken);
         }
         else if (chapter.Status == EditingStatus.Typed || chapter.Status == EditingStatus.InReview)
         {
-            command.Result = await chapterRepository.UpdateReviewerAssignment(command.LibraryId, command.BookId, command.ChapterNumber, command.AccountId, cancellationToken);
+            command.Result = await chapterRepository.UpdateReviewerAssignment(command.LibraryId, command.BookId, command.ChapterNumber, accountId, cancellationToken);
         }
         else
         {

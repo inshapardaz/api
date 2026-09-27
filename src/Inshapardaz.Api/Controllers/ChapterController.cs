@@ -119,7 +119,7 @@ public class ChapterController(
             return new BadRequestObjectResult(ModelState);
         }
 
-        var request = new AssignChapterToUserRequest(libraryId, bookId, chapterNumber, assignment.Unassign ? null : assignment.AccountId);
+        var request = new AssignChapterToUserRequest(libraryId, bookId, chapterNumber, assignment.AccountId, assignment.Unassign);
 
         await commandProcessor.SendAsync(request, cancellationToken: token);
 

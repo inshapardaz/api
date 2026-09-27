@@ -29,7 +29,7 @@ public class RepositoryFactory
     private ICategoryRepository _categoryRepository;
     private ICorrectionRepository _correctionRepository;
     private IArticleRepository _articleRepository;
-    
+
     public RepositoryFactory(string connectionString, DatabaseTypes dbType)
     {
         _dbType = dbType;
@@ -46,8 +46,8 @@ public class RepositoryFactory
 
         _connectionProvider = dbType switch
         {
-            DatabaseTypes.MySql => new MySqlConnectionProvider(sourceSettingOption),
-            DatabaseTypes.SqlServer => new SqlServerConnectionProvider(sourceSettingOption),
+            DatabaseTypes.MySql => new MySqlConnectionProvider(sourceSettingOption, null),
+            DatabaseTypes.SqlServer => new SqlServerConnectionProvider(sourceSettingOption, null),
             _ => null
         };
     }
@@ -67,7 +67,7 @@ public class RepositoryFactory
                     _ => _libraryRepository
                 };
             }
-            
+
             return _libraryRepository;
         }
     }

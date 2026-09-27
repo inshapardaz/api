@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
             var account = AccountBuilder.Build();
             _issue = IssueBuilder.WithLibrary(LibraryId).WithPages(20).AssignPagesToWriter(account.Id, 15).Build();
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages?pageSize=10&pageNumber=1&assignmentFilter=assigned");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages?pageSize=10&pageNumber=1&writerAssignmentFilter=assigned");
 
             _assert = Services.GetService<PagingAssert<IssuePageView>>().ForResponse(_response);
         }
@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
         public void ShouldHaveSelfLink()
         {
             _assert.ShouldHaveSelfLink($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages",
-                new KeyValuePair<string, string>("assignmentFilter", "Assigned"));
+                new KeyValuePair<string, string>("writerAssignmentFilter", "Assigned"));
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
         public void ShouldHaveNextLink()
         {
             _assert.ShouldHaveNextLink($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages", 2, 10,
-                new KeyValuePair<string, string>("assignmentFilter", "Assigned"));
+                new KeyValuePair<string, string>("writerAssignmentFilter", "Assigned"));
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.SequenceNumber == item.SequenceNumber);
                 Services.GetService<IssuePageAssert>().ForView(actual).ForLibrary(LibraryId)
-                        .ShouldMatchWithoutText(item)
+                        .ShouldMatchWithText(item)
                         .ShouldHaveSelfLink()
                         .ShouldHavePeriodicalLink()
                         .ShouldHaveIssueLink()

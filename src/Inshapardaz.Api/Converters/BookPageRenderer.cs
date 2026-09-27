@@ -359,11 +359,11 @@ public class BookPageRenderer(IRenderLink linkRenderer, IUserHelper userHelper, 
                 queryString.Add("status", source.Filters.Status.Value.ToString());
             }
 
-            if (source.Filters.AssignmentFilter.HasValue && source.Filters.AssignmentFilter != Domain.Models.AssignmentFilter.All)
+            if (source.Filters.WrtiterAssignmentFilter.HasValue && source.Filters.WrtiterAssignmentFilter != Domain.Models.AssignmentFilter.All)
             {
-                queryString.Add("assignmentFilter", source.Filters.AssignmentFilter.Value.ToString());
+                queryString.Add("assignmentFilter", source.Filters.WrtiterAssignmentFilter.Value.ToString());
 
-                if (source.Filters.AssignmentFilter == Domain.Models.AssignmentFilter.AssignedTo &&
+                if (source.Filters.WrtiterAssignmentFilter == Domain.Models.AssignmentFilter.AssignedTo &&
                     source.Filters.AccountId.HasValue)
                 {
                     queryString.Add("assignmentTo", source.Filters.AccountId.ToString());

@@ -52,7 +52,7 @@ public class IssuePageController(
         {
             Page = result,
             RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
-            Filters = new PageFilter { Status = status, AssignmentFilter = writerAssignmentFilter, ReviewerAssignmentFilter = reviewerAssignmentFilter, AccountId = assignmentTo }
+            Filters = new PageFilter { Status = status, WrtiterAssignmentFilter = writerAssignmentFilter, ReviewerAssignmentFilter = reviewerAssignmentFilter, AccountId = assignmentTo }
         };
 
         return new OkObjectResult(issuePageRenderer.Render(args, libraryId, periodicalId, volumeNumber, issueNumber));
@@ -101,7 +101,7 @@ public class IssuePageController(
         await commandProcessor.SendAsync(request, cancellationToken: token);
 
         var renderResult = issuePageRenderer.Render(request.Result, libraryId);
-        
+
         if (request.IsAdded)
         {
             return Created(renderResult.Links.Self(), renderResult);

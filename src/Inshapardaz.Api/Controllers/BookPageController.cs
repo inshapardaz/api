@@ -52,7 +52,7 @@ public class BookPageController(
         {
             Page = result,
             RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize },
-            Filters = new PageFilter { Status = status, AssignmentFilter = assignmentFilter, ReviewerAssignmentFilter = reviewerAssignmentFilter, AccountId = assignmentTo }
+            Filters = new PageFilter { Status = status, WrtiterAssignmentFilter = assignmentFilter, ReviewerAssignmentFilter = reviewerAssignmentFilter, AccountId = assignmentTo }
         };
 
         return new OkObjectResult(bookPageRenderer.Render(args, libraryId, bookId));

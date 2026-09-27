@@ -206,6 +206,16 @@ builder.Services.AddAuthentication(options =>
                 context.Token = context.Request.Cookies["token"];
             }
             return Task.CompletedTask;
+        },
+        OnAuthenticationFailed = context =>
+        {
+            // Most endpoints are anonymous-friendly and only check User.Identity.IsAuthenticated
+            // to decide whether to return extra/owned data -- they never enforce [Authorize], so a
+            // failed validation (e.g. an expired token) never challenges and would otherwise be
+            // silently treated as an anonymous call. Flag it here so TokenValidationMiddleware,
+            // which *does* run for every request, can turn a supplied-but-invalid token into a 401.
+            context.HttpContext.Items["Bearer.AuthenticationFailed"] = true;
+            return Task.CompletedTask;
         }
     };
 });
@@ -311,6 +321,7 @@ app.UseAuthorization();
 app.UseRateLimiter();
 app.UseRequestLogging();
 app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseMiddleware<TokenValidationMiddleware>();
 app.UseMiddleware<LibraryConfigurationMiddleware>();
 
 app.MapControllers();

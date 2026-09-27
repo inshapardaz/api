@@ -30,6 +30,7 @@ namespace Inshapardaz.Api.Tests
         protected readonly Role? _role;
         private readonly WebApplicationFactory<Program> _factory;
         private readonly AccountDto _account;
+        private Settings _settings;
 
         protected AccountAssert AccountAssert => Services.GetService<AccountAssert>();
         protected FakeSmtpClient SmtpClient => Services.GetService<ISmtpClient>() as FakeSmtpClient;
@@ -61,7 +62,7 @@ namespace Inshapardaz.Api.Tests
                 builder.ConfigureTestServices(services => ConfigureServices(services));
             });
 
-            var settings = Services.GetService<IOptions<Settings>>().Value;
+            _settings = Services.GetService<IOptions<Settings>>().Value;
             AccountBuilder = _factory.Services.GetService<AccountDataBuilder>();
 
             if (role.HasValue)
@@ -81,7 +82,7 @@ namespace Inshapardaz.Api.Tests
 
             if (_account != null)
             {
-                var token = TokenBuilder.GenerateToken(settings, _account.Id,
+                var token = TokenBuilder.GenerateToken(_settings, _account.Id,
                     isSuperAdmin: _account.IsSuperAdmin,
                     name: _account.Name,
                     email: _account.Email,
@@ -89,6 +90,24 @@ namespace Inshapardaz.Api.Tests
                     role: _role);
                 Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
+        }
+
+        // The real API issues one `lib:{id}:role` claim per library the account belongs to (see TokenGenerator).
+        // The constructor above only knows about the single library created via `createLibrary: true`, so tests that
+        // build several libraries with roles after construction (createLibrary: false) need to reissue the token to
+        // pick up a role claim for each of those libraries -- otherwise role-gated links never show up for them.
+        protected void RefreshAuthTokenForLibraries(IEnumerable<int> libraryIds, Role role)
+        {
+            if (_account == null) return;
+
+            var token = TokenBuilder.GenerateToken(_settings, _account.Id,
+                isSuperAdmin: _account.IsSuperAdmin,
+                name: _account.Name,
+                email: _account.Email,
+                libraryId: Library?.Id,
+                role: _role,
+                libraryRoles: libraryIds.Select(id => (id, role)));
+            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
 
         private void ConfigureServices(IServiceCollection services)

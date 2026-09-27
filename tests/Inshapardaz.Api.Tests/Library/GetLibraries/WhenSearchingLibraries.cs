@@ -25,6 +25,8 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
             _nonMatchingLibraryBuilder = Services.GetService<LibraryDataBuilder>();
             _nonMatchingLibraryBuilder.AssignToUser(AccountId, Role.Writer).Build(2);
 
+            RefreshAuthTokenForLibraries(LibraryBuilder.Libraries.Select(l => l.Id), Role.Writer);
+
             _response = await Client.GetAsync($"/libraries?query={_startWith}");
             _assert = Services.GetService<PagingAssert<LibraryView>>().ForResponse(_response);
         }

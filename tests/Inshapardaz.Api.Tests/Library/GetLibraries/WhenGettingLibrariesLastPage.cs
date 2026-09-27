@@ -16,6 +16,7 @@ namespace Inshapardaz.Api.Tests.Library.GetLibraries
         public async Task Setup()
         {
             LibraryBuilder.AssignToUser(AccountId, Role.Writer).Build(15);
+            RefreshAuthTokenForLibraries(LibraryBuilder.Libraries.Select(l => l.Id), Role.Writer);
 
             _response = await Client.GetAsync($"/libraries?pageNumber=3&pageSize=5");
             _assert = Services.GetService<PagingAssert<LibraryView>>().ForResponse(_response);

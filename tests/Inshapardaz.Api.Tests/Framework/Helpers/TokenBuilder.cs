@@ -15,12 +15,13 @@ namespace Inshapardaz.Api.Tests.Framework.Helpers
             return GenerateToken(settings, accountId, isSuperAdmin: false);
         }
 
-        public static string GenerateToken(Settings settings, int accountId, 
-            bool isSuperAdmin = false, 
-            string name = null, 
+        public static string GenerateToken(Settings settings, int accountId,
+            bool isSuperAdmin = false,
+            string name = null,
             string email = null,
-            int? libraryId = null, 
-            Role? role = null)
+            int? libraryId = null,
+            Role? role = null,
+            IEnumerable<(int LibraryId, Role Role)> libraryRoles = null)
         {
             var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.Security.Secret));
 
@@ -35,6 +36,14 @@ namespace Inshapardaz.Api.Tests.Framework.Helpers
             if (libraryId.HasValue && role.HasValue)
             {
                 claims.Add(new Claim($"lib:{libraryId.Value}:role", role.Value.ToString()));
+            }
+
+            if (libraryRoles != null)
+            {
+                foreach (var libraryRole in libraryRoles)
+                {
+                    claims.Add(new Claim($"lib:{libraryRole.LibraryId}:role", libraryRole.Role.ToString()));
+                }
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();

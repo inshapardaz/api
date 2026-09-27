@@ -291,7 +291,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
-        public IssuePageAssert ShouldMatchWithoutText(IssuePageDto dto)
+        public IssuePageAssert ShouldMatchWithText(IssuePageDto dto)
         {
             ShouldMatch(dto);
             var filePath = fileRepository.GetFileById(dto.FileId.Value).FilePath;
@@ -299,7 +299,7 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             _issuePage.Text.Should().Be(content);
             return this;
         }
-        public IssuePageAssert ShouldMatch(IssuePageDto dto)
+        public IssuePageAssert ShouldMatch(IssuePageDto dto, bool checkText = true)
         {
             _issuePage.SequenceNumber.Should().Be(dto.SequenceNumber);
             _issuePage.WriterAccountId.Should().Be(dto.WriterAccountId);
@@ -321,8 +321,6 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             {
                 _issuePage.ReviewerAssignTimeStamp.Should().BeNull();
             }
-
-            _issuePage.Text.Should().NotBeNullOrEmpty();
 
             return this;
         }

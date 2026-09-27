@@ -136,6 +136,48 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
             return this;
         }
 
+        public CategoryAssert ShouldHaveParent(int? parentCategoryId)
+        {
+            _category.ParentCategoryId.Should().Be(parentCategoryId);
+            return this;
+        }
+
+        public CategoryAssert ShouldHaveParentInDataStore(int? parentCategoryId)
+        {
+            var dbCat = categoryRepository.GetCategoryById(_libraryId, _category.Id);
+            dbCat.Should().NotBeNull();
+            dbCat.ParentCategoryId.Should().Be(parentCategoryId);
+            return this;
+        }
+
+        public CategoryAssert ShouldHaveChildCount(int childCount)
+        {
+            _category.ChildCount.Should().Be(childCount);
+            return this;
+        }
+
+        public CategoryAssert ShouldHaveChildrenLink()
+        {
+            _category.Link("children")
+                  .ShouldBeGet()
+                  .EndingWith($"libraries/{_libraryId}/categories/{_category.Id}/children");
+            return this;
+        }
+
+        public CategoryAssert ShouldHaveParentLink(int parentCategoryId)
+        {
+            _category.Link("parent")
+                  .ShouldBeGet()
+                  .EndingWith($"libraries/{_libraryId}/categories/{parentCategoryId}");
+            return this;
+        }
+
+        public CategoryAssert ShouldNotHaveParentLink()
+        {
+            _category.Link("parent").Should().BeNull();
+            return this;
+        }
+
         public CategoryAssert ShouldHaveCreatedCategory()
         {
             var cat = categoryRepository.GetCategoryById(_libraryId, _category.Id);

@@ -15,6 +15,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         private List<AuthorDto> _authors = new List<AuthorDto>();
         private List<CategoryDto> _categories = new List<CategoryDto>();
         private int _libraryId;
+        private int? _parentCategoryId;
         private IEnumerable<BookDto> _books;
         private IEnumerable<PeriodicalDto> _periodicals;
 
@@ -32,6 +33,12 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         public CategoryDto Build() => Build(1).Single();
 
+        public CategoriesDataBuilder WithParent(CategoryDto parent)
+        {
+            _parentCategoryId = parent?.Id;
+            return this;
+        }
+
         internal CategoriesDataBuilder WithLibrary(int libraryId)
         {
             _libraryId = libraryId;
@@ -44,6 +51,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
             var cats = fixture.Build<CategoryDto>()
                               .With(c => c.LibraryId, _libraryId)
+                              .With(c => c.ParentCategoryId, _parentCategoryId)
                                .CreateMany(count);
 
             categoryRepository.AddCategories(cats);

@@ -18,7 +18,16 @@ namespace Inshapardaz.Api.Tests.Framework.Asserts
         public PagingAssert<T> ForResponse(HttpResponseMessage response)
         {
             _response = response;
-            _page = response.GetContent<PageView<T>>().Result;
+
+            // A non-2xx response (401/403/404/...) doesn't carry a PageView body. Deserializing it anyway lets
+            // Newtonsoft's parameterized-constructor binding silently default PageSize to 0, which then blows up
+            // as an OverflowException computing PageCount (division by zero -> NaN -> Convert.ToInt32) before the
+            // test ever gets to assert on the status code.
+            if (response.IsSuccessStatusCode)
+            {
+                _page = response.GetContent<PageView<T>>().Result;
+            }
+
             return this;
         }
 

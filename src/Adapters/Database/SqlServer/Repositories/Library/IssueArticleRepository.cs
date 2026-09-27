@@ -561,13 +561,17 @@ public class IssueArticleRepository(SqlServerConnectionProvider connectionProvid
     public async Task UpdateArticleSequence(int libraryId, int periodicalId, int volumeNumber, int issueNumber, IEnumerable<IssueArticleModel> articles, CancellationToken cancellationToken)
     {
         using (var connection = connectionProvider.GetLibraryConnection())
+        // Dapper issues one UPDATE per article in this parameter list sequentially (not a single
+        // statement), so without a transaction a failure partway through (e.g. a transient
+        // connection blip) leaves the sequence half-reordered instead of failing cleanly.
+        using (var transaction = connection.BeginTransaction())
         {
             var sql = @"Update a Set a.SequenceNumber = @SequenceNumber
                             From IssueArticle a
-                            Inner Join Issue i On i.Id = A.IssueId
+                            Inner Join Issue i On i.Id = a.IssueId
                             Inner Join Periodical p On p.Id = i.PeriodicalId
-                            Where p.LibraryId = @LibraryId 
-                            AND p.Id = @PeriodicalId 
+                            Where p.LibraryId = @LibraryId
+                            AND p.Id = @PeriodicalId
                             AND i.VolumeNumber = @VolumeNumber
                             AND i.IssueNumber = @IssueNumber
                             AND a.Id = @Id";
@@ -580,8 +584,9 @@ public class IssueArticleRepository(SqlServerConnectionProvider connectionProvid
                 Id = a.Id,
                 SequenceNumber = a.SequenceNumber
             });
-            var command = new CommandDefinition(sql, args, cancellationToken: cancellationToken);
+            var command = new CommandDefinition(sql, args, transaction: transaction, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
+            transaction.Commit();
         }
     }
 }

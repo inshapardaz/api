@@ -69,4 +69,12 @@ public interface IBookRepository
     Task DeleteBookRating(int libraryId, int accountId, int bookId, CancellationToken cancellationToken);
 
     Task<RatingSummaryModel> GetBookRatingSummary(int libraryId, int bookId, CancellationToken cancellationToken);
+
+    Task<IEnumerable<CategoryModel>> GetBookCategories(int libraryId, int bookId, CancellationToken cancellationToken);
+
+    Task SetBookCategories(int libraryId, int bookId, IEnumerable<int> categoryIds, CancellationToken cancellationToken);
+
+    Task AddCategoryToBook(int libraryId, int bookId, int categoryId, CancellationToken cancellationToken);
+
+    Task RemoveCategoryFromBook(int libraryId, int bookId, int categoryId, CancellationToken cancellationToken);
 }

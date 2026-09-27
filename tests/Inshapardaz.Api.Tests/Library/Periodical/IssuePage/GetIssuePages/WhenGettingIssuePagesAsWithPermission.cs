@@ -52,16 +52,16 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
             foreach (var item in expectedItems)
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.SequenceNumber == item.SequenceNumber);
-                    Services.GetService<IssuePageAssert>().ForView(actual).ForLibrary(LibraryId)
-                        .ShouldMatchWithoutText(item)
-                        .ShouldHaveSelfLink()
-                        .ShouldHavePeriodicalLink()
-                        .ShouldHaveIssueLink()
-                        .ShouldNotHaveImageLink()
-                        .ShouldHaveUpdateLink()
-                        .ShouldHaveDeleteLink()
-                        .ShouldNotHaveImageUpdateLink()
-                        .ShouldNotHaveImageDeleteLink();
+                Services.GetService<IssuePageAssert>().ForView(actual).ForLibrary(LibraryId)
+                    .ShouldMatchWithText(item)
+                    .ShouldHaveSelfLink()
+                    .ShouldHavePeriodicalLink()
+                    .ShouldHaveIssueLink()
+                    .ShouldNotHaveImageLink()
+                    .ShouldHaveUpdateLink()
+                    .ShouldHaveDeleteLink()
+                    .ShouldNotHaveImageUpdateLink()
+                    .ShouldNotHaveImageDeleteLink();
             }
         }
     }

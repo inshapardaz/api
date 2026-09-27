@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Domain.Models;
+using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Adapters.Repositories;
 
 namespace Inshapardaz.Api.Tests.Framework.DataBuilders
@@ -111,6 +112,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                 .With(b => b.IsPublic, true)
                                 .With(b => b.LastModified, RandomData.Date)
                                 .With(b => b.Status, EditingStatus.Completed)
+                                .With(b => b.Type, ArticleType.Writing)
                                 .Without(b => b.WriterAccountId)
                                 .Without(b => b.WriterAssignTimeStamp)
                                 .Without(b => b.ReviewerAccountId)

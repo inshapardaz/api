@@ -20,6 +20,7 @@ public class BookController(
     IQueryProcessor queryProcessor,
     IRenderBook bookRenderer,
     IRenderFile fileRenderer,
+    IRenderCategory categoryRenderer,
     IUserHelper userHelper)
     : Controller
 {
@@ -161,6 +162,42 @@ public class BookController(
         {
             return new OkObjectResult(renderResult);
         }
+    }
+
+    [HttpGet("libraries/{libraryId}/books/{bookId}/categories", Name = nameof(BookController.GetBookCategories))]
+    public async Task<IActionResult> GetBookCategories(int libraryId, int bookId, CancellationToken token = default(CancellationToken))
+    {
+        var query = new GetBookCategoriesQuery(libraryId, bookId);
+        var categories = await queryProcessor.ExecuteAsync(query, cancellationToken: token);
+
+        return new OkObjectResult(categoryRenderer.Render(categories, libraryId));
+    }
+
+    [HttpPut("libraries/{libraryId}/books/{bookId}/categories", Name = nameof(BookController.SetBookCategories))]
+    public async Task<IActionResult> SetBookCategories(int libraryId, int bookId, [FromBody] List<int> categoryIds, CancellationToken token = default(CancellationToken))
+    {
+        var request = new SetBookCategoriesRequest(libraryId, bookId, categoryIds ?? new List<int>());
+        await commandProcessor.SendAsync(request, cancellationToken: token);
+
+        return new OkObjectResult(categoryRenderer.Render(request.Result, libraryId));
+    }
+
+    [HttpPost("libraries/{libraryId}/books/{bookId}/categories/{categoryId}", Name = nameof(BookController.AddCategoryToBook))]
+    public async Task<IActionResult> AddCategoryToBook(int libraryId, int bookId, int categoryId, CancellationToken token = default(CancellationToken))
+    {
+        var request = new AddCategoryToBookRequest(libraryId, bookId, categoryId);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
+
+        return new OkObjectResult(categoryRenderer.Render(request.Result, libraryId));
+    }
+
+    [HttpDelete("libraries/{libraryId}/books/{bookId}/categories/{categoryId}", Name = nameof(BookController.RemoveCategoryFromBook))]
+    public async Task<IActionResult> RemoveCategoryFromBook(int libraryId, int bookId, int categoryId, CancellationToken token = default(CancellationToken))
+    {
+        var request = new RemoveCategoryFromBookRequest(libraryId, bookId, categoryId);
+        await commandProcessor.SendAsync(request, cancellationToken: token);
+
+        return new NoContentResult();
     }
 
     [HttpDelete("libraries/{libraryId}/books/{bookId}", Name = nameof(BookController.DeleteBook))]

@@ -65,7 +65,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.SequenceNumber == item.SequenceNumber);
                 Services.GetService<IssuePageAssert>().ForView(actual).ForLibrary(LibraryId)
-                        .ShouldMatchWithoutText(item)
+                        .ShouldMatchWithText(item)
                         .ShouldHaveSelfLink()
                         .ShouldHavePeriodicalLink()
                         .ShouldHaveIssueLink()

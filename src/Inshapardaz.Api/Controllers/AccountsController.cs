@@ -62,14 +62,11 @@ public class AccountsController(
     public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest? model, CancellationToken cancellationToken)
     {
         var token = model?.Token ?? Request.Cookies["refreshToken"];
-        if (token is not null)
-        {
-            var command = new RevokeTokenCommand(token);
-            await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
-        }
-        
-        SetRefreshTokenCookie(token, true);
-        SetAccessTokenCookie(token, true);
+        var command = new RevokeTokenCommand(token);
+        await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+
+        SetRefreshTokenCookie(string.Empty, true);
+        SetAccessTokenCookie(string.Empty, true);
         return Ok();
     }
 

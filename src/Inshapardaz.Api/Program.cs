@@ -196,8 +196,12 @@ builder.Services.AddAuthentication(options =>
     {
         OnMessageReceived = context =>
         {
-            // Fall back to cookie if no Authorization header present
-            if (string.IsNullOrEmpty(context.Token))
+            // Fall back to the cookie only when the caller sent no Authorization header at all.
+            // context.Token is still null at this point regardless of the header (the default
+            // header-based extraction runs *after* this event), so checking it here fell back to
+            // the cookie unconditionally, letting a stale login cookie silently override an explicit
+            // Authorization: Bearer header from the actual caller.
+            if (string.IsNullOrEmpty(context.Request.Headers.Authorization))
             {
                 context.Token = context.Request.Cookies["token"];
             }

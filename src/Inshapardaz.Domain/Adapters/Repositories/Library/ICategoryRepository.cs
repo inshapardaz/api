@@ -1,4 +1,4 @@
-﻿using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Models.Library;
 
 namespace Inshapardaz.Domain.Adapters.Repositories.Library;
 
@@ -15,4 +15,6 @@ public interface ICategoryRepository
     Task<CategoryModel> GetCategoryById(int libraryId, int categoryId, CancellationToken cancellationToken);
 
     Task<IEnumerable<CategoryModel>> GetCategoriesByIds(int libraryId, IEnumerable<int> enumerable, CancellationToken cancellationToken);
+
+    Task<IEnumerable<CategoryModel>> GetChildCategories(int libraryId, int parentCategoryId, CancellationToken cancellationToken);
 }

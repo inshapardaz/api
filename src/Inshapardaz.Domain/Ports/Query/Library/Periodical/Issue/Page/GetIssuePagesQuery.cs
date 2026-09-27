@@ -1,6 +1,8 @@
-﻿using Inshapardaz.Domain.Adapters.Repositories.Library;
+﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Adapters.Repositories.Library;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
+using Inshapardaz.Domain.Ports.Query.File;
 using Paramore.Darker;
 
 namespace Inshapardaz.Domain.Ports.Query.Library.Periodical.Issue.Page;
@@ -25,22 +27,28 @@ public class GetIssuePagesQuery(
     public AssignmentFilter ReviewerAssignmentFilter { get; set; }
 }
 
-public class GetIssuePagesQueryHandler(IIssuePageRepository issuePageRepository, IQueryProcessor queryProcessor)
+public class GetIssuePagesQueryHandler(IIssuePageRepository issuePageRepository,
+    IFileRepository fileRepository,
+    IFileStorage fileStorage)
     : QueryHandlerAsync<GetIssuePagesQuery, Page<IssuePageModel>>
 {
-    private readonly IQueryProcessor _queryProcessor = queryProcessor;
 
     public override async Task<Page<IssuePageModel>> ExecuteAsync(GetIssuePagesQuery query, CancellationToken cancellationToken = new CancellationToken())
     {
         var pages = await issuePageRepository.GetPagesByIssue(query.LibraryId, query.PeriodicalId, query.VolumeNumber, query.IssueNumber, query.PageNumber, query.PageSize, query.StatusFilter, query.WriterAssignmentFilter, query.ReviewerAssignmentFilter, query.AccountId, cancellationToken);
 
-        // foreach (var page in pages.Data)
-        // {
-        //     if (page.FileId.HasValue)
-        //     { 
-        //         page.Text = await _queryProcessor.ExecuteAsync(new GetTextFileQuery(page.FileId.Value), cancellationToken);
-        //     }
-        // }
+        foreach (var page in pages.Data)
+        {
+            if (page.FileId.HasValue)
+            {
+                var file = await fileRepository.GetFileById(page.FileId.Value, cancellationToken);
+                if (file != null)
+                {
+                    var fc = await fileStorage.GetTextFile(file.FilePath, cancellationToken);
+                    page.Text = fc;
+                }
+            }
+        }
 
         return pages;
     }

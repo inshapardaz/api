@@ -20,7 +20,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
             var account = AccountBuilder.Build();
             _issue = IssueBuilder.WithLibrary(LibraryId).WithPages(20).AssignPagesToWriter(account.Id, 4).Build();
 
-            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages?pageSize=10&pageNumber=1&assignmentFilter=unassigned");
+            _response = await Client.GetAsync($"/libraries/{LibraryId}/periodicals/{_issue.PeriodicalId}/volumes/{_issue.VolumeNumber}/issues/{_issue.IssueNumber}/pages?pageSize=10&pageNumber=1&writerAssignmentFilter=unassigned");
 
             _assert = Services.GetService<PagingAssert<IssuePageView>>().ForResponse(_response);
         }
@@ -56,7 +56,7 @@ namespace Inshapardaz.Api.Tests.Library.Periodical.IssuePage.GetIssuePages
             {
                 var actual = _assert.Data.FirstOrDefault(x => x.SequenceNumber == item.SequenceNumber);
                 Services.GetService<IssuePageAssert>().ForView(actual).ForLibrary(LibraryId)
-                        .ShouldMatchWithoutText(item)
+                        .ShouldMatchWithText(item)
                         .ShouldHaveSelfLink()
                         .ShouldHavePeriodicalLink()
                         .ShouldHaveIssueLink()

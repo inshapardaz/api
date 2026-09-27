@@ -354,6 +354,11 @@ public class LibraryRepository(MySqlConnectionProvider connectionProvider) : ILi
     {
         using (var connection = connectionProvider.GetConnection())
         {
+            await connection.ExecuteAsync(new CommandDefinition(
+                "UPDATE Category SET ParentCategoryId = NULL WHERE LibraryId = @Id",
+                new { Id = libraryId },
+                cancellationToken: cancellationToken));
+
             var sql = @"DELETE FROM Library WHERE Id = @Id";
             var command = new CommandDefinition(sql, new { Id = libraryId }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);

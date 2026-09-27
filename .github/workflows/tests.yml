@@ -1,0 +1,113 @@
+name: Tests
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.TEST_MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: nawishta_test
+          # The official mysql image only grants 'root'@'localhost' by default -- a TCP connection
+          # from the runner (via the published port) arrives as the docker bridge gateway address
+          # (e.g. 172.18.0.1), not 127.0.0.1, so it's rejected with a generic "Access denied" (1045)
+          # that looks identical to a wrong password. MYSQL_ROOT_HOST widens the grant to any host.
+          MYSQL_ROOT_HOST: "%"
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      ASPNETCORE_ENVIRONMENT: Production
+      # Fixture values for this ephemeral CI database/JWT signing key -- not real credentials,
+      # but stored as repo secrets (rather than inline) so secret scanners don't flag them.
+      AppSettings__Security__Secret: ${{ secrets.TEST_JWT_SECRET }}
+      AppSettings__Database__DatabaseConnectionType: MySql
+      # AllowPublicKeyRetrieval is required for MySql.Data to complete caching_sha2_password auth
+      # (MySQL 8's default plugin) over plain TCP with no SSL -- without it, RSA public-key exchange
+      # for a fresh/uncached login is refused and every connection fails with "Access denied", even
+      # with the correct password.
+      AppSettings__Database__ConnectionString: Server=127.0.0.1;Port=3306;Database=nawishta_test;Uid=root;Pwd=${{ secrets.TEST_MYSQL_ROOT_PASSWORD }};AllowPublicKeyRetrieval=True;SslMode=Disabled;
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # This suite creates one WebApplicationFactory per test fixture (thousands total), each
+      # registering its own config-file watcher. The runner's default inotify limits are too low
+      # for that many to coexist, and the run dies partway through with
+      # "The configured user limit (1280) on the number of inotify instances has been reached."
+      - name: Raise inotify limits for the large test suite
+        run: |
+          sudo sysctl -w fs.inotify.max_user_instances=8192
+          sudo sysctl -w fs.inotify.max_user_watches=524288
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore
+        run: dotnet restore tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj
+
+      - name: Build
+        run: dotnet build tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj --no-restore
+
+      - name: Run API integration tests
+        run: >-
+          dotnet test tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj
+          --no-build
+          --logger "trx;LogFileName=test-results.trx"
+          --results-directory ./TestResults
+          --collect:"XPlat Code Coverage"
+
+      - name: Report test results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: API test results
+          path: "TestResults/*.trx"
+          reporter: dotnet-trx
+          fail-on-error: true
+
+      - name: Generate coverage report
+        uses: danielpalme/ReportGenerator-GitHub-Action@5
+        if: always()
+        with:
+          reports: "TestResults/**/coverage.cobertura.xml"
+          targetdir: coverage-report
+          reporttypes: "Html;MarkdownSummaryGithub"
+
+      - name: Publish coverage summary
+        if: always()
+        run: cat coverage-report/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: "TestResults/*.trx"
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-report

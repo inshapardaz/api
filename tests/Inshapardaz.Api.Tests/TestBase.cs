@@ -4,6 +4,7 @@ using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Storage.Azure;
 using Inshapardaz.Adapters.Database.SqlServer.Repositories;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Inshapardaz.Domain.Models;
@@ -29,6 +30,7 @@ namespace Inshapardaz.Api.Tests
         protected readonly Role? _role;
         private readonly WebApplicationFactory<Program> _factory;
         private readonly AccountDto _account;
+        private Settings _settings;
 
         protected AccountAssert AccountAssert => Services.GetService<AccountAssert>();
         protected FakeSmtpClient SmtpClient => Services.GetService<ISmtpClient>() as FakeSmtpClient;
@@ -42,17 +44,36 @@ namespace Inshapardaz.Api.Tests
             var projectDir = Directory.GetCurrentDirectory();
             var configPath = Path.Combine(projectDir, "appsettings.json");
 
+            // The API requires a JWT secret outside Development; read at host build, before the test appsettings file is applied.
+            if (string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("AppSettings__Security__Secret")))
+            {
+                Environment.SetEnvironmentVariable("AppSettings__Security__Secret", "1448a5f505894b71a009e12200e204051448a5f505894b71a009e12200e20405");
+            }
+
             _factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
+                // Development enables DI scope validation, which rejects resolving the scoped-dependent test builders from the root provider.
+                builder.UseEnvironment("Testing");
                 builder.ConfigureAppConfiguration((context, conf) =>
                 {
-                    conf.AddJsonFile(configPath);
+                    // reloadOnChange: false -- this fixture file never changes during a run, and each
+                    // TestBase/WebApplicationFactory instance otherwise registers its own FileSystemWatcher
+                    // that's never disposed; with thousands of test fixtures in one process, that exhausts
+                    // the CI runner's inotify instance limit long before the suite finishes.
+                    conf.AddJsonFile(configPath, optional: false, reloadOnChange: false);
+                    // WebApplicationFactory appends this AFTER Program.cs's own configuration sources
+                    // (including environment variables), so without re-adding env vars here, this
+                    // fixture file's hardcoded local-dev values (e.g. the DB password) would silently
+                    // win over real values set by the environment -- as in CI, where this made every
+                    // test hit the CI database with the wrong password regardless of what the actual
+                    // environment variable/secret was set to.
+                    conf.AddEnvironmentVariables();
                 });
                 builder.ConfigureTestServices(services => ConfigureServices(services));
             });
 
-            var settings = Services.GetService<IOptions<Settings>>().Value;
+            _settings = Services.GetService<IOptions<Settings>>().Value;
             AccountBuilder = _factory.Services.GetService<AccountDataBuilder>();
 
             if (role.HasValue)
@@ -72,7 +93,7 @@ namespace Inshapardaz.Api.Tests
 
             if (_account != null)
             {
-                var token = TokenBuilder.GenerateToken(settings, _account.Id,
+                var token = TokenBuilder.GenerateToken(_settings, _account.Id,
                     isSuperAdmin: _account.IsSuperAdmin,
                     name: _account.Name,
                     email: _account.Email,
@@ -80,6 +101,24 @@ namespace Inshapardaz.Api.Tests
                     role: _role);
                 Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
             }
+        }
+
+        // The real API issues one `lib:{id}:role` claim per library the account belongs to (see TokenGenerator).
+        // The constructor above only knows about the single library created via `createLibrary: true`, so tests that
+        // build several libraries with roles after construction (createLibrary: false) need to reissue the token to
+        // pick up a role claim for each of those libraries -- otherwise role-gated links never show up for them.
+        protected void RefreshAuthTokenForLibraries(IEnumerable<int> libraryIds, Role role)
+        {
+            if (_account == null) return;
+
+            var token = TokenBuilder.GenerateToken(_settings, _account.Id,
+                isSuperAdmin: _account.IsSuperAdmin,
+                name: _account.Name,
+                email: _account.Email,
+                libraryId: Library?.Id,
+                role: _role,
+                libraryRoles: libraryIds.Select(id => (id, role)));
+            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
         }
 
         private void ConfigureServices(IServiceCollection services)

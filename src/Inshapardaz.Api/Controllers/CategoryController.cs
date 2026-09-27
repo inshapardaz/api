@@ -25,6 +25,24 @@ public class CategoryController(
         return new OkObjectResult(categoryRenderer.Render(categories, libraryId));
     }
 
+    [HttpGet("libraries/{libraryId}/categories/tree", Name = nameof(CategoryController.GetCategoryTree))]
+    public async Task<IActionResult> GetCategoryTree(int libraryId, CancellationToken token = default(CancellationToken))
+    {
+        var query = new GetCategoryTreeQuery(libraryId);
+        var categories = await queryProcessor.ExecuteAsync(query, cancellationToken: token);
+
+        return new OkObjectResult(categoryRenderer.Render(categories, libraryId));
+    }
+
+    [HttpGet("libraries/{libraryId}/categories/{categoryId}/children", Name = nameof(CategoryController.GetChildCategories))]
+    public async Task<IActionResult> GetChildCategories(int libraryId, int categoryId, CancellationToken token = default(CancellationToken))
+    {
+        var query = new GetChildCategoriesQuery(libraryId, categoryId);
+        var categories = await queryProcessor.ExecuteAsync(query, cancellationToken: token);
+
+        return new OkObjectResult(categoryRenderer.Render(categories, libraryId));
+    }
+
     [HttpGet("libraries/{libraryId}/categories/{categoryId}", Name = nameof(CategoryController.GetCategoryById))]
     public async Task<IActionResult> GetCategoryById(int libraryId, int categoryId, CancellationToken token = default(CancellationToken))
     {

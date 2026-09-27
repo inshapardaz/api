@@ -87,4 +87,8 @@ public static class RelTypes
     public const string CreateArticle = "create-article";
     public const string AddBook = "add-book";
     public const string RemoveBookFromBookShelf = "remove-book-from-bookshelf";
+    public const string Children = "children";
+    public const string Parent = "parent";
+    public const string Tree = "tree";
+    public const string SetCategories = "set-categories";
 }

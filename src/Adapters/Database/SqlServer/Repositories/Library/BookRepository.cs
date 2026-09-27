@@ -962,4 +962,59 @@ public class BookRepository(SqlServerConnectionProvider connectionProvider) : IB
                 return "Title";
         }
     }
+
+    public async Task<IEnumerable<CategoryModel>> GetBookCategories(int libraryId, int bookId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"Select c.Id, c.Name, c.ParentCategoryId
+                        From Category AS c
+                        Inner Join BookCategory bc On bc.CategoryId = c.Id
+                        Inner Join Book b On b.Id = bc.BookId
+                        Where b.LibraryId = @LibraryId And bc.BookId = @BookId";
+            var command = new CommandDefinition(sql, new { LibraryId = libraryId, BookId = bookId }, cancellationToken: cancellationToken);
+
+            return await connection.QueryAsync<CategoryModel>(command);
+        }
+    }
+
+    public async Task SetBookCategories(int libraryId, int bookId, IEnumerable<int> categoryIds, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            await connection.ExecuteAsync(new CommandDefinition(
+                "Delete From BookCategory Where BookId = @BookId",
+                new { BookId = bookId },
+                cancellationToken: cancellationToken));
+
+            if (categoryIds != null && categoryIds.Any())
+            {
+                var sqlCategory = @"Insert Into BookCategory (BookId, CategoryId) Values (@BookId, @CategoryId);";
+                var bookCategories = categoryIds.Select(id => new { BookId = bookId, CategoryId = id });
+                var command = new CommandDefinition(sqlCategory, bookCategories, cancellationToken: cancellationToken);
+                await connection.ExecuteAsync(command);
+            }
+        }
+    }
+
+    public async Task AddCategoryToBook(int libraryId, int bookId, int categoryId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"If Not Exists (Select 1 From BookCategory Where BookId = @BookId And CategoryId = @CategoryId)
+                        Insert Into BookCategory (BookId, CategoryId) Values (@BookId, @CategoryId)";
+            var command = new CommandDefinition(sql, new { BookId = bookId, CategoryId = categoryId }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+        }
+    }
+
+    public async Task RemoveCategoryFromBook(int libraryId, int bookId, int categoryId, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetLibraryConnection())
+        {
+            var sql = @"Delete From BookCategory Where BookId = @BookId And CategoryId = @CategoryId";
+            var command = new CommandDefinition(sql, new { BookId = bookId, CategoryId = categoryId }, cancellationToken: cancellationToken);
+            await connection.ExecuteAsync(command);
+        }
+    }
 }

@@ -21,6 +21,11 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: ${{ secrets.TEST_MYSQL_ROOT_PASSWORD }}
           MYSQL_DATABASE: nawishta_test
+          # The official mysql image only grants 'root'@'localhost' by default -- a TCP connection
+          # from the runner (via the published port) arrives as the docker bridge gateway address
+          # (e.g. 172.18.0.1), not 127.0.0.1, so it's rejected with a generic "Access denied" (1045)
+          # that looks identical to a wrong password. MYSQL_ROOT_HOST widens the grant to any host.
+          MYSQL_ROOT_HOST: "%"
         ports:
           - 3306:3306
         options: >-

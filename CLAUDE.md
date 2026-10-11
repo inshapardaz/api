@@ -125,6 +125,23 @@ The very first migration creates the root user; its credentials come from `NAWIS
 
 Pluggable via `IFileStorage`, 4 backends selectable per library: FileSystem (local disk, `data/{libraryId}`), Azure Blob Storage, AWS S3, Database (MySQL/SQL Server).
 
+### Language tools
+
+Global (not library-scoped) language features, moved here from the LanguageTools repo, which is now meant to be a front-end over these endpoints. DI for all of them is in `Infrastructure/Configuration/LanguageToolsConfiguration.cs`.
+
+| Feature | Routes | Storage | Writes allowed for |
+|---|---|---|---|
+| Spelling dictionary (one per language) | `/tools/{lang}/words*`, `/tools/{lang}/spellchecker/check`, `/replace` | `CommonWords`, `SpellingReplacements` | add/update: editors; delete/bulk: Admin, DictionaryWriter |
+| Autocorrect / punctuation lists | `/tools/{lang}/corrections/{autocorrect\|punctuation}*`, `/tools/{lang}/spellchecker/{profile}` | `Corrections` (`Profile` column) | editors; bulk: Admin, DictionaryWriter |
+| Meaning dictionaries (many, public to read) | `/dictionaries*` | `Dictionaries`, `DictionaryArticles` | create: Admin, DictionaryWriter; change: the owner while still a DictionaryWriter, or Admin |
+| Transliteration (`ur`, `hi`) | `/tools/{lang}/transliterate`, `/tools/{lang}/transliteration/entries*` | `TransliterationEntries` | Admin, DictionaryWriter |
+
+- **Roles**: "DictionaryWriter" is an account-wide flag (`Accounts.IsDictionaryWriter`, `isDictionaryWriter` claim), not a library `Role`; Admins grant it via `PUT/DELETE /accounts/{id}/roles/dictionary-writer`. An "editor" is Admin, DictionaryWriter, or Writer/LibraryAdmin in any library (`IUserHelper.IsEditor`). Handlers use `[AuthorizeEditor]` / `[AuthorizeLanguageTools]`; per-dictionary ownership is checked in the handler via `DictionaryPermissions`.
+- **Word matching** goes through `WordNormaliser` (Arabic/Urdu letter variants, diacritics, zero-width joiners), both for spell check and for dictionary headwords (`HeadwordNormalised` column).
+- **Caches**: `SpellingIndexCache` and `TransliterationDictionaryCache` are per-process singletons, invalidated by the handlers that change their data. Writes made directly in the database (e.g. test data helpers) aren't seen until the cache for that language is rebuilt.
+- **Adapters**: `Adapters/Dictionary.Formats` (StarDict/DSL parsing and StarDict/DSL/JSON/Kobo/Kindle export, behind `IReadDictionaryFiles`/`IWriteDictionaryFiles`) and `Adapters/Transliteration` (rule-based engine behind `ITransliterate`, unit-tested in `tests/Inshapardaz.Adapters.Transliteration.Tests`).
+- `tools/language-tools-migration/migrate.py` is the one-off copy of LanguageTools' data into these tables.
+
 ## Coding Conventions
 
 | Element | Convention | Example |

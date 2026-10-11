@@ -13,7 +13,7 @@ public class DeleteCorrectionRequest(string language, string profile, long corre
 public class DeleteCorrectionRequestHandler(ICorrectionRepository correctionRepository)
     : RequestHandlerAsync<DeleteCorrectionRequest>
 {
-    [AuthorizeAdmin(1)]
+    [AuthorizeEditor(1)]
     public override async Task<DeleteCorrectionRequest> HandleAsync(DeleteCorrectionRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         var author = await correctionRepository.GetCorrection(command.Language, command.Profile, command.CorrectionId, cancellationToken);

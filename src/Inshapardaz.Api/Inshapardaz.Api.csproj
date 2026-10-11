@@ -11,15 +11,23 @@
     <PackageReference Include="Elastic.Serilog.Sinks" Version="8.11.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.19.1" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.19.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.19.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.19.0" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.19.0" />
     <PackageReference Include="Paramore.Brighter.Extensions.DependencyInjection" Version="9.7.8" />
     <PackageReference Include="Paramore.Darker.AspNetCore" Version="4.1.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
+    <PackageReference Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Adapters\Database\MySql\Inshapardaz.Adapters.Database.MySql.csproj" />
     <ProjectReference Include="..\Adapters\Database\SqlServer\Inshapardaz.Adapters.Database.SqlServer.csproj" />
+    <ProjectReference Include="..\Adapters\Dictionary.Formats\Inshapardaz.Adapters.Dictionary.Formats.csproj" />
+    <ProjectReference Include="..\Adapters\Transliteration\Inshapardaz.Adapters.Transliteration.csproj" />
     <ProjectReference Include="..\Adapters\Ocr.Google\Inshapardaz.Adapter.Ocr.Google.csproj" />
     <ProjectReference Include="..\Adapters\Storage\Azure\Inshapardaz.Storage.Azure.csproj" />
     <ProjectReference Include="..\Adapters\Storage\FileSystem\Inshapardaz.Storage.FileSystem.csproj" />

@@ -29,6 +29,15 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         
         public CommonWordDto Build() => Build(1).First();
 
+        // Adds these exact words (in the builder's language) to the dictionary.
+        public IEnumerable<CommonWordDto> BuildWords(params string[] words)
+        {
+            var dtos = words.Select(w => new CommonWordDto { Word = w, Language = _language ?? RandomData.Locale }).ToList();
+            _commonWords.AddRange(dtos);
+            commonWordsRepository.AddCommonWords(dtos);
+            return dtos;
+        }
+
         public IEnumerable<CommonWordDto> Build(int count)
         {
             var fixture = new Fixture();

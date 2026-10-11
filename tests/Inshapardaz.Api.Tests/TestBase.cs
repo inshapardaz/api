@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.Tests
         protected AccountAssert AccountAssert => Services.GetService<AccountAssert>();
         protected FakeSmtpClient SmtpClient => Services.GetService<ISmtpClient>() as FakeSmtpClient;
 
-        public TestBase(Role? role = null, bool periodicalsEnabled = false, bool createLibrary = true)
+        public TestBase(Role? role = null, bool periodicalsEnabled = false, bool createLibrary = true, bool isDictionaryWriter = false)
         {
             _periodicalsEnabled = periodicalsEnabled;
             _role = role;
@@ -78,7 +78,7 @@ namespace Inshapardaz.Api.Tests
 
             if (role.HasValue)
             {
-                AccountBuilder = AccountBuilder.As(_role.Value).Verified();
+                AccountBuilder = AccountBuilder.As(_role.Value).AsDictionaryWriter(isDictionaryWriter).Verified();
                 _account = AccountBuilder.Build();
             }
 
@@ -95,6 +95,7 @@ namespace Inshapardaz.Api.Tests
             {
                 var token = TokenBuilder.GenerateToken(_settings, _account.Id,
                     isSuperAdmin: _account.IsSuperAdmin,
+                    isDictionaryWriter: _account.IsDictionaryWriter,
                     name: _account.Name,
                     email: _account.Email,
                     libraryId: Library?.Id,
@@ -113,6 +114,7 @@ namespace Inshapardaz.Api.Tests
 
             var token = TokenBuilder.GenerateToken(_settings, _account.Id,
                 isSuperAdmin: _account.IsSuperAdmin,
+                isDictionaryWriter: _account.IsDictionaryWriter,
                 name: _account.Name,
                 email: _account.Email,
                 libraryId: Library?.Id,
@@ -160,6 +162,8 @@ namespace Inshapardaz.Api.Tests
                 services.AddTransient<IFileTestRepository, SqlServerFileTestRepository>();
                 services.AddTransient<ICorrectionTestRepository, SqlServerCorrectionTestRepository>();
                 services.AddTransient<ICommonWordsTestRepository, SqlServerCommonWordsTestRepository>();
+                services.AddTransient<IDictionaryTestRepository, SqlServerDictionaryTestRepository>();
+                services.AddTransient<ITransliterationTestRepository, SqlServerTransliterationTestRepository>();
             }
             else if (DatabaseType == DatabaseTypes.MySql)
             {
@@ -182,6 +186,8 @@ namespace Inshapardaz.Api.Tests
                 services.AddTransient<IFileTestRepository, MySqlFileTestRepository>();
                 services.AddTransient<ICorrectionTestRepository, MySqlCorrectionTestRepository>();
                 services.AddTransient<ICommonWordsTestRepository, MySqlCommonWordsTestRepository>();
+                services.AddTransient<IDictionaryTestRepository, MySqlDictionaryTestRepository>();
+                services.AddTransient<ITransliterationTestRepository, MySqlTransliterationTestRepository>();
             }
             else
             {
@@ -201,6 +207,7 @@ namespace Inshapardaz.Api.Tests
             .AddTransient<AccountAssert>()
             .AddTransient<CorrectionBuilder>()
             .AddTransient<CommonWordBuilder>()
+            .AddTransient<DictionaryDataBuilder>()
             .AddTransient<BookShelfDataBuilder>()
             .AddTransient<ArticlesDataBuilder>()
             .AddTransient<FileStoreAssert>();
@@ -264,6 +271,7 @@ namespace Inshapardaz.Api.Tests
         private PeriodicalsDataBuilder _periodicalBuilder;
         protected CorrectionBuilder _correctionBuilder;
         protected CommonWordBuilder _commonWordBuilder;
+        private DictionaryDataBuilder _dictionaryBuilder;
         private BookShelfDataBuilder _bookshelfDataBuilder;
         private ArticlesDataBuilder _articleBuilder;
         private FileStoreAssert _fileStoreAssert;
@@ -428,6 +436,8 @@ namespace Inshapardaz.Api.Tests
             }
         }
         
+        protected DictionaryDataBuilder DictionaryBuilder => _dictionaryBuilder ??= _factory.Services.GetService<DictionaryDataBuilder>();
+
         protected CommonWordBuilder CommonWordBuilder
         {
             get
@@ -488,6 +498,7 @@ namespace Inshapardaz.Api.Tests
             _libraryBuilder?.CleanUp();
             _correctionBuilder?.Cleanup();
             _commonWordBuilder?.Cleanup();
+            _dictionaryBuilder?.Cleanup();
         }
     }
 }

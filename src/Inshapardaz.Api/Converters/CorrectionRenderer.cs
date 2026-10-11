@@ -8,7 +8,7 @@ namespace Inshapardaz.Api.Converters;
 
 public interface IRenderCorrection
 {
-    PageView<CorrectionView> Render(PageRendererArgs<CorrectionModel> source, string language, string profile);
+    PageView<CorrectionView> Render(PageRendererArgs<CorrectionModel> source, string language, string profile, CorrectionSortByType sortBy = CorrectionSortByType.IncorrectText);
     IEnumerable<CorrectionSimpleView> RenderSimple(IEnumerable<CorrectionModel> source);
 
     CorrectionView Render(CorrectionModel correction);
@@ -16,7 +16,7 @@ public interface IRenderCorrection
 
 public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper) : IRenderCorrection
 {
-    public PageView<CorrectionView> Render(PageRendererArgs<CorrectionModel> source, string language, string profile)
+    public PageView<CorrectionView> Render(PageRendererArgs<CorrectionModel> source, string language, string profile, CorrectionSortByType sortBy = CorrectionSortByType.IncorrectText)
     {
         var page = new PageView<CorrectionView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
         {
@@ -34,12 +34,13 @@ public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper
                 {
                     { "pageNumber" , page.CurrentPageIndex.ToString() },
                     { "pageSize", page.PageSize.ToString() },
-                    { "query", source.RouteArguments.Query }
+                    { "query", source.RouteArguments.Query },
+                    { "sortBy", sortBy == CorrectionSortByType.Usage ? "usage" : null }
                 }
             })
         };
 
-        if (userHelper.IsAdmin)
+        if (userHelper.IsEditor)
         {
             links.Add(linkRenderer.Render(new Link
             {
@@ -62,7 +63,8 @@ public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper
                 {
                     { "pageNumber" , (page.CurrentPageIndex + 1).ToString() },
                     { "pageSize", page.PageSize.ToString() },
-                    { "query", source.RouteArguments.Query }
+                    { "query", source.RouteArguments.Query },
+                    { "sortBy", sortBy == CorrectionSortByType.Usage ? "usage" : null }
                 }
             }));
         }
@@ -79,7 +81,8 @@ public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper
                 {
                     { "pageNumber" , (page.CurrentPageIndex - 1).ToString() },
                     { "pageSize", page.PageSize.ToString() },
-                    { "query", source.RouteArguments.Query }
+                    { "query", source.RouteArguments.Query },
+                    { "sortBy", sortBy == CorrectionSortByType.Usage ? "usage" : null }
                 }
             }));
         }
@@ -101,7 +104,7 @@ public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper
         }));
 
 
-        if (userHelper.IsAdmin)
+        if (userHelper.IsEditor)
         {
             view.Links.Add(linkRenderer.Render(new Link
             {

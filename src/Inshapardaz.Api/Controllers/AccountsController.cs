@@ -71,7 +71,7 @@ public class AccountsController(
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status410Gone)]
     [HttpGet("invitation/{id}", Name = nameof(CheckInvitationCode))]
     public async Task<IActionResult> CheckInvitationCode(string id, CancellationToken cancellationToken)
@@ -106,7 +106,7 @@ public class AccountsController(
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [HttpPost("invite")]
     [HttpPost("invite/library/{libraryId}", Name = nameof(AccountsController.InviteUser))]
@@ -280,6 +280,26 @@ public class AccountsController(
 
         await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
         return Ok(model);
+    }
+
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpPut("{id:int}/roles/dictionary-writer", Name = nameof(AccountsController.AddDictionaryWriterRole))]
+    public async Task<IActionResult> AddDictionaryWriterRole(int id, CancellationToken cancellationToken)
+    {
+        await commandProcessor.SendAsync(new SetDictionaryWriterCommand(id, true), cancellationToken: cancellationToken);
+        return NoContent();
+    }
+
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [HttpDelete("{id:int}/roles/dictionary-writer", Name = nameof(AccountsController.RemoveDictionaryWriterRole))]
+    public async Task<IActionResult> RemoveDictionaryWriterRole(int id, CancellationToken cancellationToken)
+    {
+        await commandProcessor.SendAsync(new SetDictionaryWriterCommand(id, false), cancellationToken: cancellationToken);
+        return NoContent();
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]

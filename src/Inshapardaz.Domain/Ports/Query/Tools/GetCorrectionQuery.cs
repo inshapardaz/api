@@ -14,7 +14,6 @@ public class GetCorrectionQuery : IQuery<CorrectionModel>
 public class GetCorrectionQueryHandler(ICorrectionRepository correctionRepository)
     : QueryHandlerAsync<GetCorrectionQuery, CorrectionModel>
 {
-    [AuthorizeAdmin(1)]
     public async override Task<CorrectionModel> ExecuteAsync(GetCorrectionQuery query, CancellationToken cancellationToken = default)
         => await correctionRepository.GetCorrection(query.Language, query.Profile, query.Id, cancellationToken);
 

@@ -13,7 +13,8 @@ public static class CorrectionMapper
             Profile = source.Profile,
             IncorrectText = source.IncorrectText,
             CorrectText = source.CorrectText,
-            CompleteWord = source.CompleteWord
+            CompleteWord = source.CompleteWord,
+            Usage = source.Usage
         };
 
     public static CorrectionModel Map(this CorrectionView source)
@@ -29,6 +30,24 @@ public static class CorrectionMapper
 
     public static CorrectionSimpleView MapSimple(this CorrectionModel source)
         => new CorrectionSimpleView
+        {
+            Id = source.Id,
+            IncorrectText = source.IncorrectText,
+            CorrectText = source.CorrectText,
+            CompleteWord = source.CompleteWord,
+            Usage = source.Usage
+        };
+
+    public static CorrectionTransferView MapTransfer(this CorrectionModel source)
+        => new CorrectionTransferView
+        {
+            IncorrectText = source.IncorrectText,
+            CorrectText = source.CorrectText,
+            CompleteWord = source.CompleteWord
+        };
+
+    public static CorrectionModel Map(this CorrectionTransferView source)
+        => new CorrectionModel
         {
             IncorrectText = source.IncorrectText,
             CorrectText = source.CorrectText,

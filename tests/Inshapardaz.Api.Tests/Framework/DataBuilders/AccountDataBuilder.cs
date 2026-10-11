@@ -18,6 +18,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         private int? _libraryId;
         private string _resetToken = null;
         private DateTime? _resetTokenExpiry = null;
+        private bool _isDictionaryWriter;
 
         public AccountDto Account { get; private set; }
 
@@ -30,6 +31,12 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
         public AccountDataBuilder As(Role role)
         {
             _role = role;
+            return this;
+        }
+
+        public AccountDataBuilder AsDictionaryWriter(bool isDictionaryWriter = true)
+        {
+            _isDictionaryWriter = isDictionaryWriter;
             return this;
         }
 
@@ -86,6 +93,7 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                                  .With(a => a.AcceptTerms, true)
                                  .With(a => a.Created, DateTime.UtcNow)
                                  .With(a => a.IsSuperAdmin, _role == Role.Admin)
+                                 .With(a => a.IsDictionaryWriter, _isDictionaryWriter)
                                  .With(a => a.InvitationCode, _invitationCode)
                                  .With(a => a.InvitationCodeExpiry, _invitationExipry)
                                  .With(a => a.ResetToken, _resetToken)

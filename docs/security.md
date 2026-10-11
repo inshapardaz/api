@@ -28,3 +28,15 @@ Contributors are the users who have access to write contents in the given contex
 ## Reader
 
 Reader is a user who has read only access to the resource. It is similar to un-authenticated access for public resource. Plans are in place to allow people to be readers for private resources.
+
+# Language tools
+
+The language tools (`/tools/...`) are shared by all libraries, so access to them is not tied to a library role:
+
+| Who | Can |
+|---|---|
+| Anyone | read word lists, autocorrect and punctuation lists |
+| Editor: Writer or LibraryAdmin in any library, Dictionary Writer, Administrator | add and update words; add, update and delete autocorrect/punctuation corrections |
+| Dictionary Writer, Administrator | delete words |
+
+**Dictionary Writer** is an account-wide flag (`isDictionaryWriter` claim), not a library role. Administrators grant it with `PUT /accounts/{id}/roles/dictionary-writer` and revoke it with `DELETE` on the same URL; the change applies from the account's next login or token refresh. Account responses carry `add-dictionary-writer`/`remove-dictionary-writer` links for administrators.

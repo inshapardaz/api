@@ -45,6 +45,15 @@ public static class DatabaseFactory
     public static ICommonWordsRepository GetCommonWordsRepository(IServiceProvider provider) =>
                 GetRepository<ICommonWordsRepository, SqlServerRepoisotires.CommonWordsRepository, MySqlRepositories.CommonWordsRepository>(provider);
 
+    public static ISpellingReplacementRepository GetSpellingReplacementRepository(IServiceProvider provider) =>
+                GetRepository<ISpellingReplacementRepository, SqlServerRepoisotires.SpellingReplacementRepository, MySqlRepositories.SpellingReplacementRepository>(provider);
+
+    public static IDictionaryRepository GetDictionaryRepository(IServiceProvider provider) =>
+                GetRepository<IDictionaryRepository, SqlServerRepoisotires.DictionaryRepository, MySqlRepositories.DictionaryRepository>(provider);
+
+    public static ITransliterationRepository GetTransliterationRepository(IServiceProvider provider) =>
+                GetRepository<ITransliterationRepository, SqlServerRepoisotires.TransliterationRepository, MySqlRepositories.TransliterationRepository>(provider);
+
     public static IIssueArticleRepository GetIssueArticleRepository(IServiceProvider provider) =>
                 GetRepository<IIssueArticleRepository, SqlServerRepoisotires.Library.IssueArticleRepository, MySqlRepositories.Library.IssueArticleRepository>(provider);
 

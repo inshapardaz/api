@@ -118,6 +118,22 @@ public class AccountRenderer(IRenderLink linkRenderer, IUserHelper userHelper) :
                 Rel = RelTypes.AddToLibrary,
                 Parameters = new { accountId = model.Id }
             }));
+
+            view.Links.Add(model.IsDictionaryWriter
+                ? linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(AccountsController.RemoveDictionaryWriterRole),
+                    Method = HttpMethod.Delete,
+                    Rel = RelTypes.RemoveDictionaryWriter,
+                    Parameters = new { id = model.Id }
+                })
+                : linkRenderer.Render(new Link
+                {
+                    ActionName = nameof(AccountsController.AddDictionaryWriterRole),
+                    Method = HttpMethod.Put,
+                    Rel = RelTypes.AddDictionaryWriter,
+                    Parameters = new { id = model.Id }
+                }));
         }
 
         var isLibraryAdmin = libraryId.HasValue && userHelper.IsLibraryAdmin(libraryId.Value);
@@ -173,6 +189,7 @@ public class AccountRenderer(IRenderLink linkRenderer, IUserHelper userHelper) :
             Name = model.Account.Name,
             Created = model.Account.Created,
             IsSuperAdmin = model.Account.IsSuperAdmin,
+            IsDictionaryWriter = model.Account.IsDictionaryWriter,
             IsVerified = model.Account.IsVerified,
             AccessToken = model.AccessToken,
             AccessTokenExpiry = model.AccessTokenExpiry,

@@ -23,21 +23,48 @@ public class ToolController(
     {
         var query = new GetAllCorrectionsQuery() { Language = language, Profile = profile };
         var result = await queryProcessor.ExecuteAsync(query, cancellationToken: cancellationToken);
-        return Ok(correctionRenderer.RenderSimple(result));
+        return this.OkWithETag(correctionRenderer.RenderSimple(result));
+    }
+
+    // Batched: editors report how often each correction fired since their last report.
+    [HttpPost("/tools/{language}/corrections/{profile}/usage", Name = nameof(RecordCorrectionUsage))]
+    public async Task<IActionResult> RecordCorrectionUsage(string language, string profile, [FromBody] IEnumerable<CorrectionUsageView> usages, CancellationToken cancellationToken)
+    {
+        var request = new RecordCorrectionUsageRequest(language, profile,
+            (usages ?? []).Select(u => new CorrectionUsageModel { Id = u.Id, Count = u.Count }));
+        await commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
+        return NoContent();
+    }
+
+    [HttpPost("/tools/{language}/corrections/{profile}/bulk", Name = nameof(ImportCorrections))]
+    public async Task<IActionResult> ImportCorrections(string language, string profile, [FromBody] IEnumerable<CorrectionTransferView> corrections, CancellationToken cancellationToken)
+    {
+        var request = new ImportCorrectionsRequest(language, profile, (corrections ?? []).Select(c => c.Map()));
+        await commandProcessor.SendAsync(request, cancellationToken: cancellationToken);
+        return Ok(new CorrectionImportResultView { Added = request.Result.Added, Updated = request.Result.Updated, Skipped = request.Result.Skipped });
+    }
+
+    [HttpGet("/tools/{language}/corrections/{profile}/export", Name = nameof(ExportCorrections))]
+    public async Task<IActionResult> ExportCorrections(string language, string profile, CancellationToken cancellationToken)
+    {
+        var result = await queryProcessor.ExecuteAsync(new GetAllCorrectionsQuery { Language = language, Profile = profile }, cancellationToken: cancellationToken);
+        var json = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(result.Select(c => c.MapTransfer()),
+            new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web) { WriteIndented = true });
+        return File(json, "application/json", $"{language}-{profile}.json");
     }
 
 
     [HttpGet("/tools/{language}/corrections/{profile}", Name = nameof(GetCorrections))]
-    public async Task<IActionResult> GetCorrections(string language, string profile, string query, int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default(CancellationToken))
+    public async Task<IActionResult> GetCorrections(string language, string profile, string query, int pageNumber = 1, int pageSize = 10, CorrectionSortByType sortBy = CorrectionSortByType.IncorrectText, CancellationToken cancellationToken = default(CancellationToken))
     {
-        var correctionQuery = new GetCorrectionsQuery() { Language = language, Query = query, Profile = profile, PageNumber = pageNumber, PageSize = pageSize };
+        var correctionQuery = new GetCorrectionsQuery() { Language = language, Query = query, Profile = profile, PageNumber = pageNumber, PageSize = pageSize, SortBy = sortBy };
         var result = await queryProcessor.ExecuteAsync(correctionQuery, cancellationToken: cancellationToken);
         var pageRenderArgs = new PageRendererArgs<CorrectionModel>
         {
             Page = result,
             RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize, Query = query },
         };
-        return Ok(correctionRenderer.Render(pageRenderArgs, language, profile));
+        return Ok(correctionRenderer.Render(pageRenderArgs, language, profile, sortBy));
     }
 
     [HttpGet("/tools/{language}/corrections/{profile}/{id}", Name = nameof(GetCorrectionById))]

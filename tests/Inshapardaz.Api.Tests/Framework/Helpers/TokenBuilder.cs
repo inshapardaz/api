@@ -21,7 +21,8 @@ namespace Inshapardaz.Api.Tests.Framework.Helpers
             string email = null,
             int? libraryId = null,
             Role? role = null,
-            IEnumerable<(int LibraryId, Role Role)> libraryRoles = null)
+            IEnumerable<(int LibraryId, Role Role)> libraryRoles = null,
+            bool isDictionaryWriter = false)
         {
             var mySecurityKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(settings.Security.Secret));
 
@@ -30,7 +31,8 @@ namespace Inshapardaz.Api.Tests.Framework.Helpers
                 new("id", accountId.ToString()),
                 new(ClaimTypes.Name, name ?? string.Empty),
                 new(ClaimTypes.Email, email ?? string.Empty),
-                new("isSuperAdmin", isSuperAdmin.ToString())
+                new("isSuperAdmin", isSuperAdmin.ToString()),
+                new("isDictionaryWriter", isDictionaryWriter.ToString())
             };
 
             if (libraryId.HasValue && role.HasValue)

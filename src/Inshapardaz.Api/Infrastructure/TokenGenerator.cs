@@ -29,7 +29,8 @@ public class TokenGenerator(IOptions<Settings> settings) : IGenerateToken
             new("id", account.Id.ToString()),
             new(ClaimTypes.Name, account.Name ?? string.Empty),
             new(ClaimTypes.Email, account.Email ?? string.Empty),
-            new("isSuperAdmin", account.IsSuperAdmin.ToString())
+            new("isSuperAdmin", account.IsSuperAdmin.ToString()),
+            new("isDictionaryWriter", account.IsDictionaryWriter.ToString())
         };
 
         if (libraries != null)

@@ -74,6 +74,12 @@ jobs:
       - name: Build
         run: dotnet build tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj --no-restore
 
+      - name: Run transliteration engine tests
+        run: >-
+          dotnet test tests/Inshapardaz.Adapters.Transliteration.Tests/Inshapardaz.Adapters.Transliteration.Tests.csproj
+          --logger "trx;LogFileName=transliteration-results.trx"
+          --results-directory ./TestResults
+
       - name: Run API integration tests
         run: >-
           dotnet test tests/Inshapardaz.Api.Tests/Inshapardaz.Api.Tests.csproj

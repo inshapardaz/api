@@ -14,6 +14,7 @@ public static class AccountMapper
             IsVerified = source.IsVerified,
             Created = source.Created,
             IsSuperAdmin = source.IsSuperAdmin,
+            IsDictionaryWriter = source.IsDictionaryWriter,
             Updated = source.Updated,
             Role = source.Role
         };

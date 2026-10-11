@@ -6,6 +6,7 @@ public class AuthenticateResponse
     public string Name { get; set; }
     public string Email { get; set; }
     public bool IsSuperAdmin { get; set; }
+    public bool IsDictionaryWriter { get; set; }
     public DateTime Created { get; set; }
     public DateTime? Updated { get; set; }
     public bool IsVerified { get; set; }

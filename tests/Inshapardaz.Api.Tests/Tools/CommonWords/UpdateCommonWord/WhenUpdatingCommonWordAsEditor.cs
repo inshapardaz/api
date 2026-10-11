@@ -8,10 +8,10 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Tools.CommonWords.UpdateCommonWord
 {
-    [TestFixture(Role.LibraryAdmin)]
-    [TestFixture(Role.Writer)]
-    [TestFixture(Role.Reader)]
-    public class WhenUpdatingCommonWordAsNonAdmin(Role role) : TestBase(role)
+    [TestFixture(Role.Writer, false)]
+    [TestFixture(Role.LibraryAdmin, false)]
+    [TestFixture(Role.Reader, true)]
+    public class WhenUpdatingCommonWordAsEditor(Role role, bool isDictionaryWriter) : TestBase(role, isDictionaryWriter: isDictionaryWriter)
     {
         private HttpResponseMessage _response;
         private CommonWordAssert _assert;
@@ -24,7 +24,7 @@ namespace Inshapardaz.Api.Tests.Tools.CommonWords.UpdateCommonWord
             _commonWord = CommonWordBuilder.Build();
             _update = new CommonWordView
             {
-                Word = _commonWord.Word + "2"
+                Word = _commonWord.Word + "2",
             };
 
             _response = await Client.PutObject($"/tools/{_commonWord.Language}/words/{_commonWord.Id}", _update);
@@ -35,9 +35,17 @@ namespace Inshapardaz.Api.Tests.Tools.CommonWords.UpdateCommonWord
         public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnForbidden() => _response.ShouldBeForbidden();
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveNotUpdatedCorrection() => _assert.ShouldMatchSavedWord(_commonWord);
+        public void ShouldHaveUpdatedCorrection()
+        {
+            _assert.ShouldMatchSavedWord(new CommonWordDto
+            {
+                Id = _commonWord.Id,
+                Language = _commonWord.Language,
+                Word = _update.Word
+            });
+        }
     }
 }

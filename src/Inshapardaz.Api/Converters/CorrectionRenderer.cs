@@ -39,7 +39,7 @@ public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper
             })
         };
 
-        if (userHelper.IsAdmin)
+        if (userHelper.IsEditor)
         {
             links.Add(linkRenderer.Render(new Link
             {
@@ -101,7 +101,7 @@ public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper
         }));
 
 
-        if (userHelper.IsAdmin)
+        if (userHelper.IsEditor)
         {
             view.Links.Add(linkRenderer.Render(new Link
             {

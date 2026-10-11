@@ -35,7 +35,7 @@ namespace Inshapardaz.Api.Tests
         protected AccountAssert AccountAssert => Services.GetService<AccountAssert>();
         protected FakeSmtpClient SmtpClient => Services.GetService<ISmtpClient>() as FakeSmtpClient;
 
-        public TestBase(Role? role = null, bool periodicalsEnabled = false, bool createLibrary = true)
+        public TestBase(Role? role = null, bool periodicalsEnabled = false, bool createLibrary = true, bool isDictionaryWriter = false)
         {
             _periodicalsEnabled = periodicalsEnabled;
             _role = role;
@@ -78,7 +78,7 @@ namespace Inshapardaz.Api.Tests
 
             if (role.HasValue)
             {
-                AccountBuilder = AccountBuilder.As(_role.Value).Verified();
+                AccountBuilder = AccountBuilder.As(_role.Value).AsDictionaryWriter(isDictionaryWriter).Verified();
                 _account = AccountBuilder.Build();
             }
 
@@ -95,6 +95,7 @@ namespace Inshapardaz.Api.Tests
             {
                 var token = TokenBuilder.GenerateToken(_settings, _account.Id,
                     isSuperAdmin: _account.IsSuperAdmin,
+                    isDictionaryWriter: _account.IsDictionaryWriter,
                     name: _account.Name,
                     email: _account.Email,
                     libraryId: Library?.Id,
@@ -113,6 +114,7 @@ namespace Inshapardaz.Api.Tests
 
             var token = TokenBuilder.GenerateToken(_settings, _account.Id,
                 isSuperAdmin: _account.IsSuperAdmin,
+                isDictionaryWriter: _account.IsDictionaryWriter,
                 name: _account.Name,
                 email: _account.Email,
                 libraryId: Library?.Id,

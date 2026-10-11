@@ -5,10 +5,8 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Tools.CommonWords.AddCommonWord
 {
-    [TestFixture(Role.Reader)]
-    [TestFixture(Role.Writer)]
-    [TestFixture(Role.LibraryAdmin)]
-    public class WhenAddingCommomWordAsNonAdmin(Role role) : TestBase(role)
+    [TestFixture]
+    public class WhenAddingCommonWordAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
 

@@ -13,7 +13,7 @@ public class AddCommonWordRequest(CommonWordModel commonWordModel) : RequestBase
 public class AddCommonWordRequestHandler(ICommonWordsRepository commonWordsRepository)
     : RequestHandlerAsync<AddCommonWordRequest>
 {
-    [AuthorizeAdmin(1)]
+    [AuthorizeEditor(1)]
     public override async Task<AddCommonWordRequest> HandleAsync(AddCommonWordRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         command.Result = await commonWordsRepository.AddWord(command.CommonWordModel, cancellationToken);

@@ -13,7 +13,7 @@ public class AddCorrectionRequest(CorrectionModel correctionModel) : RequestBase
 public class AddCorrectionRequestHandler(ICorrectionRepository correctionRepository)
     : RequestHandlerAsync<AddCorrectionRequest>
 {
-    [AuthorizeAdmin(1)]
+    [AuthorizeEditor(1)]
     public override async Task<AddCorrectionRequest> HandleAsync(AddCorrectionRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         command.Result = await correctionRepository.AddCorrection(command.Correction, cancellationToken);

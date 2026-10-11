@@ -11,6 +11,7 @@
         public string VerificationToken { get; set; }
         public DateTime? Verified { get; set; }
         public bool IsSuperAdmin { get; set; }
+        public bool IsDictionaryWriter { get; set; }
         public string InvitationCode { get; set; }
         public DateTime? InvitationCodeExpiry { get; set; }
         public string PasswordHash { get; set; }

@@ -13,6 +13,10 @@ public class UserHelper(IHttpContextAccessor contextAccessor)
 
     public bool IsAdmin => IsAuthenticated && IsSuperAdmin;
 
+    public bool IsDictionaryWriter => IsAuthenticated && HasDictionaryWriterClaim;
+
+    public bool IsEditor => IsAuthenticated && (IsSuperAdmin || HasDictionaryWriterClaim || HasWriterRoleInAnyLibrary);
+
     public bool IsLibraryAdmin(int libraryId) =>
         IsAuthenticated && (IsAdmin || HasLibraryRole(libraryId, Role.LibraryAdmin));
 
@@ -33,13 +37,22 @@ public class UserHelper(IHttpContextAccessor contextAccessor)
                 Id = id,
                 Name = User.FindFirst(ClaimTypes.Name)?.Value,
                 Email = User.FindFirst(ClaimTypes.Email)?.Value,
-                IsSuperAdmin = IsSuperAdmin
+                IsSuperAdmin = IsSuperAdmin,
+                IsDictionaryWriter = HasDictionaryWriterClaim
             };
         }
     }
 
     private bool IsSuperAdmin =>
         bool.TryParse(User?.FindFirst("isSuperAdmin")?.Value, out var isSuperAdmin) && isSuperAdmin;
+
+    private bool HasDictionaryWriterClaim =>
+        bool.TryParse(User?.FindFirst("isDictionaryWriter")?.Value, out var isDictionaryWriter) && isDictionaryWriter;
+
+    private bool HasWriterRoleInAnyLibrary =>
+        User?.Claims.Any(c => c.Type.StartsWith("lib:") && c.Type.EndsWith(":role")
+            && Enum.TryParse<Role>(c.Value, out var role)
+            && role is Role.Admin or Role.LibraryAdmin or Role.Writer) ?? false;
 
     private bool HasLibraryRole(int libraryId, Role role)
     {

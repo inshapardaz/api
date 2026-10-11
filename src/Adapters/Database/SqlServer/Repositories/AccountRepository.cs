@@ -449,9 +449,24 @@ public class AccountRepository(SqlServerConnectionProvider connectionProvider) :
                             InvitationCode = NULL,
                             InvitationCodeExpiry = NULL,
                             IsDeleted = 1,
+                            IsDictionaryWriter = 0,
                             Updated = GETDATE()
                             WHERE Id = @Id";
             var command = new CommandDefinition(sql, new { Id = accountId }, cancellationToken: cancellationToken);
+
+            await connection.ExecuteAsync(command);
+        }
+    }
+
+    public async Task SetDictionaryWriter(int accountId, bool isDictionaryWriter, CancellationToken cancellationToken)
+    {
+        using (var connection = connectionProvider.GetConnection())
+        {
+            var sql = @"UPDATE Accounts
+                            SET IsDictionaryWriter = @IsDictionaryWriter,
+                            Updated = GETDATE()
+                            WHERE Id = @Id";
+            var command = new CommandDefinition(sql, new { Id = accountId, IsDictionaryWriter = isDictionaryWriter }, cancellationToken: cancellationToken);
 
             await connection.ExecuteAsync(command);
         }

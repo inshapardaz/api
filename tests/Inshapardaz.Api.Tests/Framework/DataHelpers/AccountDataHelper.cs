@@ -43,8 +43,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into Accounts (Name, Email, Passwordhash, AcceptTerms, IsSuperAdmin, Verified, InvitationCode, InvitationCodeExpiry, ResetToken, ResetTokenExpires, Created)
-                VALUES (@Name, @Email, @Passwordhash, @AcceptTerms, @IsSuperAdmin, @Verified, @InvitationCode, @InvitationCodeExpiry, @ResetToken, @ResetTokenExpires, @Created);
+                var sql = @"Insert Into Accounts (Name, Email, Passwordhash, AcceptTerms, IsSuperAdmin, IsDictionaryWriter, Verified, InvitationCode, InvitationCodeExpiry, ResetToken, ResetTokenExpires, Created)
+                VALUES (@Name, @Email, @Passwordhash, @AcceptTerms, @IsSuperAdmin, @IsDictionaryWriter, @Verified, @InvitationCode, @InvitationCodeExpiry, @ResetToken, @ResetTokenExpires, @Created);
                 SELECT LAST_INSERT_ID();";
                 var id = connection.ExecuteScalar<int>(sql, account);
                 account.Id = id;
@@ -130,8 +130,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using (var connection = connectionProvider.GetConnection())
             {
-                var sql = @"Insert Into Accounts (Name, Email, Passwordhash, AcceptTerms, IsSuperAdmin, Verified, InvitationCode, InvitationCodeExpiry, ResetToken, ResetTokenExpires, Created)
-                        OUTPUT Inserted.Id VALUES (@Name, @Email, @Passwordhash, @AcceptTerms, @IsSuperAdmin, @Verified, @InvitationCode, @InvitationCodeExpiry, @ResetToken, @ResetTokenExpires, @Created);";
+                var sql = @"Insert Into Accounts (Name, Email, Passwordhash, AcceptTerms, IsSuperAdmin, IsDictionaryWriter, Verified, InvitationCode, InvitationCodeExpiry, ResetToken, ResetTokenExpires, Created)
+                        OUTPUT Inserted.Id VALUES (@Name, @Email, @Passwordhash, @AcceptTerms, @IsSuperAdmin, @IsDictionaryWriter, @Verified, @InvitationCode, @InvitationCodeExpiry, @ResetToken, @ResetTokenExpires, @Created);";
 
                 var id = connection.ExecuteScalar<int>(sql, account);
                 account.Id = id;

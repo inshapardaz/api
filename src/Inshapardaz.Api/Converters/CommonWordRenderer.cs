@@ -43,7 +43,7 @@ public class CommonWordRenderer(IRenderLink linkRenderer, IUserHelper userHelper
             })
         };
 
-        if (userHelper.IsAdmin)
+        if (userHelper.IsEditor)
         {
             links.Add(linkRenderer.Render(new Link
             {
@@ -104,7 +104,7 @@ public class CommonWordRenderer(IRenderLink linkRenderer, IUserHelper userHelper
             Parameters = new { language = language, id = word.Id }
         }));
 
-        if (userHelper.IsAdmin)
+        if (userHelper.IsEditor)
         {
             view.Links.Add(linkRenderer.Render(new Link
             {
@@ -113,7 +113,10 @@ public class CommonWordRenderer(IRenderLink linkRenderer, IUserHelper userHelper
                 Rel = RelTypes.Update,
                 Parameters = new { language = language, id = word.Id }
             }));
+        }
 
+        if (userHelper.CanManageLanguageTools)
+        {
             view.Links.Add(linkRenderer.Render(new Link
             {
                 ActionName = nameof(CommonWordController.DeleteCommonWord),

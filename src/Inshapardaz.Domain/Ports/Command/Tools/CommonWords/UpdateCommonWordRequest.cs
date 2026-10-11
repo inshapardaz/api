@@ -19,7 +19,7 @@ public class UpdateCommonWordRequest(CommonWordModel commonWordModel) : RequestB
 public class UpdateCommonWordRequestHandler(ICommonWordsRepository commonWordsRepository)
     : RequestHandlerAsync<UpdateCommonWordRequest>
 {
-    [AuthorizeAdmin(1)]
+    [AuthorizeEditor(1)]
     public override async Task<UpdateCommonWordRequest> HandleAsync(UpdateCommonWordRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         var result = await commonWordsRepository.GetWordById(command.WordModel.Language, command.WordModel.Id, cancellationToken);

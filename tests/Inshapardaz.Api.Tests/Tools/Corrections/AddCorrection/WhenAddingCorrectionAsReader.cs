@@ -6,10 +6,8 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tools.Corrections.AddCorrection
 {
-    [TestFixture(Role.Reader)]
-    [TestFixture(Role.Writer)]
-    [TestFixture(Role.LibraryAdmin)]
-    public class WhenAddingCorrectionAsNonAdmin(Role role) : TestBase(role)
+    [TestFixture]
+    public class WhenAddingCorrectionAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
 

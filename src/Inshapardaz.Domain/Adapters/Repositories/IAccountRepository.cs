@@ -45,6 +45,8 @@ public interface IAccountRepository
 
     Task AnonymizeAccount(int accountId, CancellationToken cancellationToken);
 
+    Task SetDictionaryWriter(int accountId, bool isDictionaryWriter, CancellationToken cancellationToken);
+
     Task RevokeAllRefreshTokens(int accountId, string ipAddress, CancellationToken cancellationToken);
 
     #region for migration

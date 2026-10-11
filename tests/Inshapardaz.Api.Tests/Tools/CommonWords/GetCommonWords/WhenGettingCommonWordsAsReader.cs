@@ -7,10 +7,8 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Tools.CommonWords.GetCommonWords
 {
-    [TestFixture(Role.LibraryAdmin)]
-    [TestFixture(Role.Writer)]
-    [TestFixture(Role.Reader)]
-    public class WhenGettingCommonWordsWithReadOnlyRole(Role role) : TestBase(role)
+    [TestFixture]
+    public class WhenGettingCommonWordsAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private PagingAssert<CommonWordView> _assert;

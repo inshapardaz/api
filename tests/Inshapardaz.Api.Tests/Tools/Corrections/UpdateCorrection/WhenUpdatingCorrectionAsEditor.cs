@@ -8,10 +8,10 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Tools.Corrections.UpdateCorrection
 {
-    [TestFixture(Role.LibraryAdmin)]
-    [TestFixture(Role.Writer)]
-    [TestFixture(Role.Reader)]
-    public class WhenUpdatingCorrectionAsNonAdmin(Role role) : TestBase(role)
+    [TestFixture(Role.Writer, false)]
+    [TestFixture(Role.LibraryAdmin, false)]
+    [TestFixture(Role.Reader, true)]
+    public class WhenUpdatingCorrectionAsEditor(Role role, bool isDictionaryWriter) : TestBase(role, isDictionaryWriter: isDictionaryWriter)
     {
         private HttpResponseMessage _response;
         private CorrectionAssert _assert;
@@ -37,9 +37,20 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.UpdateCorrection
         public void Teardown() => Cleanup();
 
         [Test]
-        public void ShouldReturnForbidden() => _response.ShouldBeForbidden();
+        public void ShouldReturnOk() => _response.ShouldBeOk();
 
         [Test]
-        public void ShouldHaveNotUpdatedCorrection() => _assert.ShouldMatchSavedCorrection(_correction);
+        public void ShouldHaveUpdatedCorrection()
+        {
+            _assert.ShouldMatchSavedCorrection(new CorrectionDto
+            {
+                Id = _correction.Id,
+                Language = _correction.Language,
+                Profile = _correction.Profile,
+                IncorrectText = _update.IncorrectText,
+                CorrectText = _update.CorrectText,
+                CompleteWord = _update.CompleteWord
+            });
+        }
     }
 }

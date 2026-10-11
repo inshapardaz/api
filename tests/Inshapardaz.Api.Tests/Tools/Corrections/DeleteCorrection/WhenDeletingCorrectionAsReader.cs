@@ -6,10 +6,8 @@ using NUnit.Framework;
 
 namespace Inshapardaz.Api.Tests.Tools.Corrections.DeleteCorrection
 {
-    [TestFixture(Role.LibraryAdmin)]
-    [TestFixture(Role.Writer)]
-    [TestFixture(Role.Reader)]
-    public class WhenDeletingCorrectionAsNonAdmin(Role role) : TestBase(role)
+    [TestFixture]
+    public class WhenDeletingCorrectionAsReader() : TestBase(Role.Reader)
     {
         private HttpResponseMessage _response;
         private CorrectionAssert _assert;

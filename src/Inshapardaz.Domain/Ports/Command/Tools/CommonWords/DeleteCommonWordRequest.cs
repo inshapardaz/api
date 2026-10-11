@@ -12,7 +12,7 @@ public class DeleteCommonWordRequest(long wordId, string language) : RequestBase
 public class DeleteCommonWordRequestHandler(ICommonWordsRepository commonWordsRepository)
     : RequestHandlerAsync<DeleteCommonWordRequest>
 {
-    [AuthorizeAdmin(1)]
+    [AuthorizeLanguageTools(1)]
     public override async Task<DeleteCommonWordRequest> HandleAsync(DeleteCommonWordRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
         await commonWordsRepository.DeleteWord(command.Language, command.WordId, cancellationToken);

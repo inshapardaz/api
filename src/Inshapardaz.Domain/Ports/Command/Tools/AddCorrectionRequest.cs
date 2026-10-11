@@ -16,6 +16,7 @@ public class AddCorrectionRequestHandler(ICorrectionRepository correctionReposit
     [AuthorizeEditor(1)]
     public override async Task<AddCorrectionRequest> HandleAsync(AddCorrectionRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
+        CorrectionValidation.Validate(command.Correction);
         command.Result = await correctionRepository.AddCorrection(command.Correction, cancellationToken);
 
         return await base.HandleAsync(command, cancellationToken);

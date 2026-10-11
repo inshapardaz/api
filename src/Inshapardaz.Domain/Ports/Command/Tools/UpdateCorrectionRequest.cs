@@ -22,6 +22,7 @@ public class UpdateCorrectionRequestHandler(ICorrectionRepository correctionRepo
     [AuthorizeEditor(1)]
     public override async Task<UpdateCorrectionRequest> HandleAsync(UpdateCorrectionRequest command, CancellationToken cancellationToken = new CancellationToken())
     {
+        CorrectionValidation.Validate(command.Correction);
         var result = await correctionRepository.GetCorrection(command.Correction.Language, command.Correction.Profile, command.Correction.Id, cancellationToken);
 
         if (result == null)

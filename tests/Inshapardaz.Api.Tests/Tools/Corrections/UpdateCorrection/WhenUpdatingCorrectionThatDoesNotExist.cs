@@ -15,7 +15,7 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.UpdateCorrection
         private CorrectionAssert _assert;
         private CorrectionView _correction;
         private readonly string _language = RandomData.Locale;
-        private readonly string _profile = RandomData.Words(1);
+        private readonly string _profile = Framework.DataBuilders.CorrectionBuilder.RandomProfile;
 
         [OneTimeSetUp]
         public async Task Setup()

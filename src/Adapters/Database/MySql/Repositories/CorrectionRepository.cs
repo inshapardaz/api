@@ -12,7 +12,8 @@ public class CorrectionRepository(MySqlConnectionProvider connectionProvider) : 
         {
             var sql = @"SELECT * FROM Corrections 
                     WHERE `Language` = @Language 
-                        AND `Profile` = @Profile";
+                        AND `Profile` = @Profile
+                    ORDER BY `Usage` DESC, IncorrectText";
             var command = new CommandDefinition(sql, new
             {
                 Language = language,
@@ -23,16 +24,17 @@ public class CorrectionRepository(MySqlConnectionProvider connectionProvider) : 
         }
     }
 
-    public async Task<Page<CorrectionModel>> GetCorrectionList(string language, string query, string profile, int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Page<CorrectionModel>> GetCorrectionList(string language, string query, string profile, int pageNumber, int pageSize, CorrectionSortByType sortBy, CancellationToken cancellationToken)
     {
         using (var connection = connectionProvider.GetConnection())
         {
-            var sql = @"SELECT *
+            var orderBy = sortBy == CorrectionSortByType.Usage ? "`Usage` DESC, IncorrectText" : "IncorrectText";
+            var sql = $@"SELECT *
                             FROM Corrections
                             WHERE language = @Language 
                                 AND (IncorrectText LIKE @Query OR CorrectText LIKE @Query)
                                 AND `Profile` = @Profile
-                            ORDER BY `Language`, `Profile`, IncorrectText
+                            ORDER BY {orderBy}
                             LIMIT @PageSize OFFSET @Offset";
             var command = new CommandDefinition(sql, new { 
                                                     Language = language, 
@@ -47,7 +49,7 @@ public class CorrectionRepository(MySqlConnectionProvider connectionProvider) : 
             var sqlCorrectionCount = @"SELECT COUNT(*) 
                     FROM Corrections 
                     WHERE `Language` = @Language 
-                        AND IncorrectText LIKE @Query 
+                        AND (IncorrectText LIKE @Query OR CorrectText LIKE @Query)
                         AND `Profile` = @Profile";
             var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCorrectionCount, new { Language = language, Query = $"%{query}%", Profile = profile }, cancellationToken: cancellationToken));
 
@@ -141,6 +143,17 @@ public class CorrectionRepository(MySqlConnectionProvider connectionProvider) : 
             var command = new CommandDefinition(sql, new { Id = id }, cancellationToken: cancellationToken);
             await connection.ExecuteAsync(command);
         }
+    }
+
+    public async Task IncrementUsage(string language, string profile, IEnumerable<CorrectionUsageModel> usages, CancellationToken cancellationToken)
+    {
+        using var connection = connectionProvider.GetConnection();
+        using var transaction = connection.BeginTransaction();
+        var sql = @"UPDATE Corrections SET `Usage` = `Usage` + @Count
+                    WHERE Id = @Id AND `Language` = @Language AND `Profile` = @Profile";
+        var rows = usages.Select(u => new { u.Id, u.Count, Language = language, Profile = profile });
+        await connection.ExecuteAsync(new CommandDefinition(sql, rows, transaction, cancellationToken: cancellationToken));
+        transaction.Commit();
     }
 
     #region for migration

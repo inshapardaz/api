@@ -75,6 +75,8 @@ public static class RelTypes
     public const string AddToLibrary = "add-to-library";
     public const string AddDictionaryWriter = "add-dictionary-writer";
     public const string RemoveDictionaryWriter = "remove-dictionary-writer";
+    public const string Merge = "merge";
+    public const string MergeCandidates = "merge-candidates";
     public const string Ocr = "ocr";
     public const string Publish = "publish";
     public const string UpdateUser = "update-user";

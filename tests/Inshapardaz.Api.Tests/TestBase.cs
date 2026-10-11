@@ -162,6 +162,7 @@ namespace Inshapardaz.Api.Tests
                 services.AddTransient<IFileTestRepository, SqlServerFileTestRepository>();
                 services.AddTransient<ICorrectionTestRepository, SqlServerCorrectionTestRepository>();
                 services.AddTransient<ICommonWordsTestRepository, SqlServerCommonWordsTestRepository>();
+                services.AddTransient<IDictionaryTestRepository, SqlServerDictionaryTestRepository>();
             }
             else if (DatabaseType == DatabaseTypes.MySql)
             {
@@ -184,6 +185,7 @@ namespace Inshapardaz.Api.Tests
                 services.AddTransient<IFileTestRepository, MySqlFileTestRepository>();
                 services.AddTransient<ICorrectionTestRepository, MySqlCorrectionTestRepository>();
                 services.AddTransient<ICommonWordsTestRepository, MySqlCommonWordsTestRepository>();
+                services.AddTransient<IDictionaryTestRepository, MySqlDictionaryTestRepository>();
             }
             else
             {
@@ -203,6 +205,7 @@ namespace Inshapardaz.Api.Tests
             .AddTransient<AccountAssert>()
             .AddTransient<CorrectionBuilder>()
             .AddTransient<CommonWordBuilder>()
+            .AddTransient<DictionaryDataBuilder>()
             .AddTransient<BookShelfDataBuilder>()
             .AddTransient<ArticlesDataBuilder>()
             .AddTransient<FileStoreAssert>();
@@ -266,6 +269,7 @@ namespace Inshapardaz.Api.Tests
         private PeriodicalsDataBuilder _periodicalBuilder;
         protected CorrectionBuilder _correctionBuilder;
         protected CommonWordBuilder _commonWordBuilder;
+        private DictionaryDataBuilder _dictionaryBuilder;
         private BookShelfDataBuilder _bookshelfDataBuilder;
         private ArticlesDataBuilder _articleBuilder;
         private FileStoreAssert _fileStoreAssert;
@@ -430,6 +434,8 @@ namespace Inshapardaz.Api.Tests
             }
         }
         
+        protected DictionaryDataBuilder DictionaryBuilder => _dictionaryBuilder ??= _factory.Services.GetService<DictionaryDataBuilder>();
+
         protected CommonWordBuilder CommonWordBuilder
         {
             get
@@ -490,6 +496,7 @@ namespace Inshapardaz.Api.Tests
             _libraryBuilder?.CleanUp();
             _correctionBuilder?.Cleanup();
             _commonWordBuilder?.Cleanup();
+            _dictionaryBuilder?.Cleanup();
         }
     }
 }

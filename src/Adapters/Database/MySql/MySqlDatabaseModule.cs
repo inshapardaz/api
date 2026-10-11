@@ -25,5 +25,6 @@ public static class MySqlDatabaseModule
             .AddTransient<PeriodicalRepository>()
             .AddTransient<SeriesRepository>()
             .AddTransient<CommonWordsRepository>()
-            .AddTransient<SpellingReplacementRepository>();
+            .AddTransient<SpellingReplacementRepository>()
+            .AddTransient<DictionaryRepository>();
 }

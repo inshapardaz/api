@@ -57,8 +57,11 @@ builder.Host.UseSerilog((ctx, cfg) =>
         .MinimumLevel.Override("Microsoft.AspNetCore.Mvc", LogEventLevel.Warning)
         .MinimumLevel.Override("Microsoft.AspNetCore.Routing", LogEventLevel.Warning)
         .MinimumLevel.Override("Paramore", LogEventLevel.Error)
-        .WriteTo.Console();
+        .WriteTo.Console()
+        .WriteToOpenTelemetry(serviceName);
 });
+
+builder.Services.AddApiTelemetry(serviceName);
 
 //--------------------------------------------------------------------
 // Cookie-based auth (see AccountsController's token/refreshToken cookies) means a CORS

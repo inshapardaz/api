@@ -163,6 +163,7 @@ namespace Inshapardaz.Api.Tests
                 services.AddTransient<ICorrectionTestRepository, SqlServerCorrectionTestRepository>();
                 services.AddTransient<ICommonWordsTestRepository, SqlServerCommonWordsTestRepository>();
                 services.AddTransient<IDictionaryTestRepository, SqlServerDictionaryTestRepository>();
+                services.AddTransient<ITransliterationTestRepository, SqlServerTransliterationTestRepository>();
             }
             else if (DatabaseType == DatabaseTypes.MySql)
             {
@@ -186,6 +187,7 @@ namespace Inshapardaz.Api.Tests
                 services.AddTransient<ICorrectionTestRepository, MySqlCorrectionTestRepository>();
                 services.AddTransient<ICommonWordsTestRepository, MySqlCommonWordsTestRepository>();
                 services.AddTransient<IDictionaryTestRepository, MySqlDictionaryTestRepository>();
+                services.AddTransient<ITransliterationTestRepository, MySqlTransliterationTestRepository>();
             }
             else
             {

@@ -51,6 +51,9 @@ public static class DatabaseFactory
     public static IDictionaryRepository GetDictionaryRepository(IServiceProvider provider) =>
                 GetRepository<IDictionaryRepository, SqlServerRepoisotires.DictionaryRepository, MySqlRepositories.DictionaryRepository>(provider);
 
+    public static ITransliterationRepository GetTransliterationRepository(IServiceProvider provider) =>
+                GetRepository<ITransliterationRepository, SqlServerRepoisotires.TransliterationRepository, MySqlRepositories.TransliterationRepository>(provider);
+
     public static IIssueArticleRepository GetIssueArticleRepository(IServiceProvider provider) =>
                 GetRepository<IIssueArticleRepository, SqlServerRepoisotires.Library.IssueArticleRepository, MySqlRepositories.Library.IssueArticleRepository>(provider);
 

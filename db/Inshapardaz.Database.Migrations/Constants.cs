@@ -44,6 +44,7 @@ namespace Inshapardaz.Database.Migrations
         public const string SpellingReplacements = "SpellingReplacements";
         public const string Dictionaries = "Dictionaries";
         public const string DictionaryArticles = "DictionaryArticles";
+        public const string TransliterationEntries = "TransliterationEntries";
 
     }
 

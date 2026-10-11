@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Ported from LanguageTools' Nawishta library, which uses nullable annotations. -->
+    <Nullable>annotations</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Inshapardaz.Domain\Inshapardaz.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

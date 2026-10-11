@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Adapters\Database\MySql\Inshapardaz.Adapters.Database.MySql.csproj" />
     <ProjectReference Include="..\Adapters\Database\SqlServer\Inshapardaz.Adapters.Database.SqlServer.csproj" />
     <ProjectReference Include="..\Adapters\Dictionary.Formats\Inshapardaz.Adapters.Dictionary.Formats.csproj" />
+    <ProjectReference Include="..\Adapters\Transliteration\Inshapardaz.Adapters.Transliteration.csproj" />
     <ProjectReference Include="..\Adapters\Ocr.Google\Inshapardaz.Adapter.Ocr.Google.csproj" />
     <ProjectReference Include="..\Adapters\Storage\Azure\Inshapardaz.Storage.Azure.csproj" />
     <ProjectReference Include="..\Adapters\Storage\FileSystem\Inshapardaz.Storage.FileSystem.csproj" />

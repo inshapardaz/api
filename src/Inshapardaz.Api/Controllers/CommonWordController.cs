@@ -1,5 +1,7 @@
 ﻿using Inshapardaz.Api.Converters;
 using Inshapardaz.Api.Extensions;
+using Inshapardaz.Api.Views.Tools;
+using Inshapardaz.Domain.Helpers.Spelling;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Ports.Command.Tools;
 using Inshapardaz.Domain.Ports.Command.Tools.CommonWords;
@@ -26,7 +28,48 @@ public class CommonWordController(
             return NotFound();
         }
         
-        return Ok(result);
+        return this.OkWithETag(result);
+    }
+
+    [HttpGet("/tools/{language}/words/export", Name = nameof(ExportCommonWords))]
+    public async Task<IActionResult> ExportCommonWords(string language, CancellationToken cancellationToken)
+    {
+        var result = await queryProcessor.ExecuteAsync(new GetAllWordsForLanguageQuery(language), cancellationToken: cancellationToken);
+        var content = string.Concat((result ?? []).Select(word => word + "\n"));
+        return File(System.Text.Encoding.UTF8.GetBytes(content), "text/plain; charset=utf-8", $"{language}.txt");
+    }
+
+    [HttpPost("/tools/{language}/words/bulk", Name = nameof(ImportCommonWords))]
+    public async Task<IActionResult> ImportCommonWords(string language, [FromBody] WordImportRequestView request, CancellationToken cancellationToken)
+    {
+        if (!ModelState.IsValid)
+        {
+            return new BadRequestObjectResult(ModelState);
+        }
+
+        return Ok(await ImportWords(language, request.Words, cancellationToken));
+    }
+
+    // Plain text (one word per line) or a Hunspell .dic file.
+    [HttpPost("/tools/{language}/words/upload", Name = nameof(UploadCommonWords))]
+    [RequestSizeLimit(50 * 1024 * 1024)]
+    public async Task<IActionResult> UploadCommonWords(string language, IFormFile file, CancellationToken cancellationToken)
+    {
+        if (file is null || file.Length == 0)
+        {
+            return BadRequest();
+        }
+
+        using var reader = new StreamReader(file.OpenReadStream(), System.Text.Encoding.UTF8);
+        var words = WordListParser.Parse(reader).ToList();
+        return Ok(await ImportWords(language, words, cancellationToken));
+    }
+
+    private async Task<WordImportResultView> ImportWords(string language, IEnumerable<string> words, CancellationToken cancellationToken)
+    {
+        var command = new ImportCommonWordsRequest(language, words);
+        await commandProcessor.SendAsync(command, cancellationToken: cancellationToken);
+        return new WordImportResultView { Added = command.Result.Added, Skipped = command.Result.Skipped };
     }
     
     [HttpGet("/tools/{language}/words", Name = nameof(GetCommonWords))]

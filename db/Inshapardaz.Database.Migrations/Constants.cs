@@ -41,6 +41,7 @@ namespace Inshapardaz.Database.Migrations
         public const string Notes = "Notes";
         public const string BookRatings = "BookRatings";
         public const string IssueRatings = "IssueRatings";
+        public const string SpellingReplacements = "SpellingReplacements";
 
     }
 

@@ -1,4 +1,5 @@
 ﻿using Inshapardaz.Domain.Adapters.Repositories;
+using Inshapardaz.Domain.Helpers.Spelling;
 using Inshapardaz.Domain.Models;
 using Paramore.Brighter;
 
@@ -16,7 +17,7 @@ public class UpdateCommonWordRequest(CommonWordModel commonWordModel) : RequestB
     }
 }
 
-public class UpdateCommonWordRequestHandler(ICommonWordsRepository commonWordsRepository)
+public class UpdateCommonWordRequestHandler(ICommonWordsRepository commonWordsRepository, SpellingIndexCache spellingIndexCache)
     : RequestHandlerAsync<UpdateCommonWordRequest>
 {
     [AuthorizeEditor(1)]
@@ -33,6 +34,8 @@ public class UpdateCommonWordRequestHandler(ICommonWordsRepository commonWordsRe
         {
             command.Result.WordModel = await commonWordsRepository.UpdateWord(command.WordModel, cancellationToken); ;
         }
+
+        spellingIndexCache.Invalidate(command.WordModel.Language);
 
         return await base.HandleAsync(command, cancellationToken);
     }

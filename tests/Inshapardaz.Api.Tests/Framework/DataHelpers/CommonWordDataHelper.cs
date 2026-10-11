@@ -10,6 +10,9 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         void AddCommonWords(IEnumerable<CommonWordDto> commonWord);
         void DeleteCommonWords(IEnumerable<CommonWordDto> commonWords);
         CommonWordDto GetCommonWordById(long id);
+        IEnumerable<string> GetWordsForLanguage(string language);
+        void DeleteWordsForLanguage(string language);
+        void DeleteSpellingReplacements(string language);
     }
 
     public class MySqlCommonWordsTestRepository(IProvideConnection connectionProvider) : ICommonWordsTestRepository
@@ -41,6 +44,23 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
             using var connection = connectionProvider.GetConnection();
             return connection.QuerySingleOrDefault<CommonWordDto>("SELECT * FROM CommonWords WHERE Id = @Id", new { Id = id });
         }
+        public IEnumerable<string> GetWordsForLanguage(string language)
+        {
+            using var connection = connectionProvider.GetConnection();
+            return connection.Query<string>("SELECT `Word` FROM CommonWords WHERE `Language` = @Language", new { Language = language }).ToList();
+        }
+
+        public void DeleteWordsForLanguage(string language)
+        {
+            using var connection = connectionProvider.GetConnection();
+            connection.Execute("DELETE FROM CommonWords WHERE `Language` = @Language", new { Language = language });
+        }
+
+        public void DeleteSpellingReplacements(string language)
+        {
+            using var connection = connectionProvider.GetConnection();
+            connection.Execute("DELETE FROM SpellingReplacements WHERE `Language` = @Language", new { Language = language });
+        }
     }
 
     public class SqlServerCommonWordsTestRepository(IProvideConnection connectionProvider) : ICommonWordsTestRepository
@@ -71,6 +91,24 @@ namespace Inshapardaz.Api.Tests.Framework.DataHelpers
         {
             using var connection = connectionProvider.GetConnection();
             return connection.QuerySingleOrDefault<CommonWordDto>("SELECT * FROM CommonWords WHERE Id = @Id", new { Id = id });
+        }
+
+        public IEnumerable<string> GetWordsForLanguage(string language)
+        {
+            using var connection = connectionProvider.GetConnection();
+            return connection.Query<string>("SELECT Word FROM [Library].CommonWords WHERE [Language] = @Language", new { Language = language }).ToList();
+        }
+
+        public void DeleteWordsForLanguage(string language)
+        {
+            using var connection = connectionProvider.GetConnection();
+            connection.Execute("DELETE FROM [Library].CommonWords WHERE [Language] = @Language", new { Language = language });
+        }
+
+        public void DeleteSpellingReplacements(string language)
+        {
+            using var connection = connectionProvider.GetConnection();
+            connection.Execute("DELETE FROM [Language].SpellingReplacements WHERE [Language] = @Language", new { Language = language });
         }
     }
 }

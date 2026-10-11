@@ -10,4 +10,5 @@ public interface ICommonWordsRepository
     Task<CommonWordModel> AddWord(CommonWordModel commonWordModel, CancellationToken cancellationToken);
     Task<CommonWordModel> UpdateWord(CommonWordModel commonWordModel, CancellationToken cancellationToken);
     Task DeleteWord(string language, long id, CancellationToken cancellationToken);
+    Task AddWords(string language, IEnumerable<string> words, CancellationToken cancellationToken);
 }

@@ -107,4 +107,25 @@ public class CommonWordsRepository(MySqlConnectionProvider connectionProvider) :
         var command = new CommandDefinition(sql, new { Language = language, Id = id }, cancellationToken: cancellationToken);
         await connection.ExecuteAsync(command);
     }
+
+    public async Task AddWords(string language, IEnumerable<string> words, CancellationToken cancellationToken)
+    {
+        using var connection = connectionProvider.GetConnection();
+        if (connection.State != System.Data.ConnectionState.Open) connection.Open();
+        using var transaction = connection.BeginTransaction();
+        // Multi-row VALUES per chunk: one round trip per 500 words instead of one per word.
+        foreach (var chunk in words.Chunk(500))
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("Language", language);
+            var values = chunk.Select((word, i) =>
+            {
+                parameters.Add($"Word{i}", word);
+                return $"(@Language, @Word{i})";
+            });
+            var sql = $"INSERT INTO CommonWords (`Language`, `Word`) VALUES {string.Join(", ", values)}";
+            await connection.ExecuteAsync(new CommandDefinition(sql, parameters, transaction, cancellationToken: cancellationToken));
+        }
+        transaction.Commit();
+    }
 }

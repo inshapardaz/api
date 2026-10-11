@@ -280,6 +280,8 @@ builder.Services.AddSqlServer()
     .AddScoped<IBookShelfRepository>(DatabaseFactory.GetBookShelfRepository)
     .AddScoped<ICommonWordsRepository>(DatabaseFactory.GetCommonWordsRepository);
 
+builder.Services.AddLanguageTools();
+
 //=====================================================================
 var app = builder.Build();
 

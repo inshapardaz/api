@@ -17,17 +17,17 @@ public static class WordNormaliser
         {
             switch (c)
             {
-                case 'ي': // ARABIC LETTER YEH
-                case 'ى': // ARABIC LETTER ALEF MAKSURA
-                    builder.Append('ی'); // FARSI YEH
+                case '\u064A': // ARABIC LETTER YEH
+                case '\u0649': // ARABIC LETTER ALEF MAKSURA
+                    builder.Append('\u06CC'); // FARSI YEH
                     break;
-                case 'ك': // ARABIC LETTER KAF
-                    builder.Append('ک'); // KEHEH
+                case '\u0643': // ARABIC LETTER KAF
+                    builder.Append('\u06A9'); // KEHEH
                     break;
-                case 'ـ': // TATWEEL
-                case '‌': // ZERO WIDTH NON-JOINER
-                case '‍': // ZERO WIDTH JOINER
-                case '​': // ZERO WIDTH SPACE
+                case '\u0640': // TATWEEL
+                case '\u200C': // ZERO WIDTH NON-JOINER
+                case '\u200D': // ZERO WIDTH JOINER
+                case '\u200B': // ZERO WIDTH SPACE
                     break;
                 default:
                     if (IsDiacritic(c)) break;
@@ -43,6 +43,6 @@ public static class WordNormaliser
     public static bool HasNoLetters(string word) => !word.Any(char.IsLetter);
 
     private static bool IsDiacritic(char c) =>
-        c is >= 'ً' and <= 'ٟ' or 'ٰ'
+        c is >= '\u064B' and <= '\u065F' or '\u0670'
         || CharUnicodeInfo.GetUnicodeCategory(c) == UnicodeCategory.NonSpacingMark;
 }

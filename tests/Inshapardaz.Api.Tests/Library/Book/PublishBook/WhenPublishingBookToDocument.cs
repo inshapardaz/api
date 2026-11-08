@@ -16,7 +16,6 @@ namespace Inshapardaz.Api.Tests.Library.Book.PublishBook
     {
         private BookDto _book;
         private HttpResponseMessage _response;
-        private PagingAssert<BookPageView> _assert;
 
         [OneTimeSetUp]
         public async Task Setup()
@@ -24,8 +23,6 @@ namespace Inshapardaz.Api.Tests.Library.Book.PublishBook
             _book = BookBuilder.WithLibrary(LibraryId).WithChapters(3).WithPages(13).Build();
 
             _response = await Client.PostObject($"/libraries/{LibraryId}/books/{_book.Id}/publish", new PublishBookRequestView(MimeTypes.MsWord));
-
-            _assert = Services.GetService<PagingAssert<BookPageView>>().ForResponse(_response);
         }
 
         [OneTimeTearDown]
@@ -54,7 +51,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.PublishBook
                 .Select(group => new
                 {
                     ChapterId = group.Key,
-                    Content = string.Join(' ', group.OrderBy(x => x.SequenceNumber).Select(x => x.Content).ToList())
+                    Content = string.Join("\n\n::pagebreak\n\n", group.OrderBy(x => x.SequenceNumber).Select(x => x.Content).ToList())
                 }).ToList();
             
             var chapterTestRepository = Services.GetService<IChapterTestRepository>();

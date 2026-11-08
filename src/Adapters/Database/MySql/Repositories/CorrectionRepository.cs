@@ -28,7 +28,12 @@ public class CorrectionRepository(MySqlConnectionProvider connectionProvider) : 
     {
         using (var connection = connectionProvider.GetConnection())
         {
-            var orderBy = sortBy == CorrectionSortByType.Usage ? "`Usage` DESC, IncorrectText" : "IncorrectText";
+            var orderBy = sortBy switch
+            {
+                CorrectionSortByType.Usage => "`Usage` DESC, IncorrectText",
+                CorrectionSortByType.Newest => "Id DESC",
+                _ => "IncorrectText",
+            };
             var sql = $@"SELECT *
                             FROM Corrections
                             WHERE language = @Language 

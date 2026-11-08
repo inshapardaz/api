@@ -23,6 +23,13 @@ public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper
             Data = source.Page.Data?.Select(x => Render(x))
         };
 
+        var sortByQueryValue = sortBy switch
+        {
+            CorrectionSortByType.Usage => "usage",
+            CorrectionSortByType.Newest => "newest",
+            _ => null,
+        };
+
         var links = new List<LinkView>
         {
             linkRenderer.Render(new Link {
@@ -35,7 +42,7 @@ public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper
                     { "pageNumber" , page.CurrentPageIndex.ToString() },
                     { "pageSize", page.PageSize.ToString() },
                     { "query", source.RouteArguments.Query },
-                    { "sortBy", sortBy == CorrectionSortByType.Usage ? "usage" : null }
+                    { "sortBy", sortByQueryValue }
                 }
             })
         };
@@ -64,7 +71,7 @@ public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper
                     { "pageNumber" , (page.CurrentPageIndex + 1).ToString() },
                     { "pageSize", page.PageSize.ToString() },
                     { "query", source.RouteArguments.Query },
-                    { "sortBy", sortBy == CorrectionSortByType.Usage ? "usage" : null }
+                    { "sortBy", sortByQueryValue }
                 }
             }));
         }
@@ -82,7 +89,7 @@ public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper
                     { "pageNumber" , (page.CurrentPageIndex - 1).ToString() },
                     { "pageSize", page.PageSize.ToString() },
                     { "query", source.RouteArguments.Query },
-                    { "sortBy", sortBy == CorrectionSortByType.Usage ? "usage" : null }
+                    { "sortBy", sortByQueryValue }
                 }
             }));
         }

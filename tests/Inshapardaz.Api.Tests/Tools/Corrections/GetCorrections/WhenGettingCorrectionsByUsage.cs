@@ -80,4 +80,34 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.GetCorrections
         [Test]
         public void ShouldKeepSortInPagingLinks() => _page.Link(RelTypes.Next).ShouldHaveQueryParameter("sortBy", "usage");
     }
+
+    [TestFixture]
+    public class WhenGettingCorrectionsSortedByNewest() : TestBase()
+    {
+        private PageView<CorrectionView> _page;
+        private readonly string _language = new Faker().Random.String2(6);
+
+        [OneTimeSetUp]
+        public async Task Setup()
+        {
+            CorrectionBuilder.WithLanguage(_language).WithProfile(CorrectionProfiles.Autocorrect)
+                .BuildWith(("aaa", "x", 1), ("bbb", "y", 50), ("ccc", "z", 7));
+
+            var response = await Client.GetAsync($"/tools/{_language}/corrections/autocorrect?sortBy=newest&pageSize=2");
+            response.ShouldBeOk();
+            _page = await response.GetContent<PageView<CorrectionView>>();
+        }
+
+        [OneTimeTearDown]
+        public void Teardown() => Cleanup();
+
+        [Test]
+        public void ShouldReturnMostRecentlyAddedFirst() => _page.Data.Select(c => c.IncorrectText).Should().Equal("ccc", "bbb");
+
+        [Test]
+        public void ShouldCountAllMatches() => _page.TotalCount.Should().Be(3);
+
+        [Test]
+        public void ShouldKeepSortInPagingLinks() => _page.Link(RelTypes.Next).ShouldHaveQueryParameter("sortBy", "newest");
+    }
 }

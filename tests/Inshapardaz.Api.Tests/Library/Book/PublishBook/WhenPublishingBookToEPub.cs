@@ -54,7 +54,7 @@ namespace Inshapardaz.Api.Tests.Library.Book.PublishBook
                 .Select(group => new
                 {
                     ChapterId = group.Key,
-                    Content = string.Join(' ', group.OrderBy(x => x.SequenceNumber).Select(x => x.Content).ToList())
+                    Content = string.Join("\n\n::pagebreak\n\n", group.OrderBy(x => x.SequenceNumber).Select(x => x.Content).ToList())
                 }).ToList();
             
             var chapterTestRepository = Services.GetService<IChapterTestRepository>();

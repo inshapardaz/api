@@ -375,10 +375,11 @@ public class BookController(
         {
             OutputType = publishBookRequest.OutputType,
             OnlyPublishFile = publishBookRequest.OnlyPublishFile,
+            ConfirmOverwrite = publishBookRequest.ConfirmOverwrite,
         };
         await commandProcessor.SendAsync(request, cancellationToken: token);
 
-        return Ok();
+        return Ok(new { warnings = request.Warnings });
     }
     
     [HttpGet("libraries/{libraryId}/publishers", Name = nameof(GetPublishers))]

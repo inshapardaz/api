@@ -8,4 +8,6 @@ public class PublishBookRequestView(string outputType)
     public string OutputType { get; set; } = outputType;
 
     public bool OnlyPublishFile { get; set; }
+
+    public bool ConfirmOverwrite { get; set; }
 }

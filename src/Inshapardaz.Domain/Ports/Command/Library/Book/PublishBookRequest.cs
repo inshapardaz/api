@@ -1,12 +1,12 @@
 ﻿using Inshapardaz.Domain.Adapters;
 using Inshapardaz.Domain.Adapters.Repositories;
 using Inshapardaz.Domain.Adapters.Repositories.Library;
+using Inshapardaz.Domain.Exception;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
 using Inshapardaz.Domain.Ports.Command.Library.Book.Chapter;
 using Paramore.Brighter;
-using System.Text;
 
 namespace Inshapardaz.Domain.Ports.Command.Library.Book;
 
@@ -16,6 +16,15 @@ public class PublishBookRequest(int libraryId, int bookId) : LibraryBaseCommand(
     public string Result { get; set; }
     public int BookId { get; } = bookId;
     public bool OnlyPublishFile { get; set; }
+
+    // When combining page text produces a chapter that already has different content,
+    // the handler refuses to overwrite it (via ConflictException) unless the caller has
+    // asked the user and resubmitted the request with this set to true.
+    public bool ConfirmOverwrite { get; set; }
+
+    // Chapters whose existing content was kept rather than replaced, because the pages
+    // combined to blank text -- surfaced back to the caller as a non-fatal warning.
+    public List<string> Warnings { get; } = new List<string>();
 }
 
 public class PublishBookRequestHandler(
@@ -46,6 +55,11 @@ public class PublishBookRequestHandler(
         // Dictionary<string, string>.Add on a duplicate title used to throw, making it
         // impossible to publish any book with two same-named chapters.
         var chapterTexts = new Dictionary<int, string>();
+        // ChapterNumber -> combined page text, for chapters whose content actually needs
+        // writing. Resolved up front so a conflicting chapter can abort the whole publish
+        // before anything is persisted.
+        var chaptersToPersist = new Dictionary<int, string>();
+        var conflictingChapters = new List<string>();
 
         foreach (var chapter in chapters)
         {
@@ -66,22 +80,62 @@ public class PublishBookRequestHandler(
             {
                 var pages = await bookPageRepository.GetPagesByBookChapter(command.LibraryId, command.BookId,
                     chapter.Id, cancellationToken);
-                var finalText = await CombinePages(pages, cancellationToken);
-                chapterTexts.Add(chapter.ChapterNumber, finalText);
+                var combinedText = await CombinePages(pages, cancellationToken);
 
-                if (chapter.Contents.Any(cc => cc.Language == book.Language))
+                var existingContent = await chapterRepository.GetChapterContent(command.LibraryId, book.Id, chapter.ChapterNumber, book.Language,
+                    cancellationToken);
+                var existingText = await GetExistingChapterText(existingContent, cancellationToken);
+
+                if (string.IsNullOrWhiteSpace(combinedText) && !string.IsNullOrWhiteSpace(existingText))
                 {
-                    var cmd = new UpdateChapterContentRequest(command.LibraryId, command.BookId, chapter.ChapterNumber,
-                        finalText, book.Language);
-                    await commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
+                    // The pages have no text yet -- never wipe out chapter content that's
+                    // already there, just warn and keep what's there.
+                    chapterTexts.Add(chapter.ChapterNumber, existingText);
+                    command.Warnings.Add(
+                        $"Chapter '{chapter.Title}' has no text in its pages; its existing content was kept.");
+                    continue;
                 }
-                else
+
+                var textChanged = existingText == null || existingText.Trim() != combinedText.Trim();
+
+                if (textChanged && !string.IsNullOrWhiteSpace(existingText) && !command.ConfirmOverwrite)
                 {
-                    var cmd = new AddChapterContentRequest(command.LibraryId, command.BookId, chapter.ChapterNumber,
-                        finalText, book.Language);
-                    ;
-                    await commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
+                    conflictingChapters.Add(chapter.Title);
                 }
+
+                chapterTexts.Add(chapter.ChapterNumber, combinedText);
+
+                if (textChanged)
+                {
+                    chaptersToPersist.Add(chapter.ChapterNumber, combinedText);
+                }
+            }
+        }
+
+        if (conflictingChapters.Count > 0)
+        {
+            throw new ConflictException(
+                $"The following chapters already have content that would be overwritten by their page text: {string.Join(", ", conflictingChapters)}. Publish again confirming the overwrite to proceed.");
+        }
+
+        foreach (var chapter in chapters)
+        {
+            if (!chaptersToPersist.TryGetValue(chapter.ChapterNumber, out var finalText))
+            {
+                continue;
+            }
+
+            if (chapter.Contents.Any(cc => cc.Language == book.Language))
+            {
+                var cmd = new UpdateChapterContentRequest(command.LibraryId, command.BookId, chapter.ChapterNumber,
+                    finalText, book.Language);
+                await commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
+            }
+            else
+            {
+                var cmd = new AddChapterContentRequest(command.LibraryId, command.BookId, chapter.ChapterNumber,
+                    finalText, book.Language);
+                await commandProcessor.SendAsync(cmd, cancellationToken: cancellationToken);
             }
         }
 
@@ -164,29 +218,22 @@ public class PublishBookRequestHandler(
         await fileRepository.UpdateFile(existingDocx, cancellationToken);
     }
 
-    private char[] pageBreakSymbols = new char[] { '۔', ':', '“', '"', '\'', '!' };
+    // Likhari's markdown representation of a page-break block (see
+    // @inshapardaz/likhari-converters markdown/serialize.js, the 'page-break' case) --
+    // marks where one scanned page ends and the next begins, instead of blurring the
+    // boundary away with a plain space or newline.
+    private const string PageBreakMarker = "\n\n::pagebreak\n\n";
 
     private async Task<string> CombinePages(IEnumerable<BookPageModel> pages, CancellationToken cancellationToken)
     {
-        StringBuilder builder = new StringBuilder();
+        var texts = await Task.WhenAll(pages.Select(GetPageText));
 
-        var tasks = pages.Select(GetPageText).ToArray();
-        
-        await Task.WhenAll(tasks); 
-        
-        foreach (var task in tasks)
+        var nonEmptyTexts = texts.Where(text => !string.IsNullOrWhiteSpace(text));
+
+        return string.Join(PageBreakMarker, nonEmptyTexts).Trim();
+
+        async Task<string> GetPageText(BookPageModel page)
         {
-            var (separator, finalText) = task.Result;
-
-            builder.Append(separator);
-            builder.Append(finalText);
-        }
-
-        return builder.ToString().TrimStart();
-
-        async Task<(string separator, string finalText)> GetPageText(BookPageModel page)
-        {
-            var separator = " ";
             if (page.ContentId.HasValue)
             {
                 var file = await fileRepository.GetFileById(page.ContentId.Value, cancellationToken);
@@ -195,20 +242,27 @@ public class PublishBookRequestHandler(
                     page.Text = await fileStorage.GetTextFile(file.FilePath, cancellationToken);
                 }
             }
-            var finalText = page.Text.Trim();
-            if (string.IsNullOrWhiteSpace(finalText))
-            {
-                return (separator, finalText);
-            }
 
-            var lastCharacter = finalText.Last();
-
-            if (pageBreakSymbols.Contains(lastCharacter))
-            {
-                separator = Environment.NewLine;
-            }
-
-            return (separator, finalText);
+            return page.Text?.Trim() ?? string.Empty;
         }
+    }
+
+    private async Task<string> GetExistingChapterText(ChapterContentModel content, CancellationToken cancellationToken)
+    {
+        if (content == null)
+        {
+            return null;
+        }
+
+        if (content.FileId.HasValue)
+        {
+            var file = await fileRepository.GetFileById(content.FileId.Value, cancellationToken);
+            if (file != null)
+            {
+                return await fileStorage.GetTextFile(file.FilePath, cancellationToken);
+            }
+        }
+
+        return content.Text;
     }
 }

@@ -8,7 +8,7 @@ namespace Inshapardaz.Api.Converters;
 
 public interface IRenderCorrection
 {
-    PageView<CorrectionView> Render(PageRendererArgs<CorrectionModel> source, string language, string profile, CorrectionSortByType sortBy = CorrectionSortByType.IncorrectText);
+    PageView<CorrectionView> Render(PageRendererArgs<CorrectionModel> source, string language, string profile, CorrectionSortByType sortBy = CorrectionSortByType.IncorrectText, bool? completeWord = null);
     IEnumerable<CorrectionSimpleView> RenderSimple(IEnumerable<CorrectionModel> source);
 
     CorrectionView Render(CorrectionModel correction);
@@ -16,11 +16,25 @@ public interface IRenderCorrection
 
 public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper) : IRenderCorrection
 {
-    public PageView<CorrectionView> Render(PageRendererArgs<CorrectionModel> source, string language, string profile, CorrectionSortByType sortBy = CorrectionSortByType.IncorrectText)
+    public PageView<CorrectionView> Render(PageRendererArgs<CorrectionModel> source, string language, string profile, CorrectionSortByType sortBy = CorrectionSortByType.IncorrectText, bool? completeWord = null)
     {
         var page = new PageView<CorrectionView>(source.Page.TotalCount, source.Page.PageSize, source.Page.PageNumber)
         {
             Data = source.Page.Data?.Select(x => Render(x))
+        };
+
+        var sortByQueryValue = sortBy switch
+        {
+            CorrectionSortByType.Usage => "usage",
+            CorrectionSortByType.Newest => "newest",
+            _ => null,
+        };
+
+        var completeWordQueryValue = completeWord switch
+        {
+            true => "true",
+            false => "false",
+            null => null,
         };
 
         var links = new List<LinkView>
@@ -35,7 +49,8 @@ public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper
                     { "pageNumber" , page.CurrentPageIndex.ToString() },
                     { "pageSize", page.PageSize.ToString() },
                     { "query", source.RouteArguments.Query },
-                    { "sortBy", sortBy == CorrectionSortByType.Usage ? "usage" : null }
+                    { "sortBy", sortByQueryValue },
+                    { "completeWord", completeWordQueryValue }
                 }
             })
         };
@@ -64,7 +79,8 @@ public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper
                     { "pageNumber" , (page.CurrentPageIndex + 1).ToString() },
                     { "pageSize", page.PageSize.ToString() },
                     { "query", source.RouteArguments.Query },
-                    { "sortBy", sortBy == CorrectionSortByType.Usage ? "usage" : null }
+                    { "sortBy", sortByQueryValue },
+                    { "completeWord", completeWordQueryValue }
                 }
             }));
         }
@@ -82,7 +98,8 @@ public class CorrectionRenderer(IRenderLink linkRenderer, IUserHelper userHelper
                     { "pageNumber" , (page.CurrentPageIndex - 1).ToString() },
                     { "pageSize", page.PageSize.ToString() },
                     { "query", source.RouteArguments.Query },
-                    { "sortBy", sortBy == CorrectionSortByType.Usage ? "usage" : null }
+                    { "sortBy", sortByQueryValue },
+                    { "completeWord", completeWordQueryValue }
                 }
             }));
         }

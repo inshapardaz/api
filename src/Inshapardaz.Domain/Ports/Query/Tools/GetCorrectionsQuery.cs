@@ -12,11 +12,12 @@ public class GetCorrectionsQuery : IQuery<Page<CorrectionModel>>
     public string Query { get; set; }
     public string Profile { get; set; }
     public CorrectionSortByType SortBy { get; set; }
+    public bool? CompleteWord { get; set; }
 }
 
 public class GetCorrectionsQueryHandler(ICorrectionRepository correctionRepository)
     : QueryHandlerAsync<GetCorrectionsQuery, Page<CorrectionModel>>
 {
     public async override Task<Page<CorrectionModel>> ExecuteAsync(GetCorrectionsQuery query, CancellationToken cancellationToken = default)
-    => await correctionRepository.GetCorrectionList(query.Language, query.Query, query.Profile, query.PageNumber, query.PageSize, query.SortBy, cancellationToken);
+    => await correctionRepository.GetCorrectionList(query.Language, query.Query, query.Profile, query.PageNumber, query.PageSize, query.SortBy, query.CompleteWord, cancellationToken);
 }

@@ -28,4 +28,5 @@ public enum CorrectionSortByType
 {
     IncorrectText,
     Usage,
+    Newest,
 }

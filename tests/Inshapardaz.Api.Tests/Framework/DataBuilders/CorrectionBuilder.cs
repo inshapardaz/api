@@ -31,6 +31,10 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
 
         // Corrections with these exact texts and usage counts, in the builder's language and profile.
         public IEnumerable<CorrectionDto> BuildWith(params (string Incorrect, string Correct, long Usage)[] entries)
+            => BuildWith(entries.Select(e => (e.Incorrect, e.Correct, e.Usage, CompleteWord: false)).ToArray());
+
+        // As above, but also controlling CompleteWord per entry.
+        public IEnumerable<CorrectionDto> BuildWith(params (string Incorrect, string Correct, long Usage, bool CompleteWord)[] entries)
         {
             var corrections = entries.Select(e => new CorrectionDto
             {
@@ -38,7 +42,8 @@ namespace Inshapardaz.Api.Tests.Framework.DataBuilders
                 Profile = _profile ?? RandomProfile,
                 IncorrectText = e.Incorrect,
                 CorrectText = e.Correct,
-                Usage = e.Usage
+                Usage = e.Usage,
+                CompleteWord = e.CompleteWord
             }).ToList();
 
             _corrections.AddRange(corrections);

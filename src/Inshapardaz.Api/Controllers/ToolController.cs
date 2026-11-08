@@ -55,16 +55,16 @@ public class ToolController(
 
 
     [HttpGet("/tools/{language}/corrections/{profile}", Name = nameof(GetCorrections))]
-    public async Task<IActionResult> GetCorrections(string language, string profile, string query, int pageNumber = 1, int pageSize = 10, CorrectionSortByType sortBy = CorrectionSortByType.IncorrectText, CancellationToken cancellationToken = default(CancellationToken))
+    public async Task<IActionResult> GetCorrections(string language, string profile, string query, int pageNumber = 1, int pageSize = 10, CorrectionSortByType sortBy = CorrectionSortByType.IncorrectText, bool? completeWord = null, CancellationToken cancellationToken = default(CancellationToken))
     {
-        var correctionQuery = new GetCorrectionsQuery() { Language = language, Query = query, Profile = profile, PageNumber = pageNumber, PageSize = pageSize, SortBy = sortBy };
+        var correctionQuery = new GetCorrectionsQuery() { Language = language, Query = query, Profile = profile, PageNumber = pageNumber, PageSize = pageSize, SortBy = sortBy, CompleteWord = completeWord };
         var result = await queryProcessor.ExecuteAsync(correctionQuery, cancellationToken: cancellationToken);
         var pageRenderArgs = new PageRendererArgs<CorrectionModel>
         {
             Page = result,
             RouteArguments = new PagedRouteArgs { PageNumber = pageNumber, PageSize = pageSize, Query = query },
         };
-        return Ok(correctionRenderer.Render(pageRenderArgs, language, profile, sortBy));
+        return Ok(correctionRenderer.Render(pageRenderArgs, language, profile, sortBy, completeWord));
     }
 
     [HttpGet("/tools/{language}/corrections/{profile}/{id}", Name = nameof(GetCorrectionById))]

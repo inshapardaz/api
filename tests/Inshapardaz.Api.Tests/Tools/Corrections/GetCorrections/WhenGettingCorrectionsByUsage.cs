@@ -110,4 +110,34 @@ namespace Inshapardaz.Api.Tests.Tools.Corrections.GetCorrections
         [Test]
         public void ShouldKeepSortInPagingLinks() => _page.Link(RelTypes.Next).ShouldHaveQueryParameter("sortBy", "newest");
     }
+
+    [TestFixture]
+    public class WhenGettingCorrectionsFilteredByCompleteWord() : TestBase()
+    {
+        private PageView<CorrectionView> _page;
+        private readonly string _language = new Faker().Random.String2(6);
+
+        [OneTimeSetUp]
+        public async Task Setup()
+        {
+            CorrectionBuilder.WithLanguage(_language).WithProfile(CorrectionProfiles.Autocorrect)
+                .BuildWith(("aaa", "x", 1, true), ("bbb", "y", 50, false), ("ccc", "z", 7, true));
+
+            var response = await Client.GetAsync($"/tools/{_language}/corrections/autocorrect?completeWord=true");
+            response.ShouldBeOk();
+            _page = await response.GetContent<PageView<CorrectionView>>();
+        }
+
+        [OneTimeTearDown]
+        public void Teardown() => Cleanup();
+
+        [Test]
+        public void ShouldOnlyReturnWholeWordCorrections() => _page.Data.Select(c => c.IncorrectText).Should().BeEquivalentTo(["aaa", "ccc"]);
+
+        [Test]
+        public void ShouldCountOnlyMatchingEntries() => _page.TotalCount.Should().Be(2);
+
+        [Test]
+        public void ShouldKeepFilterInPagingLinks() => _page.Link(RelTypes.Self).ShouldHaveQueryParameter("completeWord", "true");
+    }
 }

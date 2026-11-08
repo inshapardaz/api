@@ -21,7 +21,7 @@ public class CorrectionRepository(SqlServerConnectionProvider connectionProvider
         }
     }
 
-    public async Task<Page<CorrectionModel>> GetCorrectionList(string language, string query, string profile, int pageNumber, int pageSize, CorrectionSortByType sortBy, CancellationToken cancellationToken)
+    public async Task<Page<CorrectionModel>> GetCorrectionList(string language, string query, string profile, int pageNumber, int pageSize, CorrectionSortByType sortBy, bool? completeWord, CancellationToken cancellationToken)
     {
         using (var connection = connectionProvider.GetConnection())
         {
@@ -31,22 +31,24 @@ public class CorrectionRepository(SqlServerConnectionProvider connectionProvider
                 CorrectionSortByType.Newest => "Id DESC",
                 _ => "IncorrectText",
             };
+            var completeWordFilter = completeWord.HasValue ? "AND CompleteWord = @CompleteWord" : "";
+            var parameters = new { Language = language, Query = $"%{query}%", Profile = profile, PageSize = pageSize, PageNumber = pageNumber, CompleteWord = completeWord };
+
             var sql = $@"SELECT *
                             FROM Corrections
-                            WHERE language = @Language 
+                            WHERE language = @Language
                             AND (IncorrectText LIKE @Query OR CorrectText LIKE @Query)
                             AND Profile = @Profile
+                            {completeWordFilter}
                             ORDER BY {orderBy}
                             OFFSET @PageSize * (@PageNumber - 1) ROWS
                             FETCH NEXT @PageSize ROWS ONLY";
-            var command = new CommandDefinition(sql,
-                                                new { Language = language, Query = $"%{query}%", Profile = profile, PageSize = pageSize, PageNumber = pageNumber },
-                                                cancellationToken: cancellationToken);
+            var command = new CommandDefinition(sql, parameters, cancellationToken: cancellationToken);
 
             var authors = await connection.QueryAsync<CorrectionModel>(command);
 
-            var sqlCorrectionCount = "SELECT COUNT(*) FROM Corrections WHERE Language = @Language AND (IncorrectText LIKE @Query OR CorrectText LIKE @Query) AND Profile = @Profile";
-            var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCorrectionCount, new { Language = language, Query = $"%{query}%", Profile = profile }, cancellationToken: cancellationToken));
+            var sqlCorrectionCount = $"SELECT COUNT(*) FROM Corrections WHERE Language = @Language AND (IncorrectText LIKE @Query OR CorrectText LIKE @Query) AND Profile = @Profile {completeWordFilter}";
+            var authorCount = await connection.QuerySingleAsync<int>(new CommandDefinition(sqlCorrectionCount, parameters, cancellationToken: cancellationToken));
 
             return new Page<CorrectionModel>
             {

@@ -5,6 +5,7 @@ using Inshapardaz.Api.Tests.Framework.Dto;
 using Inshapardaz.Api.Tests.Framework.Fakes;
 using Inshapardaz.Api.Tests.Framework.Helpers;
 using Inshapardaz.Api.Views.Library;
+using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -54,7 +55,9 @@ namespace Inshapardaz.Api.Tests.Library.Book.PublishBook
                 .Select(group => new
                 {
                     ChapterId = group.Key,
-                    Content = string.Join(' ', group.OrderBy(x => x.SequenceNumber).Select(x => x.Content).ToList())
+                    Content = string.Join(
+                        $"{MarkdownHelper.PageBreakMarker} ",
+                        group.OrderBy(x => x.SequenceNumber).Select(x => x.Content).ToList())
                 }).ToList();
             
             var chapterTestRepository = Services.GetService<IChapterTestRepository>();

@@ -88,7 +88,7 @@ public class PublishBookRequestHandler(
         byte[] outputFile = null;
         if (command.OutputType == MimeTypes.MsWord)
         {
-            outputFile = wordDocumentWriter.ConvertMarkdownToWord(chapterTexts.Values);
+            outputFile = wordDocumentWriter.ConvertMarkdownToWord(chapterTexts.Values, book.Publisher);
         }
         else if (command.OutputType == MimeTypes.Epub)
         {
@@ -171,12 +171,19 @@ public class PublishBookRequestHandler(
         StringBuilder builder = new StringBuilder();
 
         var tasks = pages.Select(GetPageText).ToArray();
-        
-        await Task.WhenAll(tasks); 
-        
+
+        await Task.WhenAll(tasks);
+
+        var isFirstPage = true;
         foreach (var task in tasks)
         {
             var (separator, finalText) = task.Result;
+
+            if (!isFirstPage)
+            {
+                builder.Append(MarkdownHelper.PageBreakMarker);
+            }
+            isFirstPage = false;
 
             builder.Append(separator);
             builder.Append(finalText);

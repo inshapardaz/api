@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Text;
+using System.Text.RegularExpressions;
 using Inshapardaz.Domain.Helpers;
 using Inshapardaz.Domain.Models;
 using Inshapardaz.Domain.Models.Library;
@@ -37,9 +38,9 @@ public class MarkdownToEpubConverter
         
         var coverItem = WriteCoverImage(coverImage, oebpsDir, manifest, spine);
         
-        WriteChapters(chapters, book.Language, direction, oebpsDir, manifest, spine, navItems);
+        var pageBreaks = WriteChapters(chapters, book.Language, direction, oebpsDir, manifest, spine, navItems);
 
-        WriteNavigation(chapters, oebpsDir, manifest, spine);
+        WriteNavigation(chapters, pageBreaks, oebpsDir, manifest, spine);
 
         WriteLegacyNavigation(book, chapters, oebpsDir, manifest, spine);
 
@@ -135,18 +136,30 @@ body {{
       return coverItem;
     }
     
-    private static void WriteChapters(List<Chapter> chapters, string language, string direction, string oebpsDir,
+    private static List<(string Id, string Href, int PageNumber)> WriteChapters(List<Chapter> chapters, string language, string direction, string oebpsDir,
       StringBuilder manifest, StringBuilder spine, StringBuilder navItems)
     {
       var pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+      var pageBreaks = new List<(string Id, string Href, int PageNumber)>();
+      var pageNumber = 0;
+
       for (int i = 0; i < chapters.Count; i++)
       {
         var chapter = chapters[i];
+        string fileName = $"chapter{i + 1}.xhtml";
+
         string html = Markdown.ToHtml(chapter.MarkdownContent, pipeline);
+        html = Regex.Replace(html, Regex.Escape(MarkdownHelper.PageBreakMarker), _ =>
+        {
+          pageNumber++;
+          var pageId = $"pb{pageNumber}";
+          pageBreaks.Add((pageId, $"{fileName}#{pageId}", pageNumber));
+          return $"<span epub:type='pagebreak' id='{pageId}' title='{pageNumber}' role='doc-pagebreak'/>";
+        });
 
         string xhtml = $@"<?xml version='1.0' encoding='utf-8'?>
             <!DOCTYPE html>
-            <html xmlns='http://www.w3.org/1999/xhtml' xml:lang='{language}' dir='{direction}'>
+            <html xmlns='http://www.w3.org/1999/xhtml' xmlns:epub='http://www.idpf.org/2007/ops' xml:lang='{language}' dir='{direction}'>
               <head>
                 <title>{chapter.Title}</title>
                 <link rel='stylesheet' type='text/css' href='styles.css'/>
@@ -156,22 +169,23 @@ body {{
               </body>
             </html>";
 
-        string fileName = $"chapter{i + 1}.xhtml";
         File.WriteAllText(Path.Combine(oebpsDir, fileName), xhtml, Encoding.UTF8);
 
         manifest.AppendLine($"    <item id='chap{i + 1}' href='{fileName}' media-type='application/xhtml+xml'/>");
         spine.AppendLine($"    <itemref idref='chap{i + 1}'/>");
         navItems.AppendLine($"      <li><a href='{fileName}'>{chapter.Title}</a></li>");
       }
+
+      return pageBreaks;
     }
 
-    private static void WriteNavigation(List<Chapter> chapters, string oebpsDir, StringBuilder manifest,
-      StringBuilder spine)
+    private static void WriteNavigation(List<Chapter> chapters, List<(string Id, string Href, int PageNumber)> pageBreaks,
+      string oebpsDir, StringBuilder manifest, StringBuilder spine)
     {
       StringBuilder toc = new StringBuilder();
       toc.AppendLine(@"<?xml version=""1.0"" encoding=""utf-8""?>
           <!DOCTYPE html>
-          <html xmlns=""http://www.w3.org/1999/xhtml"" 
+          <html xmlns=""http://www.w3.org/1999/xhtml""
                 xmlns:epub=""http://www.idpf.org/2007/ops""
                 xml:lang=""ur"" dir=""rtl"">
           <head><title>TOC</title></head>
@@ -185,7 +199,20 @@ body {{
         toc.AppendLine($"<li><a href=\"chapter{i + 1}.xhtml\">{chapters[i].Title}</a></li>");
       }
 
-      toc.AppendLine("</ol></nav></body></html>");
+      toc.AppendLine("</ol></nav>");
+
+      if (pageBreaks.Count > 0)
+      {
+        toc.AppendLine(@"<nav epub:type=""page-list"" id=""page-list"" hidden="""">
+          <ol>");
+        foreach (var pageBreak in pageBreaks)
+        {
+          toc.AppendLine($"<li><a href=\"{pageBreak.Href}\">{pageBreak.PageNumber}</a></li>");
+        }
+        toc.AppendLine("</ol></nav>");
+      }
+
+      toc.AppendLine("</body></html>");
       File.WriteAllText(Path.Combine(oebpsDir, "nav.xhtml"), toc.ToString(), Encoding.UTF8);
 
       manifest.AppendLine("    <item id='nav' href='nav.xhtml' media-type='application/xhtml+xml' properties='nav' />");
@@ -231,9 +258,7 @@ body {{
       string categoriesXml = book.Categories != null
         ? string.Join("\n", book.Categories.Select(c => $"<dc:subject>{c.Name}</dc:subject>"))
         : "";
-      string publisherXml = !string.IsNullOrEmpty(book.Publisher)
-        ? $"<dc:publisher>{book.Publisher}</dc:publisher>"
-        : "";
+      string publisherXml = $"<dc:publisher>{(string.IsNullOrWhiteSpace(book.Publisher) ? "Nawishta" : book.Publisher)}</dc:publisher>";
       string seriesMeta = !string.IsNullOrEmpty(book.SeriesName)
         ? $"<meta property='belongs-to-collection'>{book.SeriesName}</meta>"
         : "";
@@ -242,6 +267,7 @@ body {{
         ? $"<meta property='group-position'>{book.SeriesIndex.Value}</meta>"
         : "";
       string generatorMeta = "<meta name='generator' content='Nawishta'/>";
+      string contributorXml = "<dc:contributor id='contributor' opf:role='bkp'>Nawishta</dc:contributor>";
       
       string rightsXml = book.Copyrights != CopyrightStatuses.Open
         ? $"<dc:rights>{System.Security.SecurityElement.Escape(book.Copyrights.ToString())}</dc:rights>"
@@ -250,14 +276,15 @@ body {{
       var uniqueIdentifier = StringExtentions.GenerateEpubUniqueId();
       string opfContent = $@"<?xml version='1.0' encoding='utf-8'?>
 <package version='3.0' xmlns='http://www.idpf.org/2007/opf' unique-identifier='{uniqueIdentifier}' xml:lang='{book.Language}'>
-  <metadata xmlns:dc='http://purl.org/dc/elements/1.1/'>
+  <metadata xmlns:dc='http://purl.org/dc/elements/1.1/' xmlns:opf='http://www.idpf.org/2007/opf'>
     <dc:identifier id='bookid'>urn:uuid:{Guid.NewGuid()}</dc:identifier>
-    <dc:identifier xmlns:opf=""http://www.idpf.org/2007/opf"" id=""{uniqueIdentifier}"" opf:scheme=""uuid"">{uniqueIdentifier}</dc:identifier>
+    <dc:identifier id=""{uniqueIdentifier}"" opf:scheme=""uuid"">{uniqueIdentifier}</dc:identifier>
     <dc:title>{book.Title}</dc:title>
     <dc:language>{book.Language}</dc:language>
     {authorsXml}
     {categoriesXml}
     {publisherXml}
+    {contributorXml}
     {rightsXml}
     {seriesMeta}
     {seriesIndexMeta}
